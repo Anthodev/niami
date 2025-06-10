@@ -1,0 +1,10 @@
+parameters:
+    level: 9
+
+    treatPhpDocTypesAsCertain: false
+
+    paths:
+        - bin/
+        - config/
+        - public/
+        - src/

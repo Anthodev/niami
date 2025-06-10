@@ -1,0 +1,33 @@
+<constraint-mapping xmlns="http://symfony.com/schema/dic/constraint-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping https://symfony.com/schema/dic/constraint-mapping/constraint-mapping-1.0.xsd">
+
+    <class name="App\Domain\Model\User\User">
+        <property name="email">
+            <constraint name="NotBlank" />
+            <constraint name="Email" />
+        </property>
+        <property name="username">
+            <constraint name="NotBlank" />
+            <constraint name="Length">
+                <option name="min">3</option>
+                <option name="max">255</option>
+            </constraint>
+        </property>
+        <property name="password">
+            <constraint name="Length">
+                <option name="min">12</option>
+                <option name="max">255</option>
+                <option name="minMessage">Your password must be at least {{ limit }} characters long.</option>
+            </constraint>
+        </property>
+        <property name="plainPassword">
+            <constraint name="Length">
+                <option name="min">12</option>
+                <option name="max">255</option>
+                <option name="minMessage">Your password must be at least {{ limit }} characters long.</option>
+            </constraint>
+            <constraint name="PasswordStrength" />
+        </property>
+    </class>
+</constraint-mapping>

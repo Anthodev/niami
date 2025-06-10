@@ -1,0 +1,6 @@
+api_login_check:
+    path: /api/login_check
+
+controllers:
+    resource: ../src/Presentation/Controller/
+    type: attribute

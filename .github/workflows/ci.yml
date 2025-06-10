@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  pull_request: ~
+  workflow_dispatch: ~
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v4
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      -
+        name: Build Docker images
+        uses: docker/bake-action@v6
+        with:
+          pull: true
+          load: true
+          files: |
+            compose.yaml
+            compose.override.yaml
+          set: |
+            *.cache-from=type=gha,scope=${{github.ref}}
+            *.cache-from=type=gha,scope=refs/heads/main
+            *.cache-to=type=gha,scope=${{github.ref}},mode=max
+        env:
+          APP_ENV: test
+      -
+        name: Start services
+        run: docker compose up --wait --no-build
+        env:
+          APP_ENV: test
+      -
+        name: Symfony CLI
+        run: |
+          curl -sS https://get.symfony.com/cli/installer | bash
+          mv /home/runner/.symfony5/bin/symfony /usr/local/bin/symfony
+      -
+        name: Symfony Check Vulnerabilities
+        run: symfony check:security
+      -
+        name: Generate Lexik JWT Keys
+        run: docker compose exec -T php bin/console -e test lexik:jwt:generate-keypair --overwrite -q
+      -
+        name: Checking standards
+        run: docker compose exec -T php vendor/bin/ecs check
+      -
+        name: Static Analysis
+        run: docker compose exec -T php vendor/bin/phpstan analyse
+      -
+        name: Check HTTP reachability
+        run: curl -v --fail-with-body http://localhost
+      -
+        name: Check HTTPS reachability
+        run: curl -vk --fail-with-body https://localhost
+      -
+        name: Check Mercure reachability
+        if: false
+        run: curl -vkI --fail-with-body https://localhost/.well-known/mercure?topic=test
+      -
+        name: Create test database
+        run: docker compose exec -T php bin/console -e test doctrine:database:create
+      -
+        name: Run migrations
+        run: docker compose exec -T php bin/console -e test doctrine:migrations:migrate --no-interaction
+      -
+        name: Load fixtures
+        run: docker compose exec -T php bin/console -e test doctrine:fixtures:load --no-interaction
+      -
+        name: Run tests
+        run: docker compose exec -T php vendor/bin/pest
+      -
+        name: Doctrine Schema Validator
+        run: docker compose exec -T php bin/console -e test doctrine:schema:validate --skip-sync -vvv --no-interaction
+      -
+        name: Dump docker logs on failure
+        if: failure()
+        uses: jwalton/gh-docker-logs@v2
