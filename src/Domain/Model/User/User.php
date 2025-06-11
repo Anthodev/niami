@@ -7,7 +7,7 @@ namespace App\Domain\Model\User;
 use App\Domain\Model\Common\ModelInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Uid\Ulid;
+use Symfony\Component\Uid\Uuid;
 
 class User implements ModelInterface, UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -135,7 +135,7 @@ class User implements ModelInterface, UserInterface, PasswordAuthenticatedUserIn
 
     public function setDefaultId(): self
     {
-        $this->id = new Ulid()->toRfc4122();
+        $this->id = Uuid::v7()->toRfc4122();
 
         return $this;
     }

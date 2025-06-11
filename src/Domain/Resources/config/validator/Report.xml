@@ -1,0 +1,65 @@
+<constraint-mapping xmlns="http://symfony.com/schema/dic/constraint-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping https://symfony.com/schema/dic/constraint-mapping/constraint-mapping-1.0.xsd">
+
+    <class name="App\Domain\Model\Game\Report">
+        <property name="isSwitch2Edition">
+            <constraint name="NotNull"/>
+        </property>
+
+        <property name="is60FpsPortable">
+            <constraint name="NotNull"/>
+        </property>
+
+        <property name="hasStableFrameratePortable">
+            <constraint name="NotNull"/>
+        </property>
+
+        <property name="is60FpsDocked">
+            <constraint name="NotNull"/>
+        </property>
+
+        <property name="hasStableFramerateDocked">
+            <constraint name="NotNull"/>
+        </property>
+
+        <property name="hasResolutionImprovedPortable">
+            <constraint name="NotNull"/>
+        </property>
+
+        <property name="isNativeResolutionPortable">
+            <constraint name="NotNull"/>
+        </property>
+
+        <property name="hasResolutionImprovedDocked">
+            <constraint name="NotNull"/>
+        </property>
+
+        <property name="isNativeResolutionImprovedDocked">
+            <constraint name="NotNull"/>
+        </property>
+
+        <property name="hasImprovedLoadingTimes">
+            <constraint name="NotNull"/>
+        </property>
+
+        <property name="upvoteCount">
+            <constraint name="NotNull"/>
+            <constraint name="GreaterThanOrEqual">
+                <option name="value">0</option>
+            </constraint>
+        </property>
+
+        <property name="isVisible">
+            <constraint name="NotNull"/>
+        </property>
+
+        <property name="createdAt">
+            <constraint name="NotNull"/>
+        </property>
+
+        <property name="game">
+            <constraint name="NotBlank"/>
+        </property>
+    </class>
+</constraint-mapping>

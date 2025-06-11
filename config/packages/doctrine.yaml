@@ -24,6 +24,12 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Infrastructure/Persistence/Doctrine/config/User'
                 prefix: 'App\Domain\Model\User'
                 alias: User
+            Game:
+                is_bundle: false
+                type: xml
+                dir: '%kernel.project_dir%/src/Infrastructure/Persistence/Doctrine/config/Game'
+                prefix: 'App\Domain\Model\Game'
+                alias: Game
         controller_resolver:
             auto_mapping: false
 

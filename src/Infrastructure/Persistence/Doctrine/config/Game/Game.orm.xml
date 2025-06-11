@@ -3,28 +3,33 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
     https://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
-
-    <entity name="App\Domain\Model\User\User" table="users">
+    <entity name="App\Domain\Model\Game\Game" table="games">
         <id name="id" type="uuid" column="id">
             <generator strategy="CUSTOM"/>
             <custom-id-generator class="Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator"/>
         </id>
 
-        <field name="email" type="string" column="email" length="255">
+        <field name="name" type="string" column="name" length="255">
         </field>
 
-        <field name="username" type="string" column="username" length="255">
+        <field name="slug" type="string" column="slug" length="255">
         </field>
 
-        <field name="password" type="string" column="password" length="255">
+        <field name="description" type="text" column="description">
         </field>
 
-        <field name="plainPassword" type="string" column="plain_password" length="255" nullable="true">
+        <field name="imageCover" type="string" column="imageCover" length="255">
         </field>
 
-        <field name="enabled" type="boolean" column="enabled">
+        <field name="isPatched" type="boolean" column="isPatched">
             <options>
                 <option name="default">false</option>
+            </options>
+        </field>
+
+        <field name="isActive" type="boolean" column="isActive">
+            <options>
+                <option name="default">true</option>
             </options>
         </field>
 
@@ -40,21 +45,27 @@
             </options>
         </field>
 
+        <one-to-many
+            field="reports"
+            target-entity="App\Domain\Model\Game\Report"
+            mapped-by="game"
+        />
+
         <many-to-one
-            field="role"
-            target-entity="App\Domain\Model\User\Role"
-            inversed-by="users"
+            field="publisher"
+            target-entity="App\Domain\Model\Game\Publisher"
+            inversed-by="games"
         />
 
         <indexes>
-            <index name="users_email" columns="email"/>
-            <index name="users_username" columns="username"/>
-            <index name="users_role_id" columns="role_id"/>
+            <index name="games_name" columns="name"/>
+            <index name="games_slug" columns="slug"/>
+            <index name="games_publisher_id" columns="publisher_id"/>
         </indexes>
 
         <unique-constraints>
-            <unique-constraint name="users_email_unique_constraint" columns="email"/>
-            <unique-constraint name="users_username_unique_constraint" columns="username"/>
+            <unique-constraint name="games_name_unique_constraint" columns="name"/>
+            <unique-constraint name="games_slug_unique_constraint" columns="slug"/>
         </unique-constraints>
     </entity>
 </doctrine-mapping>
