@@ -27,11 +27,20 @@ alias e := ecs
 
 alias c := composer-install
 
+alias im := importmap
+alias ir := importmap-require
+alias ii := importmap-install
+alias iu := importmap-update
+alias irm := importmap-remove
+alias ima := importmap-audit
+
+alias tw := tailwind-watch
+
 alias ss := supervisor-start
 alias sp := supervisor-stop
 
-container-name := "symfony-bootstrap-php-1"
-docker-running := `docker ps -q --filter name=symfony-bootstrap-php-1 | grep -q . && echo true || echo false`
+container-name := "ns2-ubcr-php-1"
+docker-running := `docker ps -q --filter name=ns2-ubcr-php-1 | grep -q . && echo true || echo false`
 
 d := if docker-running == "true" { "docker exec -t " + container-name + " php" } else { "php" }
 shell := if docker-running == "true" { "docker exec -t " + container-name } else { "" }
@@ -53,28 +62,28 @@ setup-project:
     @echo "Webmail is available at http://localhost:8025"
 
 build:
-    @docker-compose build --no-cache
+    COMPOSE_BAKE=true docker compose build --no-cache
 
 up:
-    @docker-compose up -d
+    docker compose -f compose.yaml -f compose.override.yaml up -d
 
 down:
-    @docker-compose down --remove-orphans
+    docker compose down --remove-orphans
 
 stop:
-    @docker-compose stop
+    docker compose stop
 
 prune:
-    @docker-compose down --remove-orphans
-    @docker-compose down --volumes
-    @docker-compose rm -f
+    docker compose down --remove-orphans
+    docker compose down --volumes
+    docker compose rm -f
 
 reset-permissions:
     sudo chown -Rf $(id -u):$(id -g) ./
 
 #---------- Container commands ----------
 bash:
-    @docker exec -it symfony-bootstrap-php-1 bash
+    @docker exec -it ns2-ubcr-php-1 bash
 
 #---------- Symfony commands ----------
 cc:
@@ -91,16 +100,15 @@ setup-database:
 reset-database:
     @echo "Resetting the database..."
     just ddb
-    just cdb
     just sdb
 #    just sp
 #    just ss
 
-drop-database:
-    {{console}} doctrine:database:drop --force --if-exists
-
 create-database:
     {{console}} doctrine:database:create --if-not-exists
+
+drop-database:
+    {{console}} doctrine:database:drop --force --if-exists
 
 migrate:
     {{console}} doctrine:migrations:migrate --no-interaction
@@ -117,11 +125,11 @@ setup-database-test:
     just mt
     just ft
 
-drop-database-test:
-    {{console}} doctrine:database:drop --force --if-exists -e test
-
 create-database-test:
     {{console}} doctrine:database:create --if-not-exists -e test
+
+drop-database-test:
+    {{console}} doctrine:database:drop --force --if-exists -e test
 
 migrate-test:
     {{console}} doctrine:migrations:migrate --no-interaction -e test
@@ -129,12 +137,34 @@ migrate-test:
 fixtures-test:
     {{console}} doctrine:fixtures:load --no-interaction -e test
 
+#---------- Symfony & ImportMap commands ----------
+importmap:
+    {{console}} importmap
+
+importmap-require:
+    {{console}} importmap:require
+
+importmap-install:
+    {{console}} importmap:install
+
+importmap-update:
+    {{console}} importmap:update
+
+importmap-remove:
+    {{console}} importmap:remove
+
+importmap-audit:
+    {{console}} importmap:audit
+
+tailwind-watch:
+    {{console}} tailwind:build --watch
+
 #---------- Test & Analysis commands ----------
 tests:
     {{d}} vendor/bin/pest
 
 stan:
-    {{d}} vendor/bin/phpstan analyse
+    {{d}} vendor/bin/phpstan analyse --memory-limit=256M
 
 ecs:
     {{d}} vendor/bin/ecs check --fix

@@ -7,7 +7,7 @@ namespace App\Domain\Model\User;
 use App\Domain\Model\Common\ModelInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Symfony\Component\Uid\Ulid;
+use Symfony\Component\Uid\Uuid;
 
 class Role implements ModelInterface
 {
@@ -111,7 +111,7 @@ class Role implements ModelInterface
 
     public function setDefaultId(): self
     {
-        $this->id = new Ulid()->toRfc4122();
+        $this->id = Uuid::v7()->toRfc4122();
 
         return $this;
     }

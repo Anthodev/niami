@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+    https://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity name="App\Domain\Model\Game\Report" table="reports">
+        <id name="id" type="uuid" column="id">
+            <generator strategy="CUSTOM"/>
+            <custom-id-generator class="Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator"/>
+        </id>
+
+        <field name="isSwitch2Edition" type="boolean" column="is_switch_2_edition">
+            <options>
+                <option name="default">false</option>
+            </options>
+        </field>
+
+        <field name="is60FpsPortable" type="boolean" column="is_60fps_portable">
+            <options>
+                <option name="default">false</option>
+            </options>
+        </field>
+
+        <field name="hasStableFrameratePortable" type="boolean" column="has_stable_framerate_portable">
+            <options>
+                <option name="default">false</option>
+            </options>
+        </field>
+
+        <field name="is60FpsDocked" type="boolean" column="is_60fps_docked">
+            <options>
+                <option name="default">false</option>
+            </options>
+        </field>
+
+        <field name="hasStableFramerateDocked" type="boolean" column="has_stable_framerate_docked">
+            <options>
+                <option name="default">false</option>
+            </options>
+        </field>
+
+        <field name="hasResolutionImprovedPortable" type="boolean" column="has_resolution_improved_portable">
+            <options>
+                <option name="default">false</option>
+            </options>
+        </field>
+
+        <field name="isNativeResolutionPortable" type="boolean" column="is_native_resolution_portable">
+            <options>
+                <option name="default">false</option>
+            </options>
+        </field>
+
+        <field name="hasResolutionImprovedDocked" type="boolean" column="has_resolution_improved_docked">
+            <options>
+                <option name="default">false</option>
+            </options>
+        </field>
+
+        <field name="isNativeResolutionImprovedDocked" type="boolean" column="is_native_resolution_improved_docked">
+            <options>
+                <option name="default">false</option>
+            </options>
+        </field>
+
+        <field name="hasImprovedLoadingTimes" type="boolean" column="has_improved_loading_times">
+            <options>
+                <option name="default">false</option>
+            </options>
+        </field>
+
+        <field name="upvoteCount" type="integer" column="upvote_count">
+            <options>
+                <option name="default">0</option>
+            </options>
+        </field>
+
+        <field name="isVisible" type="boolean" column="is_visible">
+            <options>
+                <option name="default">true</option>
+            </options>
+        </field>
+
+        <field name="createdAt" type="datetime_immutable" column="created_at">
+            <options>
+                <option name="default">NOW()</option>
+            </options>
+        </field>
+
+        <field name="updatedAt" type="datetime" column="updated_at" nullable="true">
+            <options>
+                <option name="default">NOW()</option>
+            </options>
+        </field>
+
+        <many-to-one
+            field="game"
+            target-entity="App\Domain\Model\Game\Game"
+            inversed-by="reports"
+        />
+
+        <indexes>
+            <index name="reports_game_id" columns="game_id"/>
+            <index name="reports_upvote_count" columns="upvote_count"/>
+        </indexes>
+    </entity>
+</doctrine-mapping>
