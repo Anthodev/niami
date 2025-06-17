@@ -18,6 +18,9 @@
         <field name="description" type="text" column="description">
         </field>
 
+        <field name="releaseDate" type="string" column="releaseDate" length="255">
+        </field>
+
         <field name="imageCover" type="string" column="imageCover" length="255">
         </field>
 

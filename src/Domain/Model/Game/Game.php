@@ -19,6 +19,7 @@ class Game implements ModelInterface
         private ?string $name = null,
         private ?string $slug = null,
         private ?string $description = null,
+        private ?string $releaseDate = null,
         private ?string $imageCover = null,
         private bool $isPatched = false,
         private bool $isActive = true,
@@ -72,6 +73,18 @@ class Game implements ModelInterface
     public function setDescription(string $description): self
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getReleaseDate(): ?string
+    {
+        return $this->releaseDate;
+    }
+
+    public function setReleaseDate(string $releaseDate): self
+    {
+        $this->releaseDate = $releaseDate;
 
         return $this;
     }

@@ -25,8 +25,23 @@ services:
     App\Infrastructure\Manager\JwtPayloadManager:
         public: true
     
+    App\Infrastructure\Client\IgdbClient:
+        arguments:
+            $clientId: '%env(IGDB_CLIENT_ID)%'
+            $clientSecret: '%env(IGDB_CLIENT_SECRET)%'
+    
     App\Infrastructure\Persistence\Doctrine\User\Repository\DoctrineUserRepository:
         class: App\Infrastructure\Persistence\Doctrine\User\Repository\DoctrineUserRepository
         arguments: [ '@doctrine' ]
 
     App\Domain\Repository\User\UserRepositoryInterface: '@App\Infrastructure\Persistence\Doctrine\User\Repository\DoctrineUserRepository'
+    
+    App\Domain\Service\Game\GameApiServiceInterface:
+        class: App\Infrastructure\Service\Game\ApiGameSearchService
+
+    App\Domain\Repository\Game\ApiGameRepositoryInterface:
+        class: App\Infrastructure\Repository\Game\IgdbApiRepository
+    
+    App\Infrastructure\Serializer\IgdbSearchResponseDtoArraySerializer:
+        tags:
+            - { name: 'serializer.normalizer', priority: 90 }
