@@ -55,7 +55,7 @@ jobs:
         run: docker compose exec -T php vendor/bin/ecs check
       -
         name: Static Analysis
-        run: docker compose exec -T php vendor/bin/phpstan analyse
+        run: docker compose exec -T php vendor/bin/phpstan analyse --memory-limit=256M
       -
         name: Check HTTP reachability
         run: curl -v --fail-with-body http://localhost
