@@ -14,6 +14,8 @@
         "doctrine/orm": "^3.3.3",
         "lexik/jwt-authentication-bundle": "^3.1.1",
         "runtime/frankenphp-symfony": "^0.2.0",
+        "symfony/asset": "7.2.*",
+        "symfony/asset-mapper": "7.2.*",
         "symfony/cache": "7.2.*",
         "symfony/console": "7.2.*",
         "symfony/doctrine-messenger": "7.2.*",
@@ -26,10 +28,14 @@
         "symfony/runtime": "7.2.*",
         "symfony/security-bundle": "7.2.*",
         "symfony/serializer": "7.2.*",
+        "symfony/stimulus-bundle": "^2.26",
         "symfony/twig-bundle": "7.2.*",
         "symfony/uid": "7.2.*",
         "symfony/validator": "7.2.*",
-        "symfony/yaml": "7.2.*"
+        "symfony/yaml": "7.2.*",
+        "symfonycasts/tailwind-bundle": "*",
+        "twig/extra-bundle": "^2.12|^3.0",
+        "twig/twig": "^2.12|^3.0"
     },
     "config": {
         "allow-plugins": {
@@ -64,7 +70,8 @@
     "scripts": {
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
-            "assets:install %PUBLIC_DIR%": "symfony-cmd"
+            "assets:install %PUBLIC_DIR%": "symfony-cmd",
+            "importmap:install": "symfony-cmd"
         },
         "post-install-cmd": [
             "@auto-scripts"

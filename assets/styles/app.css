@@ -1,0 +1,11 @@
+@import "tailwindcss";
+@import "../vendor/daisyui/daisyui.min.css";
+@plugin "../vendor/daisyui/daisyui.index.js" {
+    themes: light --default, night --prefersdark;
+}
+
+@source "../../templates/";
+
+body {
+    /**/
+}
