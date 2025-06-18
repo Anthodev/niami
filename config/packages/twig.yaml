@@ -1,5 +1,9 @@
 twig:
+    default_path: '%kernel.project_dir%/src/Presentation/Template'
     file_name_pattern: '*.twig'
+    paths:
+        'src/Presentation/Template': 'app'
+        'src/Presentation/Template/Admin': 'admin'
 
 when@test:
     twig:
