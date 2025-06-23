@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\EventListener;
+namespace App\Application\EventListener;
 
 use App\Domain\Model\Common\ModelInterface;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;

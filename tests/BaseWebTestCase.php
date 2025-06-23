@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests;
 
+use App\Application\Manager\JwtPayloadManager;
+use App\Domain\Factory\User\UserFactory;
 use App\Domain\Model\User\User;
 use App\Infrastructure\Enum\RoleCodeEnum;
-use App\Infrastructure\Factory\User\UserFactory;
-use App\Infrastructure\Manager\JwtPayloadManager;
 use App\Infrastructure\Persistence\Doctrine\User\Repository\DoctrineRoleRepository;
 use App\Infrastructure\Persistence\Doctrine\User\Repository\DoctrineUserRepository;
 use App\Tests\Trait\WebUtilsTrait;

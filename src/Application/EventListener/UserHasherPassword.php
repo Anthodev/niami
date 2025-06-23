@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\EventListener;
+namespace App\Application\EventListener;
 
+use App\Application\Security\PasswordChanger;
 use App\Domain\Model\User\User;
-use App\Infrastructure\Security\PasswordChanger;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
 use Doctrine\ORM\Events;
 

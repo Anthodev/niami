@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Serializer;
+namespace App\Application\Serializer;
 
 use App\Shared\Dto\Game\IgdbSearchResponseDto;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;

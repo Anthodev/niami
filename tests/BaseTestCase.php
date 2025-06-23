@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests;
 
+use App\Domain\Factory\User\UserFactory;
 use App\Domain\Model\User\User;
 use App\Infrastructure\Enum\RoleCodeEnum;
-use App\Infrastructure\Factory\User\UserFactory;
 use App\Infrastructure\Persistence\Doctrine\User\Repository\DoctrineRoleRepository;
 use App\Tests\Trait\UtilsTrait;
 use Doctrine\ORM\EntityManagerInterface;
