@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Factory\Game;
+namespace App\Domain\Factory\Game;
 
 use App\Domain\Model\Game\ApiGame;
 

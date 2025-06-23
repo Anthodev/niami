@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Infrastructure\Service\Game;
 
-use App\Domain\Model\Game\ApiGame;
+use App\Application\Service\Game\ApiGameSearchService;
 use App\Domain\Repository\Game\ApiGameRepositoryInterface;
-use App\Infrastructure\Service\Game\ApiGameSearchService;
 use Exception;
 use Faker\Factory;
 use Faker\Generator;

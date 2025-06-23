@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Client;
 
+use App\Application\Processor\SearchQueryProcessor;
+use App\Domain\Factory\Game\ApiGameFactory;
 use App\Domain\Model\Game\ApiGame;
 use App\Infrastructure\Enum\ApiTypeRequestEnum;
 use App\Infrastructure\Enum\IgdbGamePlatformEnum;
 use App\Infrastructure\Exception\Game\IgdbAccessTokenRetrievalException;
-use App\Infrastructure\Factory\Game\ApiGameFactory;
-use App\Infrastructure\Processor\SearchQueryProcessor;
 use App\Shared\Dto\Game\IgdbSearchResponseDto;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\HttpClient\HttpClient;

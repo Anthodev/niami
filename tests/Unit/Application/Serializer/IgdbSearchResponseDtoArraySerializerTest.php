@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Infrastructure\Serializer;
 
-use App\Infrastructure\Serializer\IgdbSearchResponseDtoArraySerializer;
+use App\Application\Serializer\IgdbSearchResponseDtoArraySerializer;
 use App\Shared\Dto\Game\IgdbSearchResponseDto;
 use Faker\Factory;
 use Faker\Generator;
-use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 

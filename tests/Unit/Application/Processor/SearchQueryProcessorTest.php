@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Infrastructure\Processor;
+namespace App\Tests\Unit\Application\Processor;
 
-use App\Infrastructure\Processor\SearchQueryProcessor;
+use App\Application\Processor\SearchQueryProcessor;
 use ReflectionClass;
 
 describe('SearchQueryProcessor', function () {

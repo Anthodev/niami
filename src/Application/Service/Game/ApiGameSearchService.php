@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Service\Game;
+namespace App\Application\Service\Game;
 
 use App\Domain\Model\Game\ApiGame;
 use App\Domain\Repository\Game\ApiGameRepositoryInterface;

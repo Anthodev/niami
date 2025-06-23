@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Factory\User;
+namespace App\Domain\Factory\User;
 
 use App\Domain\Model\User\Role;
 use App\Domain\Model\User\User;
