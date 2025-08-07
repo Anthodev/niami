@@ -64,8 +64,10 @@ jobs:
         run: curl -vk --fail-with-body https://localhost
       -
         name: Check Mercure reachability
-        if: false
         run: curl -vkI --fail-with-body https://localhost/.well-known/mercure?topic=test
+      -
+        name: Generate Tailwind CSS build
+        run: docker compose exec -T php php bin/console tailwind:build
       -
         name: Create test database
         run: docker compose exec -T php bin/console -e test doctrine:database:create
