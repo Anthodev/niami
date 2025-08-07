@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Infrastructure\Serializer;
+namespace App\Tests\Unit\Application\Serializer;
 
-use App\Application\Serializer\IgdbSearchResponseDtoArraySerializer;
+use App\Application\Serializer\IgdbSearchResponseDtoArrayNormalizer;
 use App\Shared\Dto\Game\IgdbSearchResponseDto;
 use Faker\Factory;
 use Faker\Generator;
@@ -16,7 +16,7 @@ beforeEach(function () {
     $this->normalizer = $this->createMock(NormalizerInterface::class);
     $this->denormalizer = $this->createMock(DenormalizerInterface::class);
 
-    $this->serializer = new IgdbSearchResponseDtoArraySerializer();
+    $this->serializer = new IgdbSearchResponseDtoArrayNormalizer();
     $this->serializer->setNormalizer($this->normalizer);
     $this->serializer->setDenormalizer($this->denormalizer);
 });
@@ -224,9 +224,10 @@ describe('denormalize', function () {
 function createIgdbSearchResponseDto(Generator $faker): IgdbSearchResponseDto
 {
     return new IgdbSearchResponseDto(
+        id: $faker->randomNumber(),
         name: $faker->words(3, true),
         slug: $faker->slug(),
-        involvedCompanies: [
+        involved_companies: [
             [
                 'company' => ['name' => $faker->company()],
                 'publisher' => true
@@ -235,7 +236,7 @@ function createIgdbSearchResponseDto(Generator $faker): IgdbSearchResponseDto
         cover: [
             'url' => '//images.igdb.com/igdb/image/upload/t_thumb/' . $faker->sha1() . '.jpg'
         ],
-        firstReleaseDate: $faker->unixTime(),
+        first_release_date: $faker->unixTime(),
         summary: $faker->paragraph(),
         websites: [
             ['url' => $faker->url()]

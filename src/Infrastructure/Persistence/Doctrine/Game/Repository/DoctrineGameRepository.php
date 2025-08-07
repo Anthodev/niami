@@ -29,6 +29,26 @@ class DoctrineGameRepository extends DoctrineBaseEntityRepository implements Gam
         return $qb->getResult();
     }
 
+    /**
+     * @return Game[]
+     */
+    public function findGamesByNameOrSlug(
+        string $query,
+        int $limit = 10,
+    ): array {
+        $qb = $this->createQueryBuilder('g')
+            ->where('g.name LIKE :query OR g.slug LIKE :query')
+            ->andWhere('g.isActive = :active')
+            ->setParameter('query', '%'.$query.'%')
+            ->setParameter('active', true)
+            ->orderBy('g.name', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery();
+
+        /** @var Game[] */
+        return $qb->getResult();
+    }
+
     public function getOneByIdEnabledGame(string $gameId): ?Game
     {
         /** @var Game|null */

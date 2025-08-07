@@ -9,3 +9,10 @@
 body {
     /**/
 }
+
+/* Turbo loading indicator */
+.turbo-progress-bar {
+    @apply fixed top-0 left-0 h-[3px] bg-primary z-50 w-0;
+    @apply transition-[width,opacity] duration-300 ease-out;
+    transform: translate3d(0, 0, 0);
+}

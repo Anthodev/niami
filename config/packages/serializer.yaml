@@ -1,0 +1,7 @@
+services:
+    App\Application\Serializer\IgdbSearchResponseDtoNormalizer:
+        tags:
+            - { name: 'serializer.normalizer', priority: 100 }
+    App\Application\Serializer\IgdbSearchResponseDtoArrayNormalizer:
+        tags:
+            - { name: 'serializer.normalizer', priority: 90 }
