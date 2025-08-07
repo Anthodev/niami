@@ -13,7 +13,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-class IgdbSearchResponseDtoArraySerializer implements NormalizerInterface, DenormalizerInterface, NormalizerAwareInterface, DenormalizerAwareInterface
+class IgdbSearchResponseDtoArrayNormalizer implements NormalizerInterface, DenormalizerInterface, NormalizerAwareInterface, DenormalizerAwareInterface
 {
     use NormalizerAwareTrait;
     use DenormalizerAwareTrait;
@@ -75,6 +75,7 @@ class IgdbSearchResponseDtoArraySerializer implements NormalizerInterface, Denor
         }
 
         $result = [];
+
         foreach ($data as $item) {
             if (is_array($item)) {
                 $result[] = $this->denormalizer->denormalize($item, IgdbSearchResponseDto::class, $format, $context);

@@ -41,7 +41,3 @@ services:
 
     App\Domain\Repository\Game\ApiGameRepositoryInterface:
         class: App\Infrastructure\Repository\Game\IgdbApiRepository
-
-    App\Application\Serializer\IgdbSearchResponseDtoArraySerializer:
-        tags:
-            - { name: "serializer.normalizer", priority: 90 }

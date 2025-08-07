@@ -1,0 +1,53 @@
+<turbo-frame id="search-frame">
+    {{ form_start(searchGamesForm, {
+        'action': path('search_games'),
+        'attr': {
+            'data-controller': 'search-debounce',
+            'data-search-debounce-delay-value': '500',
+            'data-search-debounce-min-length-value': '3',
+            'class': 'space-y-6'
+        }
+    }) }}
+    <div class="form-control w-full">
+        <label class="label">
+            <span class="label-text text-lg font-semibold">{{ form_label(searchGamesForm.game) }}</span>
+        </label>
+        {{ form_widget(searchGamesForm.game, {
+            'attr': {
+                'data-search-debounce-target': 'input',
+                'data-action': 'input->search-debounce#search',
+                'class': 'input input-bordered input-primary w-full text-lg',
+                'placeholder': 'Tapez au moins 3 caractères pour rechercher...'
+            }
+        }) }}
+        <label class="label">
+            <span class="label-text-alt">La recherche se lance automatiquement après 3 caractères</span>
+        </label>
+    </div>
+
+    {{ form_rest(searchGamesForm) }}
+
+    <button type="submit" class="btn btn-primary btn-lg w-full gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        Rechercher maintenant
+    </button>
+    {{ form_end(searchGamesForm) }}
+
+    <div class="mt-8">
+        {% if hasError %}
+            <div class="alert alert-error">
+                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>{{ errorMessage }}</span>
+            </div>
+        {% else %}
+            {% include '@app/partials/_game_search_results.html.twig' with {
+                'games': games,
+                'searchQuery': searchQuery
+            } %}
+        {% endif %}
+    </div>
+</turbo-frame>

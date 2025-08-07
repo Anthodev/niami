@@ -9,11 +9,13 @@ use App\Domain\Factory\Game\ApiGameFactory;
 use App\Domain\Model\Game\ApiGame;
 use App\Infrastructure\Enum\ApiTypeRequestEnum;
 use App\Infrastructure\Enum\IgdbGamePlatformEnum;
+use App\Infrastructure\Enum\IgdbGameTypeEnum;
 use App\Infrastructure\Exception\Game\IgdbAccessTokenRetrievalException;
 use App\Shared\Dto\Game\IgdbSearchResponseDto;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -45,32 +47,43 @@ class IgdbClient implements ApiClientInterface
     /**
      * @return ApiGame[]
      *
-     * @throws ClientExceptionInterface|InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function searchGames(string $query, int $limit = 10): array
     {
         $searchCacheKey = $this->generateSearchCacheKey($query, $limit);
 
-        return $this->cache->get($searchCacheKey, function () use ($query, $limit) {
-            return $this->performApiRequest(
-                query: $query,
-                type: ApiTypeRequestEnum::SEARCH,
-                limit: $limit,
-            );
-        }, self::API_RESPONSE_CACHE_TTL);
+        return $this->cache->get(
+            $searchCacheKey,
+            function () use ($query, $limit) {
+                return $this->performApiRequest(
+                    query: $query,
+                    type: ApiTypeRequestEnum::SEARCH,
+                    limit: $limit,
+                );
+            },
+            self::API_RESPONSE_CACHE_TTL,
+        );
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function getGameBySlug(string $slug, int $limit = 3): ?ApiGame
     {
         $cacheKey = $this->generateGetGameSlugCacheKey($slug, $limit);
 
-        $game = $this->cache->get($cacheKey, function () use ($slug, $limit) {
-            return $this->performApiRequest(
-                query: $slug,
-                type: ApiTypeRequestEnum::SLUG,
-                limit: $limit,
-            );
-        }, self::API_RESPONSE_CACHE_TTL);
+        $game = $this->cache->get(
+            $cacheKey,
+            function () use ($slug, $limit) {
+                return $this->performApiRequest(
+                    query: $slug,
+                    type: ApiTypeRequestEnum::SLUG,
+                    limit: $limit,
+                );
+            },
+            self::API_RESPONSE_CACHE_TTL,
+        );
 
         if (!empty($game)) {
             return $game[0];
@@ -93,8 +106,10 @@ class IgdbClient implements ApiClientInterface
         return self::API_RESPONSE_CACHE_PREFIX.'search_'.$md5CacheKeyData;
     }
 
-    private function generateGetGameSlugCacheKey(string $query, int $limit): string
-    {
+    private function generateGetGameSlugCacheKey(
+        string $query,
+        int $limit,
+    ): string {
         $cacheKeyData = [
             'query' => trim(strtolower($query)),
             'limit' => $limit,
@@ -110,6 +125,7 @@ class IgdbClient implements ApiClientInterface
     /**
      * @return ApiGame[]
      *                                           *
+     * @throws ExceptionInterface
      * @throws ClientExceptionInterface
      * @throws DecodingExceptionInterface
      * @throws IgdbAccessTokenRetrievalException
@@ -144,9 +160,17 @@ class IgdbClient implements ApiClientInterface
         }
 
         $body = sprintf(
-            'fields name, slug, involved_companies.company.name, involved_companies.publisher, cover.url, first_release_date, summary, websites.url; where (%s) & platforms = (%d); limit %d;',
+            'fields name, slug, involved_companies.company.name, involved_companies.publisher, cover.url, first_release_date, summary, websites.url; where (%s) & platforms = (%d) & %s & version_parent = null & first_release_date < %d; sort first_release_date desc; limit %d;',
             $apiQuery,
             IgdbGamePlatformEnum::NINTENDO_SWITCH->value,
+            sprintf(
+                '(game_type = %d | game_type = %d | game_type = %d | game_type = %d)',
+                IgdbGameTypeEnum::MAIN_GAME->value,
+                IgdbGameTypeEnum::REMAKE->value,
+                IgdbGameTypeEnum::EXPANDED_GAME->value,
+                IgdbGameTypeEnum::PORT->value,
+            ),
+            time(),
             $limit,
         );
 
@@ -158,8 +182,13 @@ class IgdbClient implements ApiClientInterface
 
         /**
          * @var IgdbSearchResponseDto[] $deserializedResponseData
+         *
+         * @phpstan-ignore-next-line
          */
-        $deserializedResponseData = $this->serializer->deserialize($responseData, 'json', IgdbSearchResponseDto::class);
+        $deserializedResponseData = $this->serializer->denormalize(
+            $responseData,
+            IgdbSearchResponseDto::class.'[]',
+        );
 
         return $this->formatResponseData($deserializedResponseData);
     }
@@ -175,8 +204,9 @@ class IgdbClient implements ApiClientInterface
 
         foreach ($igdbSearchResponseDto as $igdbSearchResultItem) {
             $firstReleaseTimestamp = null;
-            if (!empty($igdbSearchResultItem->firstReleaseDate)) {
-                $firstReleaseTimestamp = $igdbSearchResultItem->firstReleaseDate;
+            if (!empty($igdbSearchResultItem->first_release_date)) {
+                $firstReleaseTimestamp =
+                    $igdbSearchResultItem->first_release_date;
             }
 
             $releaseDate = null;
@@ -186,15 +216,19 @@ class IgdbClient implements ApiClientInterface
             }
 
             $publisher = '';
-            if (!empty($igdbSearchResultItem->involvedCompanies)) {
+            if (!empty($igdbSearchResultItem->involved_companies)) {
                 /** @var array<string, mixed> $company */
-                foreach ($igdbSearchResultItem->involvedCompanies as $company) {
+                foreach (
+                    $igdbSearchResultItem->involved_companies as $company
+                ) {
                     $isPublisher = $company['publisher'] ?? false;
 
                     if ($isPublisher) {
                         /** @var array<string, mixed> $publisherCompany */
                         $publisherCompany = $company['company'] ?? [];
-                        $publisherCompanyName = !empty($publisherCompany) ? $publisherCompany['name'] ?? '' : '';
+                        $publisherCompanyName = !empty($publisherCompany)
+                            ? $publisherCompany['name'] ?? ''
+                            : '';
 
                         /** @var string $publisher */
                         $publisher = $publisherCompanyName;
@@ -204,10 +238,13 @@ class IgdbClient implements ApiClientInterface
 
                 if (empty($publisher)) {
                     /** @var array<string, mixed> $company */
-                    $company = !empty($igdbSearchResultItem->involvedCompanies) ? $igdbSearchResultItem->involvedCompanies[0]['company'] ?? [] : [];
+                    $company = !empty($igdbSearchResultItem->involved_companies)
+                        ? $igdbSearchResultItem->involved_companies[0][
+                                'company'
+                            ] ?? []
+                        : [];
                     /** @var string $publisher */
-                    $publisher =
-                        !empty($company) ? $company['name'] ?? '' : '';
+                    $publisher = !empty($company) ? $company['name'] ?? '' : '';
                 }
             }
 
@@ -226,7 +263,9 @@ class IgdbClient implements ApiClientInterface
                 description: $igdbSearchResultItem->summary ?? '',
                 imageCover: $imageCover,
                 publisher: $publisher,
-                releaseDate: $releaseDate ? $releaseDate->format(DATE_ATOM) : ''
+                releaseDate: $releaseDate
+                    ? $releaseDate->format(DATE_ATOM)
+                    : '',
             );
         }
 
@@ -238,9 +277,13 @@ class IgdbClient implements ApiClientInterface
      */
     private function getAuthorizationToken(): string
     {
-        return $this->cache->get(self::ACCESS_TOKEN_CACHE_KEY, function () {
-            return $this->generateNewAuthorizationToken();
-        }, self::ACCESS_TOKEN_CACHE_TTL);
+        return $this->cache->get(
+            self::ACCESS_TOKEN_CACHE_KEY,
+            function () {
+                return $this->generateNewAuthorizationToken();
+            },
+            self::ACCESS_TOKEN_CACHE_TTL,
+        );
     }
 
     /**
@@ -254,8 +297,8 @@ class IgdbClient implements ApiClientInterface
                 sprintf(
                     'https://id.twitch.tv/oauth2/token?client_id=%s&client_secret=%s&grant_type=client_credentials',
                     $this->clientId,
-                    $this->clientSecret
-                )
+                    $this->clientSecret,
+                ),
             );
 
             $data = $response->toArray();
@@ -303,7 +346,7 @@ class IgdbClient implements ApiClientInterface
                     'Content-Type' => 'application/json',
                 ],
                 'body' => $body,
-            ]
+            ],
         );
 
         return $response->toArray();
@@ -333,7 +376,7 @@ class IgdbClient implements ApiClientInterface
                 $accessToken,
                 $httpMethod,
                 $body,
-                $endpoint
+                $endpoint,
             );
         } catch (ClientExceptionInterface $e) {
             if (401 === $e->getResponse()->getStatusCode() && !$isRetry) {
@@ -343,7 +386,7 @@ class IgdbClient implements ApiClientInterface
                     $httpMethod,
                     $body,
                     $endpoint,
-                    true
+                    true,
                 );
             }
 

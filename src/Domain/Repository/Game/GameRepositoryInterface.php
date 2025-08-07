@@ -24,5 +24,10 @@ interface GameRepositoryInterface
      */
     public function getAllEnabledGames(): array;
 
+    /**
+     * @return Game[]
+     */
+    public function findGamesByNameOrSlug(string $query, int $limit = 10): array;
+
     public function getOneByIdEnabledGame(string $gameId): ?Game;
 }

@@ -6,15 +6,12 @@ namespace App\Tests\Unit\Infrastructure\Client;
 
 use App\Domain\Model\Game\ApiGame;
 use App\Infrastructure\Client\IgdbClient;
-use App\Infrastructure\Enum\ApiTypeRequestEnum;
 use App\Infrastructure\Enum\IgdbGamePlatformEnum;
 use App\Infrastructure\Exception\Game\IgdbAccessTokenRetrievalException;
 use App\Shared\Dto\Game\IgdbSearchResponseDto;
 use Faker\Factory;
 use Faker\Generator;
-use PHPUnit\Framework\MockObject\MockObject;
-use Psr\Cache\InvalidArgumentException;
-use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Serializer;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
@@ -24,7 +21,7 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 beforeEach(function () {
     $this->faker = Factory::create();
     $this->cache = $this->createMock(CacheInterface::class);
-    $this->serializer = $this->createMock(SerializerInterface::class);
+    $this->serializer = $this->createMock(Serializer::class);
     $this->httpClient = $this->createMock(HttpClientInterface::class);
 
     $this->igdbClient = new IgdbClient(
@@ -180,13 +177,15 @@ it('generates correct slug cache key', function () {
         ->expects($this->once())
         ->method('get')
         ->willReturnCallback(function ($cacheKey, $callback) use ($slug, $limit) {
-            // Verify cache key format
-            expect($cacheKey)->toStartWith('igdb_api_slug_');
-            expect($cacheKey)->toContain(md5(json_encode([
-                'query' => trim(strtolower($slug)),
-                'limit' => $limit,
-                'platform' => IgdbGamePlatformEnum::NINTENDO_SWITCH->value,
-            ])));
+            expect($cacheKey)
+                ->toStartWith('igdb_api_slug_')
+                ->and($cacheKey)->toContain(
+                    md5(json_encode([
+                        'query' => trim(strtolower($slug)),
+                        'limit' => $limit,
+                        'platform' => IgdbGamePlatformEnum::NINTENDO_SWITCH->value,
+                    ]))
+                );
             return [];
         });
 
@@ -225,7 +224,6 @@ it('retries request on 401 unauthorized error', function () {
     $initialTokenResponse->method('getStatusCode')->willReturn(200);
     $initialTokenResponse->method('toArray')->willReturn(['access_token' => $initialToken]);
 
-    // Create exception for 401 response
     $unauthorizedException = new class($unauthorizedResponse) extends \Exception implements ClientExceptionInterface {
         private ResponseInterface $response;
 
@@ -259,7 +257,7 @@ it('retries request on 401 unauthorized error', function () {
 
     $this->serializer
         ->expects($this->once())
-        ->method('deserialize')
+        ->method('denormalize')
         ->willReturn([]);
 
     $this->cache
@@ -317,9 +315,10 @@ function createApiGame(Generator $faker): ApiGame
 function createIgdbSearchResponseDto(Generator $faker): IgdbSearchResponseDto
 {
     return new IgdbSearchResponseDto(
+        id: $faker->randomNumber(),
         name: $faker->words(3, true),
         slug: $faker->slug(),
-        involvedCompanies: [
+        involved_companies: [
             [
                 'company' => ['name' => $faker->company()],
                 'publisher' => true
@@ -328,7 +327,7 @@ function createIgdbSearchResponseDto(Generator $faker): IgdbSearchResponseDto
         cover: [
             'url' => '//images.igdb.com/igdb/image/upload/t_thumb/' . $faker->sha1() . '.jpg'
         ],
-        firstReleaseDate: $faker->unixTime(),
+        first_release_date: $faker->unixTime(),
         summary: $faker->paragraph(),
         websites: [
             ['url' => $faker->url()]

@@ -2,178 +2,315 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Infrastructure\Service\Game;
+namespace App\Tests\Unit\Application\Service\Game;
 
+use App\Application\Query\Game\SearchGamesQuery;
 use App\Application\Service\Game\ApiGameSearchService;
-use App\Domain\Repository\Game\ApiGameRepositoryInterface;
 use Faker\Factory;
 use Faker\Generator;
+use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\HandledStamp;
 
 beforeEach(function () {
     $this->faker = Factory::create();
-    $this->apiGameRepository = $this->createMock(ApiGameRepositoryInterface::class);
-    $this->apiGameSearchService = new ApiGameSearchService($this->apiGameRepository);
+    $this->messageBus = $this->createMock(MessageBusInterface::class);
+    $this->apiGameSearchService = new ApiGameSearchService($this->messageBus);
 });
 
 it('can search games with default limit', function () {
     // Given
     $query = 'zelda';
-    $expectedGames = [
+    $apiGames = [
         createApiGameArray($this->faker),
         createApiGameArray($this->faker),
     ];
 
-    $this->apiGameRepository
+    $expectedResult = [
+        'local' => [],
+        'api' => $apiGames,
+        'total' => count($apiGames)
+    ];
+
+    $formattedResult = [
+        'games' => $apiGames,
+        'total' => count($apiGames)
+    ];
+
+    // Create a HandledStamp with the expected result
+    $handledStamp = new HandledStamp($expectedResult, 'handler.service_id');
+    $envelope = new Envelope(new \stdClass(), [$handledStamp]);
+
+    $this->messageBus
         ->expects($this->once())
-        ->method('searchGames')
-        ->with($query, 10)
-        ->willReturn($expectedGames);
+        ->method('dispatch')
+        ->with($this->callback(function (SearchGamesQuery $searchQuery) use ($query) {
+            return $searchQuery->query === $query && $searchQuery->limit === 10;
+        }))
+        ->willReturn($envelope);
 
     // When
     $result = $this->apiGameSearchService->searchGames($query);
 
     // Then
-    expect($result)->toBe($expectedGames);
+    expect($result)->toBe($formattedResult);
 });
 
 it('can search games with custom limit', function () {
     // Given
     $query = 'mario';
     $limit = 5;
-    $expectedGames = [
+    $apiGames = [
         createApiGameArray($this->faker),
     ];
 
-    $this->apiGameRepository
+    $expectedResult = [
+        'local' => [],
+        'api' => $apiGames,
+        'total' => count($apiGames)
+    ];
+
+    $formattedResult = [
+        'games' => $apiGames,
+        'total' => count($apiGames)
+    ];
+
+    // Create a HandledStamp with the expected result
+    $handledStamp = new HandledStamp($expectedResult, 'handler.service_id');
+    $envelope = new Envelope(new \stdClass(), [$handledStamp]);
+
+    $this->messageBus
         ->expects($this->once())
-        ->method('searchGames')
-        ->with($query, $limit)
-        ->willReturn($expectedGames);
+        ->method('dispatch')
+        ->with($this->callback(function (SearchGamesQuery $searchQuery) use ($query, $limit) {
+            return $searchQuery->query === $query && $searchQuery->limit === $limit;
+        }))
+        ->willReturn($envelope);
 
     // When
     $result = $this->apiGameSearchService->searchGames($query, $limit);
 
     // Then
-    expect($result)->toBe($expectedGames);
+    expect($result)->toBe($formattedResult);
 });
 
 it('returns empty array when no games found', function () {
     // Given
     $query = 'nonexistent-game';
-    $expectedGames = [];
 
-    $this->apiGameRepository
+    $expectedResult = [
+        'local' => [],
+        'api' => [],
+        'total' => 0
+    ];
+
+    $formattedResult = [
+        'games' => [],
+        'total' => 0
+    ];
+
+    // Create a HandledStamp with the expected result
+    $handledStamp = new HandledStamp($expectedResult, 'handler.service_id');
+    $envelope = new Envelope(new \stdClass(), [$handledStamp]);
+
+    $this->messageBus
         ->expects($this->once())
-        ->method('searchGames')
-        ->with($query, 10)
-        ->willReturn($expectedGames);
+        ->method('dispatch')
+        ->with($this->callback(function (SearchGamesQuery $searchQuery) use ($query) {
+            return $searchQuery->query === $query && $searchQuery->limit === 10;
+        }))
+        ->willReturn($envelope);
 
     // When
     $result = $this->apiGameSearchService->searchGames($query);
 
     // Then
-    expect($result)->toBe($expectedGames);
-    expect($result)->toBeEmpty();
+    expect($result)->toBe($formattedResult);
+    expect($result['games'])->toBeEmpty();
 });
 
 it('can search games with large limit', function () {
     // Given
     $query = 'adventure';
     $limit = 100;
-    $expectedGames = array_map(fn() => createApiGameArray($this->faker), range(1, 50));
+    $apiGames = array_map(fn() => createApiGameArray($this->faker), range(1, 50));
 
-    $this->apiGameRepository
+    $expectedResult = [
+        'local' => [],
+        'api' => $apiGames,
+        'total' => count($apiGames)
+    ];
+
+    $formattedResult = [
+        'games' => $apiGames,
+        'total' => count($apiGames)
+    ];
+
+    // Create a HandledStamp with the expected result
+    $handledStamp = new HandledStamp($expectedResult, 'handler.service_id');
+    $envelope = new Envelope(new \stdClass(), [$handledStamp]);
+
+    $this->messageBus
         ->expects($this->once())
-        ->method('searchGames')
-        ->with($query, $limit)
-        ->willReturn($expectedGames);
+        ->method('dispatch')
+        ->with($this->callback(function (SearchGamesQuery $searchQuery) use ($query, $limit) {
+            return $searchQuery->query === $query && $searchQuery->limit === $limit;
+        }))
+        ->willReturn($envelope);
 
     // When
     $result = $this->apiGameSearchService->searchGames($query, $limit);
 
     // Then
-    expect($result)->toBe($expectedGames);
-    expect($result)->toHaveCount(50);
+    expect($result)->toBe($formattedResult);
+    expect($result['games'])->toHaveCount(50);
 });
 
 it('can search games with minimum limit', function () {
     // Given
     $query = 'rpg';
     $limit = 1;
-    $expectedGames = [
+    $apiGames = [
         createApiGameArray($this->faker),
     ];
 
-    $this->apiGameRepository
+    $expectedResult = [
+        'local' => [],
+        'api' => $apiGames,
+        'total' => count($apiGames)
+    ];
+
+    $formattedResult = [
+        'games' => $apiGames,
+        'total' => count($apiGames)
+    ];
+
+    // Create a HandledStamp with the expected result
+    $handledStamp = new HandledStamp($expectedResult, 'handler.service_id');
+    $envelope = new Envelope(new \stdClass(), [$handledStamp]);
+
+    $this->messageBus
         ->expects($this->once())
-        ->method('searchGames')
-        ->with($query, $limit)
-        ->willReturn($expectedGames);
+        ->method('dispatch')
+        ->with($this->callback(function (SearchGamesQuery $searchQuery) use ($query, $limit) {
+            return $searchQuery->query === $query && $searchQuery->limit === $limit;
+        }))
+        ->willReturn($envelope);
 
     // When
     $result = $this->apiGameSearchService->searchGames($query, $limit);
 
     // Then
-    expect($result)->toBe($expectedGames);
-    expect($result)->toHaveCount(1);
+    expect($result)->toBe($formattedResult);
+    expect($result['games'])->toHaveCount(1);
 });
 
 it('handles special characters in search query', function () {
     // Given
     $query = 'game-with-special:characters!@#$%';
-    $expectedGames = [
+    $apiGames = [
         createApiGameArray($this->faker),
     ];
 
-    $this->apiGameRepository
+    $expectedResult = [
+        'local' => [],
+        'api' => $apiGames,
+        'total' => count($apiGames)
+    ];
+
+    $formattedResult = [
+        'games' => $apiGames,
+        'total' => count($apiGames)
+    ];
+
+    // Create a HandledStamp with the expected result
+    $handledStamp = new HandledStamp($expectedResult, 'handler.service_id');
+    $envelope = new Envelope(new \stdClass(), [$handledStamp]);
+
+    $this->messageBus
         ->expects($this->once())
-        ->method('searchGames')
-        ->with($query, 10)
-        ->willReturn($expectedGames);
+        ->method('dispatch')
+        ->with($this->callback(function (SearchGamesQuery $searchQuery) use ($query) {
+            return $searchQuery->query === $query && $searchQuery->limit === 10;
+        }))
+        ->willReturn($envelope);
 
     // When
     $result = $this->apiGameSearchService->searchGames($query);
 
     // Then
-    expect($result)->toBe($expectedGames);
+    expect($result)->toBe($formattedResult);
 });
 
 it('handles empty search query', function () {
     // Given
     $query = '';
-    $expectedGames = [];
 
-    $this->apiGameRepository
+    $expectedResult = [
+        'local' => [],
+        'api' => [],
+        'total' => 0
+    ];
+
+    $formattedResult = [
+        'games' => [],
+        'total' => 0
+    ];
+
+    // Create a HandledStamp with the expected result
+    $handledStamp = new HandledStamp($expectedResult, 'handler.service_id');
+    $envelope = new Envelope(new \stdClass(), [$handledStamp]);
+
+    $this->messageBus
         ->expects($this->once())
-        ->method('searchGames')
-        ->with($query, 10)
-        ->willReturn($expectedGames);
+        ->method('dispatch')
+        ->with($this->callback(function (SearchGamesQuery $searchQuery) use ($query) {
+            return $searchQuery->query === $query && $searchQuery->limit === 10;
+        }))
+        ->willReturn($envelope);
 
     // When
     $result = $this->apiGameSearchService->searchGames($query);
 
     // Then
-    expect($result)->toBe($expectedGames);
+    expect($result)->toBe($formattedResult);
 });
 
 it('handles unicode characters in search query', function () {
     // Given
     $query = 'ポケモン';
-    $expectedGames = [
+    $apiGames = [
         createApiGameArray($this->faker),
     ];
 
-    $this->apiGameRepository
+    $expectedResult = [
+        'local' => [],
+        'api' => $apiGames,
+        'total' => count($apiGames)
+    ];
+
+    $formattedResult = [
+        'games' => $apiGames,
+        'total' => count($apiGames)
+    ];
+
+    // Create a HandledStamp with the expected result
+    $handledStamp = new HandledStamp($expectedResult, 'handler.service_id');
+    $envelope = new Envelope(new \stdClass(), [$handledStamp]);
+
+    $this->messageBus
         ->expects($this->once())
-        ->method('searchGames')
-        ->with($query, 10)
-        ->willReturn($expectedGames);
+        ->method('dispatch')
+        ->with($this->callback(function (SearchGamesQuery $searchQuery) use ($query) {
+            return $searchQuery->query === $query && $searchQuery->limit === 10;
+        }))
+        ->willReturn($envelope);
 
     // When
     $result = $this->apiGameSearchService->searchGames($query);
 
     // Then
-    expect($result)->toBe($expectedGames);
+    expect($result)->toBe($formattedResult);
 });
 
 function createApiGameArray(Generator $faker): array

@@ -2,135 +2,226 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Infrastructure\Service\Game;
+namespace App\Tests\Unit\Application\Service\Game;
 
+use App\Application\Query\Game\SearchGamesQuery;
 use App\Application\Service\Game\ApiGameSearchService;
-use App\Domain\Repository\Game\ApiGameRepositoryInterface;
 use Exception;
 use Faker\Factory;
 use Faker\Generator;
+use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\HandledStamp;
 
 beforeEach(function () {
     $this->faker = Factory::create();
-    $this->apiGameRepository = $this->createMock(ApiGameRepositoryInterface::class);
-    $this->apiGameSearchService = new ApiGameSearchService($this->apiGameRepository);
+    $this->messageBus = $this->createMock(MessageBusInterface::class);
+    $this->apiGameSearchService = new ApiGameSearchService($this->messageBus);
 });
 
-it('delegates searchGames call to repository with correct parameters', function () {
+it('delegates searchGames call to message bus with correct parameters', function () {
     // Given
     $query = 'integration-test';
     $limit = 15;
-    $expectedResult = [createApiGameData($this->faker)];
+    $expectedResult = [
+        'local' => [],
+        'api' => [createApiGameData($this->faker)],
+        'total' => 1
+    ];
+    $formattedResult = [
+        'games' => $expectedResult['api'],
+        'total' => $expectedResult['total']
+    ];
 
-    $this->apiGameRepository
+    // Create a real HandledStamp with the expected result
+    $handledStamp = new HandledStamp($expectedResult, 'handler.service_id');
+    $envelope = new Envelope(new \stdClass(), [$handledStamp]);
+
+    $this->messageBus
         ->expects($this->once())
-        ->method('searchGames')
-        ->with(
-            $this->identicalTo($query),
-            $this->identicalTo($limit)
-        )
-        ->willReturn($expectedResult);
+        ->method('dispatch')
+        ->with($this->callback(function (SearchGamesQuery $searchQuery) use ($query, $limit) {
+            return $searchQuery->query === $query && $searchQuery->limit === $limit;
+        }))
+        ->willReturn($envelope);
 
     // When
     $result = $this->apiGameSearchService->searchGames($query, $limit);
 
     // Then
-    expect($result)->toBe($expectedResult);
+    expect($result)->toBe($formattedResult);
 });
 
 it('delegates searchGames call with default limit when not provided', function () {
     // Given
     $query = 'default-limit-test';
-    $expectedResult = [];
+    $expectedResult = [
+        'local' => [],
+        'api' => [],
+        'total' => 0
+    ];
+    $formattedResult = [
+        'games' => [],
+        'total' => 0
+    ];
 
-    $this->apiGameRepository
+    // Create a real HandledStamp with the expected result
+    $handledStamp = new HandledStamp($expectedResult, 'handler.service_id');
+    $envelope = new Envelope(new \stdClass(), [$handledStamp]);
+
+    $this->messageBus
         ->expects($this->once())
-        ->method('searchGames')
-        ->with(
-            $this->identicalTo($query),
-            $this->identicalTo(10)
-        )
-        ->willReturn($expectedResult);
+        ->method('dispatch')
+        ->with($this->callback(function (SearchGamesQuery $searchQuery) use ($query) {
+            return $searchQuery->query === $query && $searchQuery->limit === 10;
+        }))
+        ->willReturn($envelope);
 
     // When
     $result = $this->apiGameSearchService->searchGames($query);
 
     // Then
-    expect($result)->toBe($expectedResult);
+    expect($result)->toBe($formattedResult);
 });
 
-it('handles repository returning large dataset', function () {
+it('handles message bus returning large dataset', function () {
     // Given
     $query = 'large-dataset';
     $limit = 100;
     $largeDataset = array_map(fn() => createApiGameData($this->faker), range(1, 100));
 
-    $this->apiGameRepository
+    $expectedResult = [
+        'local' => [],
+        'api' => $largeDataset,
+        'total' => count($largeDataset)
+    ];
+
+    $formattedResult = [
+        'games' => $largeDataset,
+        'total' => count($largeDataset)
+    ];
+
+    // Create a real HandledStamp with the expected result
+    $handledStamp = new HandledStamp($expectedResult, 'handler.service_id');
+    $envelope = new Envelope(new \stdClass(), [$handledStamp]);
+
+    $this->messageBus
         ->expects($this->once())
-        ->method('searchGames')
-        ->with($query, $limit)
-        ->willReturn($largeDataset);
+        ->method('dispatch')
+        ->with($this->callback(function (SearchGamesQuery $searchQuery) use ($query, $limit) {
+            return $searchQuery->query === $query && $searchQuery->limit === $limit;
+        }))
+        ->willReturn($envelope);
 
     // When
     $result = $this->apiGameSearchService->searchGames($query, $limit);
 
     // Then
     expect($result)
-        ->toBe($largeDataset)
-        ->and($result)->toHaveCount(100);
+        ->toBe($formattedResult)
+        ->and($result['games'])->toHaveCount(100);
 });
 
-it('handles repository returning empty array', function () {
+it('handles message bus returning empty array', function () {
     // Given
     $query = 'no-results';
     $limit = 10;
 
-    $this->apiGameRepository
+    $expectedResult = [
+        'local' => [],
+        'api' => [],
+        'total' => 0
+    ];
+
+    $formattedResult = [
+        'games' => [],
+        'total' => 0
+    ];
+
+    // Create a real HandledStamp with the expected result
+    $handledStamp = new HandledStamp($expectedResult, 'handler.service_id');
+    $envelope = new Envelope(new \stdClass(), [$handledStamp]);
+
+    $this->messageBus
         ->expects($this->once())
-        ->method('searchGames')
-        ->with($query, $limit)
-        ->willReturn([]);
+        ->method('dispatch')
+        ->with($this->callback(function (SearchGamesQuery $searchQuery) use ($query, $limit) {
+            return $searchQuery->query === $query && $searchQuery->limit === $limit;
+        }))
+        ->willReturn($envelope);
 
     // When
     $result = $this->apiGameSearchService->searchGames($query, $limit);
 
     // Then
     expect($result)
-        ->toBe([])
-        ->and($result)->toBeEmpty();
+        ->toBe($formattedResult)
+        ->and($result['games'])->toBeEmpty();
 });
 
-it('propagates repository exceptions during search', function () {
+it('propagates message bus exceptions during search', function () {
     // Given
     $query = 'exception-test';
-    $exceptionMessage = 'Repository connection failed';
+    $exceptionMessage = 'Message bus dispatch failed';
+    $exception = new Exception($exceptionMessage);
 
-    $this->apiGameRepository
+    $this->messageBus
         ->expects($this->once())
-        ->method('searchGames')
-        ->with($query, 10)
-        ->willThrowException(new Exception($exceptionMessage));
+        ->method('dispatch')
+        ->with($this->callback(function (SearchGamesQuery $searchQuery) use ($query) {
+            return $searchQuery->query === $query && $searchQuery->limit === 10;
+        }))
+        ->willThrowException($exception);
 
     // When & Then
     expect(fn() => $this->apiGameSearchService->searchGames($query))
         ->toThrow(Exception::class, $exceptionMessage);
 });
 
-it('handles multiple consecutive calls to repository', function () {
+it('handles multiple consecutive calls to message bus', function () {
     // Given
     $firstQuery = 'first-query';
     $secondQuery = 'second-query';
-    $firstResult = [createApiGameData($this->faker)];
-    $secondResult = [createApiGameData($this->faker), createApiGameData($this->faker)];
+    $firstApiResult = [createApiGameData($this->faker)];
+    $secondApiResult = [createApiGameData($this->faker), createApiGameData($this->faker)];
 
-    $this->apiGameRepository
+    $firstExpectedResult = [
+        'local' => [],
+        'api' => $firstApiResult,
+        'total' => count($firstApiResult)
+    ];
+
+    $secondExpectedResult = [
+        'local' => [],
+        'api' => $secondApiResult,
+        'total' => count($secondApiResult)
+    ];
+
+    $firstFormattedResult = [
+        'games' => $firstApiResult,
+        'total' => count($firstApiResult)
+    ];
+
+    $secondFormattedResult = [
+        'games' => $secondApiResult,
+        'total' => count($secondApiResult)
+    ];
+
+    // Create HandledStamps for both calls
+    $firstHandledStamp = new HandledStamp($firstExpectedResult, 'handler.service_id');
+    $firstEnvelope = new Envelope(new \stdClass(), [$firstHandledStamp]);
+
+    $secondHandledStamp = new HandledStamp($secondExpectedResult, 'handler.service_id');
+    $secondEnvelope = new Envelope(new \stdClass(), [$secondHandledStamp]);
+
+    $this->messageBus
         ->expects($this->exactly(2))
-        ->method('searchGames')
-        ->willReturnCallback(function ($query, $limit) use ($firstQuery, $secondQuery, $firstResult, $secondResult) {
-            return match ($query) {
-                $firstQuery => $firstResult,
-                $secondQuery => $secondResult,
-                default => []
+        ->method('dispatch')
+        ->willReturnCallback(function (SearchGamesQuery $searchQuery) use ($firstQuery, $secondQuery, $firstEnvelope, $secondEnvelope) {
+            return match ($searchQuery->query) {
+                $firstQuery => $firstEnvelope,
+                $secondQuery => $secondEnvelope,
+                default => throw new \RuntimeException('Unexpected query')
             };
         });
 
@@ -140,20 +231,30 @@ it('handles multiple consecutive calls to repository', function () {
 
     // Then
     expect($result1)
-        ->toBe($firstResult)
-        ->and($result2)->toBe($secondResult);
+        ->toBe($firstFormattedResult)
+        ->and($result2)->toBe($secondFormattedResult);
 });
 
-it('verifies repository is called exactly once per service call', function () {
+it('verifies message bus is called exactly once per service call', function () {
     // Given
     $query = 'single-call-test';
-    $expectedResult = [];
+    $expectedResult = [
+        'local' => [],
+        'api' => [],
+        'total' => 0
+    ];
 
-    $this->apiGameRepository
+    // Create a real HandledStamp with the expected result
+    $handledStamp = new HandledStamp($expectedResult, 'handler.service_id');
+    $envelope = new Envelope(new \stdClass(), [$handledStamp]);
+
+    $this->messageBus
         ->expects($this->once())
-        ->method('searchGames')
-        ->with($query, 10)
-        ->willReturn($expectedResult);
+        ->method('dispatch')
+        ->with($this->callback(function (SearchGamesQuery $searchQuery) use ($query) {
+            return $searchQuery->query === $query && $searchQuery->limit === 10;
+        }))
+        ->willReturn($envelope);
 
     // When
     $this->apiGameSearchService->searchGames($query);
@@ -162,10 +263,10 @@ it('verifies repository is called exactly once per service call', function () {
     expect(true)->toBeTrue(); // Assertion to ensure test runs
 });
 
-it('preserves repository response structure exactly', function () {
+it('preserves message bus response structure exactly', function () {
     // Given
     $query = 'structure-test';
-    $complexStructure = [
+    $complexData = [
         createApiGameData($this->faker),
         [
             'custom_field' => 'custom_value',
@@ -177,18 +278,35 @@ it('preserves repository response structure exactly', function () {
         ]
     ];
 
-    $this->apiGameRepository
+    $expectedResult = [
+        'local' => [],
+        'api' => $complexData,
+        'total' => count($complexData)
+    ];
+
+    $formattedResult = [
+        'games' => $complexData,
+        'total' => count($complexData)
+    ];
+
+    // Create a real HandledStamp with the expected result
+    $handledStamp = new HandledStamp($expectedResult, 'handler.service_id');
+    $envelope = new Envelope(new \stdClass(), [$handledStamp]);
+
+    $this->messageBus
         ->expects($this->once())
-        ->method('searchGames')
-        ->with($query, 10)
-        ->willReturn($complexStructure);
+        ->method('dispatch')
+        ->with($this->callback(function (SearchGamesQuery $searchQuery) use ($query) {
+            return $searchQuery->query === $query && $searchQuery->limit === 10;
+        }))
+        ->willReturn($envelope);
 
     // When
     $result = $this->apiGameSearchService->searchGames($query);
 
     // Then
-    expect($result)->toEqual($complexStructure);
-    expect($result[1]['nested']['deeply']['nested'])->toBe('value');
+    expect($result)->toEqual($formattedResult);
+    expect($result['games'][1]['nested']['deeply']['nested'])->toBe('value');
 });
 
 function createApiGameData(Generator $faker): array

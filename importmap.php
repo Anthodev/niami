@@ -16,17 +16,33 @@ return [
         'path' => './assets/app.js',
         'entrypoint' => true,
     ],
-    '@hotwired/stimulus' => [
-        'version' => '3.2.2',
-    ],
     '@symfony/stimulus-bundle' => [
         'path' => './vendor/symfony/stimulus-bundle/assets/dist/loader.js',
     ],
+    '@hotwired/stimulus' => [
+        'version' => '3.2.2',
+    ],
     'daisyui' => [
-        'version' => '5.0.43',
+        'version' => '5.0.50',
     ],
     'daisyui/daisyui.min.css' => [
-        'version' => '5.0.43',
+        'version' => '5.0.50',
         'type' => 'css',
+    ],
+    '@orchidjs/sifter' => [
+        'version' => '1.1.0',
+    ],
+    '@orchidjs/unicode-variants' => [
+        'version' => '1.1.2',
+    ],
+    'tom-select' => [
+        'version' => '2.4.3',
+    ],
+    'tom-select/dist/css/tom-select.default.min.css' => [
+        'version' => '2.4.3',
+        'type' => 'css',
+    ],
+    '@hotwired/turbo' => [
+        'version' => '7.3.0',
     ],
 ];
