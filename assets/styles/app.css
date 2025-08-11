@@ -1,7 +1,10 @@
 @import "tailwindcss";
 @import "../vendor/daisyui/daisyui.min.css";
+@import "./plumber-dark-theme.css";
+@import "./plumber-light-theme.css";
+
 @plugin "../vendor/daisyui/daisyui.index.js" {
-    themes: light --default, night --prefersdark;
+    themes: plumber-light --default, plumber-dark --prefersdark;
 }
 
 @source "../../templates/";
