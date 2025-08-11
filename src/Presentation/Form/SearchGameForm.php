@@ -16,18 +16,18 @@ class SearchGameForm extends AbstractType
         array $options,
     ): void {
         $builder->add('game', TextType::class, [
-            'label' => 'Rechercher un jeu',
+            'label' => 'Search the game:',
             'required' => false,
             'constraints' => [
                 new Assert\Length([
                     'min' => 3,
-                    'minMessage' => 'Le terme de recherche doit contenir au moins {{ limit }} caractères.',
+                    'minMessage' => 'The search query must be at least {{ limit }} characters.',
                     'max' => 100,
-                    'maxMessage' => 'Le terme de recherche ne peut pas dépasser {{ limit }} caractères.',
+                    'maxMessage' => 'The search query can\'t be above {{ limit }} characters.',
                 ]),
             ],
             'attr' => [
-                'placeholder' => 'Tapez au moins 3 caractères...',
+                'placeholder' => 'Type at least 3 characters...',
                 'autocomplete' => 'off',
             ],
         ]);

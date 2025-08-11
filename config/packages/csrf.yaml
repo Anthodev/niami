@@ -9,3 +9,10 @@ framework:
             - submit
             - authenticate
             - logout
+
+when@test:
+    framework:
+        csrf_protection:
+            enabled: false
+        form:
+            csrf_protection: false

@@ -1,0 +1,43 @@
+<div class="card bg-base-100 shadow-xl p-8">
+    <turbo-frame id="search-frame">
+        {{ form_start(searchGamesForm, {
+            'action': path('search_games'),
+            'attr': {
+                'data-controller': 'search-debounce',
+                'data-search-debounce-delay-value': '1500',
+                'data-search-debounce-min-length-value': '3',
+                'data-turbo-frame': 'search-frame',
+                'class': 'space-y-6'
+            }
+        }) }}
+        <div class="form-control w-full">
+            <label class="label">
+                <span class="label-text text-lg font-semibold">{{ form_label(searchGamesForm.game) }}</span>
+            </label>
+            {{ form_widget(searchGamesForm.game, {
+                'attr': {
+                    'data-search-debounce-target': 'input',
+                    'data-action': 'input->search-debounce#search',
+                    'class': 'input input-bordered input-primary w-full text-lg',
+                    'placeholder': 'Type at least 3 characters to run the search...'
+                }
+            }) }}
+            <button type="submit" class="btn btn-primary gap-2 ml-1">
+                <span class="w-6 h-6">{{ ux_icon('ph:magnifying-glass') }}</span>
+                Search
+            </button>
+        </div>
+
+        {{ form_rest(searchGamesForm) }}
+
+        <div class="label">
+            <span class="label-text-alt">Search will run automatically from the third character</span>
+        </div>
+
+        {{ form_end(searchGamesForm) }}
+
+        <div id="search-results" class="mt-8">
+            <!-- Search results will be loaded here via Turbo Frame -->
+        </div>
+    </turbo-frame>
+</div>
