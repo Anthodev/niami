@@ -43,7 +43,6 @@ export default class extends Controller {
     }, this.debounceDelayValue);
   }
 
-  // Handle form submission (immediate search)
   async submit(event) {
     event.preventDefault();
 
@@ -54,7 +53,6 @@ export default class extends Controller {
       return;
     }
 
-    // Clear any pending debounced search
     if (this.debounceTimer) {
       clearTimeout(this.debounceTimer);
     }
@@ -66,7 +64,6 @@ export default class extends Controller {
     const form = this.formTarget;
     const formData = new FormData(form);
 
-    // Update the form data with current query
     formData.set('search_game_form[game]', query);
 
     try {
@@ -97,7 +94,6 @@ export default class extends Controller {
     if (this.hasResultsTarget) {
       this.resultsTarget.innerHTML = data.html || '';
 
-      // Add search info
       if (data.count !== undefined) {
         this.updateSearchInfo(query, data.count);
       }

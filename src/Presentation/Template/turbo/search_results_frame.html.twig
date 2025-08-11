@@ -3,7 +3,7 @@
         'action': path('search_games'),
         'attr': {
             'data-controller': 'search-debounce',
-            'data-search-debounce-delay-value': '500',
+            'data-search-debounce-delay-value': '1500',
             'data-search-debounce-min-length-value': '3',
             'class': 'space-y-6'
         }
@@ -17,22 +17,21 @@
                 'data-search-debounce-target': 'input',
                 'data-action': 'input->search-debounce#search',
                 'class': 'input input-bordered input-primary w-full text-lg',
-                'placeholder': 'Tapez au moins 3 caractères pour rechercher...'
+                'placeholder': 'Type at least 3 characters to run the search...'
             }
         }) }}
-        <label class="label">
-            <span class="label-text-alt">La recherche se lance automatiquement après 3 caractères</span>
-        </label>
+        <button type="submit" class="btn btn-primary gap-2 ml-1">
+            <span class="w-6 h-6">{{ ux_icon('ph:magnifying-glass') }}</span>
+            Search
+        </button>
     </div>
 
     {{ form_rest(searchGamesForm) }}
 
-    <button type="submit" class="btn btn-primary btn-lg w-full gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
-        Rechercher maintenant
-    </button>
+    <label class="label">
+        <span class="label-text-alt">Search will run automatically from the third character</span>
+    </label>
+
     {{ form_end(searchGamesForm) }}
 
     <div class="mt-8">

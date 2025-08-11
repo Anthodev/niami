@@ -7,43 +7,55 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                     </svg>
                 </div>
-                <div class="stat-title">Résultats trouvés</div>
                 <div class="stat-value text-success">{{ games|length }}</div>
+                <div class="stat-title">Game{{ games|length > 1 ? 's' : '' }} found</div>
                 {% if searchQuery %}
-                    <div class="stat-desc">pour "{{ searchQuery }}"</div>
+                    <div class="stat-desc">for "{{ searchQuery }}"</div>
                 {% endif %}
             </div>
         </div>
 
         <div class="grid gap-4">
             {% for game in games %}
-                <div class="card bg-base-100 shadow-md hover:shadow-lg transition-shadow duration-200">
+                <div class="card border-2 border-indigo-600 bg-base-100 shadow-md hover:shadow-lg transition-shadow duration-200">
                     <div class="card-body">
-                        <h2 class="card-title text-primary">
-                            {{ game.name }}
-                        </h2>
-
-                        {% if game.description %}
-                            <p class="text-base-content/70">
-                                {{ game.description|length > 150 ? game.description|slice(0, 150) ~ '...' : game.description }}
-                            </p>
-                        {% endif %}
-
-                        <div class="card-actions justify-between items-center mt-4">
-                            {% if game.releaseDate %}
-                                <div class="badge badge-outline gap-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                    {{ game.releaseDate|date('d/m/Y') }}
-                                </div>
+                        <div class="flex gap-4">
+                            {% if game.imageCover is defined and game.name is defined %}
+                                <img src="{{ game.imageCover }}" alt="{{ game.name }}" class="w-32 h-32 object-cover">
                             {% endif %}
+                            <div>
+                                {% if game.name %}
+                                    <h1 class="card-title text-primary">
+                                        {{ game.name }}
+                                    </h1>
+                                {% endif %}
 
-                            <button class="btn btn-primary btn-sm">
-                                Voir détails
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                </svg>
+                                <div class="flex items-center gap-2 my-2">
+                                    {% if game.releaseDate is defined %}
+                                        <div class="badge badge-outline badge-sm gap-2">
+                                            <span class="w-4 h-4">{{ ux_icon('ph:calendar-dots') }}</span>
+                                            {{ game.releaseDate|date('d/m/Y') }}
+                                        </div>
+                                    {% endif %}
+
+                                    {% if game.publisher is defined %}
+                                        <div class="badge badge-outline badge-primary badge-sm">Publisher: {{ game.publisher }}</div>
+                                    {% endif %}
+                                </div>
+
+                                {% if game.description is defined %}
+                                    <p class="text-left text-base-content/70">
+                                        {{ game.description|length > 500 ? game.description|slice(0, 500) ~ '...' : game.description }}
+                                    </p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="card-actions justify-end items-center mt-2">
+                            <button class="btn btn-primary btn-sm inline-flex items-center gap-2">
+                                <span class="w-4 h-4">{{ ux_icon('ph:files') }}</span>
+                                See the reports
+                                <span class="w-4 h-4">{{ ux_icon('ph:greater-than') }}</span>
                             </button>
                         </div>
                     </div>
@@ -59,8 +71,8 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
                 <div>
-                    <h3 class="font-bold">Aucun résultat trouvé</h3>
-                    <div class="text-xs">Aucun jeu trouvé pour <strong>"{{ searchQuery }}"</strong>. Essayez avec d'autres termes de recherche.</div>
+                    <h3 class="font-bold">No results found</h3>
+                    <div class="text-xs">No game found for <strong>"{{ searchQuery }}"</strong>. Search again with others terms.</div>
                 </div>
             </div>
         {% endif %}

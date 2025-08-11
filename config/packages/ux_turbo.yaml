@@ -2,3 +2,8 @@
 framework:
     csrf_protection:
         check_header: true
+
+when@test:
+    framework:
+        csrf_protection:
+            check_header: false
