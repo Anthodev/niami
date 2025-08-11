@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" data-theme="dark">
+<html lang="fr" data-theme="plumber-dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,31 +14,14 @@
     {% endblock %}
 </head>
 <body class="bg-base-200 min-h-screen" data-controller="turbo-loading" data-turbo-loading-min-length-value="3">
-<div class="navbar bg-base-100 shadow-lg">
-    <div class="navbar-start">
-        <a href="{{ path('homepage') }}" class="btn btn-ghost normal-case text-xl">🎮 NS2 UBCR</a>
-    </div>
-    <div class="navbar-end">
-        <div class="flex items-center gap-2" data-controller="theme">
-            <span class="text-sm">🌞</span>
-            <input type="checkbox" class="toggle toggle-primary" data-theme-target="toggle" data-action="change->theme#toggle" />
-            <span class="text-sm">🌙</span>
-        </div>
-    </div>
-</div>
+{% include '@app/partials/_header.html.twig' %}
 
 <main class="container mx-auto px-4">
     {% block content %}
     {% endblock %}
 </main>
 
-<footer class="footer footer-center p-10 bg-base-200 text-base-content rounded mt-10">
-    <div class="gap-4">
-        <p>Copyright © 2025 - Nintendo Switch 2 Unofficial Back-Compatibility Reports</p>
-        <p>Nintendo Switch and Nintendo Switch 2 are trademarks of Nintendo®. All rights reserved.</p>
-        <p>All game titles, artwork, logos and brands are property of their respective owners.</p>
-    </div>
-</footer>
+{% include '@app/partials/_footer.html.twig' %}
 
 </body>
 </html>

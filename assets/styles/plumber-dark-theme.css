@@ -1,0 +1,50 @@
+[data-theme="plumber-dark"]  {
+    /* Base colors - Very dark backgrounds for dark mode */
+    --color-base-100: oklch(15% 0.02 240);      /* Main background */
+    --color-base-200: oklch(12% 0.02 240);      /* Secondary background */
+    --color-base-300: oklch(9% 0.02 240);       /* Tertiary background */
+    --color-base-content: oklch(85% 0.01 240);  /* Text on base colors */
+
+    /* Primary colors - Nintendo Red */
+    --color-primary: oklch(55% 0.25 12);        /* Nintendo Red */
+    --color-primary-content: oklch(98% 0.01 12); /* White text on primary */
+
+    /* Secondary colors - Nintendo Switch Neon Blue */
+    --color-secondary: oklch(65% 0.25 220);     /* Nintendo Blue */
+    --color-secondary-content: oklch(98% 0.01 220); /* White text on secondary */
+
+    /* Accent colors - Nintendo Switch Yellow */
+    --color-accent: oklch(75% 0.20 85);         /* Nintendo Yellow */
+    --color-accent-content: oklch(20% 0.05 85); /* Dark text on accent */
+
+    /* Neutral colors - Dark grays */
+    --color-neutral: oklch(25% 0.02 240);       /* Neutral elements */
+    --color-neutral-content: oklch(85% 0.01 240); /* Text on neutral */
+
+    /* Status colors */
+    --color-info: oklch(65% 0.25 220);          /* Info (Nintendo Blue) */
+    --color-info-content: oklch(98% 0.01 220);  /* Text on info */
+
+    --color-success: oklch(60% 0.20 140);       /* Success green */
+    --color-success-content: oklch(98% 0.01 140); /* Text on success */
+
+    --color-warning: oklch(75% 0.20 85);        /* Warning (Nintendo Yellow) */
+    --color-warning-content: oklch(20% 0.05 85); /* Text on warning */
+
+    --color-error: oklch(60% 0.25 12);          /* Error (Nintendo Red) */
+    --color-error-content: oklch(98% 0.01 12);  /* Text on error */
+
+    /* Border radius - Nintendo-inspired rounded corners */
+    --radius-selector: 0.5rem;  /* Checkboxes, toggles, badges */
+    --radius-field: 0.25rem;    /* Buttons, inputs, selects */
+    --radius-box: 0.5rem;       /* Cards, modals, alerts */
+
+    /* Sizes */
+    --size-selector: 0.25rem;   /* Base size for selectors */
+    --size-field: 0.25rem;      /* Base size for fields */
+
+    /* Border and effects */
+    --border: 1px;              /* Border width */
+    --depth: 1;                 /* Add subtle 3D depth effect */
+    --noise: 0;                 /* No noise effect */
+}

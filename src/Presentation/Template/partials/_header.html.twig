@@ -1,0 +1,24 @@
+<div class="navbar bg-base-100 shadow-lg">
+    <div class="navbar-start">
+        <a href="{{ path('homepage') }}" class="btn btn-ghost normal-case text-xl">🎮 NS2 UBCR</a>
+    </div>
+    <div class="navbar-end">
+        <div class="flex items-center gap-2" data-controller="theme">
+            <span class="text-sm">🌞</span>
+            <input type="checkbox" class="toggle toggle-primary"  onclick="toggleTheme()" />
+            <span class="text-sm">🌙</span>
+        </div>
+    </div>
+</div>
+
+<script lang="text/javascript">
+    function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'plumber-dark' ? 'plumber-light' : 'plumber-dark';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+    }
+
+    const savedTheme = localStorage.getItem('theme') || 'plumber-dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+</script>

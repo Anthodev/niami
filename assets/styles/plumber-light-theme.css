@@ -1,0 +1,50 @@
+[data-theme="plumber-light"] {
+    /* Base colors - Light backgrounds for light mode */
+    --color-base-100: oklch(98% 0.02 240);      /* Main background - Very light */
+    --color-base-200: oklch(95% 0.02 240);      /* Secondary background */
+    --color-base-300: oklch(92% 0.02 240);      /* Tertiary background */
+    --color-base-content: oklch(20% 0.01 240);  /* Text on base colors - Dark text */
+
+    /* Primary colors - Nintendo Red */
+    --color-primary: oklch(55% 0.25 12);        /* Nintendo Red - Same as dark */
+    --color-primary-content: oklch(98% 0.01 12); /* White text on primary */
+
+    /* Secondary colors - Nintendo Switch Neon Blue */
+    --color-secondary: oklch(60% 0.25 220);     /* Nintendo Blue - Slightly darker for contrast */
+    --color-secondary-content: oklch(98% 0.01 220); /* White text on secondary */
+
+    /* Accent colors - Nintendo Switch Yellow */
+    --color-accent: oklch(70% 0.20 85);         /* Nintendo Yellow - Slightly darker */
+    --color-accent-content: oklch(15% 0.05 85); /* Dark text on accent for contrast */
+
+    /* Neutral colors - Medium grays */
+    --color-neutral: oklch(60% 0.02 240);       /* Neutral elements */
+    --color-neutral-content: oklch(98% 0.01 240); /* White text on neutral */
+
+    /* Status colors */
+    --color-info: oklch(60% 0.25 220);          /* Info (Nintendo Blue) - Darker for contrast */
+    --color-info-content: oklch(98% 0.01 220);  /* White text on info */
+
+    --color-success: oklch(55% 0.20 140);       /* Success green - Darker for contrast */
+    --color-success-content: oklch(98% 0.01 140); /* White text on success */
+
+    --color-warning: oklch(65% 0.20 85);        /* Warning (Nintendo Yellow) - Darker */
+    --color-warning-content: oklch(15% 0.05 85); /* Dark text on warning */
+
+    --color-error: oklch(55% 0.25 12);          /* Error (Nintendo Red) - Same as primary */
+    --color-error-content: oklch(98% 0.01 12);  /* White text on error */
+
+    /* Border radius - Nintendo-inspired rounded corners */
+    --radius-selector: 0.5rem;  /* Checkboxes, toggles, badges */
+    --radius-field: 0.25rem;    /* Buttons, inputs, selects */
+    --radius-box: 0.5rem;       /* Cards, modals, alerts */
+
+    /* Sizes */
+    --size-selector: 0.25rem;   /* Base size for selectors */
+    --size-field: 0.25rem;      /* Base size for fields */
+
+    /* Border and effects */
+    --border: 1px;              /* Border width */
+    --depth: 1;                 /* Add subtle 3D depth effect */
+    --noise: 0;                 /* No noise effect */
+}
