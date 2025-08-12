@@ -6,15 +6,23 @@ export default class extends Controller {
   };
 
   connect() {
-    document.addEventListener('turbo:submit-start', this.showLoading.bind(this));
-    document.addEventListener('turbo:submit-end', this.hideLoading.bind(this));
-    document.addEventListener('turbo:frame-load', this.hideLoading.bind(this));
-    document.addEventListener('turbo:before-fetch-request', this.showLoading.bind(this));
-    document.addEventListener('turbo:before-fetch-response', this.hideLoading.bind(this));
-
+    // Only handle search input events, not global Turbo navigation
     this.searchInputs = document.querySelectorAll('[data-search-debounce-target="input"]');
     this.searchInputs.forEach(input => {
       input.addEventListener('input', this.handleSearchInput.bind(this));
+    });
+
+    // Listen for search form submissions only
+    this.searchForms = document.querySelectorAll('[data-controller*="search-debounce"]');
+    this.searchForms.forEach(form => {
+      form.addEventListener('turbo:submit-start', this.showLoading.bind(this));
+      form.addEventListener('turbo:submit-end', this.hideLoading.bind(this));
+    });
+
+    // Listen for search results frame loads
+    const searchFrames = document.querySelectorAll('turbo-frame[id*="search"]');
+    searchFrames.forEach(frame => {
+      frame.addEventListener('turbo:frame-load', this.hideLoading.bind(this));
     });
 
     this.inputDebounceTimer = null;
@@ -23,18 +31,38 @@ export default class extends Controller {
   }
 
   disconnect() {
-    document.removeEventListener('turbo:submit-start', this.showLoading.bind(this));
-    document.removeEventListener('turbo:submit-end', this.hideLoading.bind(this));
-    document.removeEventListener('turbo:frame-load', this.hideLoading.bind(this));
-    document.removeEventListener('turbo:before-fetch-request', this.showLoading.bind(this));
-    document.removeEventListener('turbo:before-fetch-response', this.hideLoading.bind(this));
-
+    // Remove search input event listeners
     this.searchInputs.forEach(input => {
       input.removeEventListener('input', this.handleSearchInput.bind(this));
     });
 
+    // Remove search form event listeners
+    if (this.searchForms) {
+      this.searchForms.forEach(form => {
+        form.removeEventListener('turbo:submit-start', this.showLoading.bind(this));
+        form.removeEventListener('turbo:submit-end', this.hideLoading.bind(this));
+      });
+    } else {
+      // Fallback cleanup in case searchForms wasn't stored
+      const searchForms = document.querySelectorAll('[data-controller*="search-debounce"]');
+      searchForms.forEach(form => {
+        form.removeEventListener('turbo:submit-start', this.showLoading.bind(this));
+        form.removeEventListener('turbo:submit-end', this.hideLoading.bind(this));
+      });
+    }
+
+    // Remove search frame event listeners
+    const searchFrames = document.querySelectorAll('turbo-frame[id*="search"]');
+    searchFrames.forEach(frame => {
+      frame.removeEventListener('turbo:frame-load', this.hideLoading.bind(this));
+    });
+
     if (this.inputDebounceTimer) {
       clearTimeout(this.inputDebounceTimer);
+    }
+
+    if (this.hideLoadingTimer) {
+      clearTimeout(this.hideLoadingTimer);
     }
   }
 

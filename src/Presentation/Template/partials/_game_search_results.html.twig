@@ -26,7 +26,7 @@
                             {% if game.imageCover is defined and game.name is defined %}
                                 <div class="relative overflow-hidden sm:w-40 sm:h-40 w-full h-48 flex-shrink-0">
                                     <img src="{{ game.imageCover }}" alt="{{ game.name }}"
-                                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200 ease-out">
+                                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200 ease-out">
                                 </div>
                             {% endif %}
 
@@ -59,11 +59,13 @@
                                 {% endif %}
 
                                 <div class="card-actions justify-end pt-4">
-                                    <button class="btn btn-primary btn-lg gap-3 shadow-lg hover:shadow-xl transform hover:scale-102 transition-all duration-150 ease-out bg-gradient-to-r from-primary to-primary-focus hover:from-primary-focus hover:to-primary">
-                                        <span class="w-5 h-5">{{ ux_icon('ph:files') }}</span>
-                                        <span class="font-semibold">Voir les rapports</span>
-                                        <span class="w-4 h-4">{{ ux_icon('ph:arrow-right') }}</span>
-                                    </button>
+                                    <a href="{{ path('reports_for_game', {gameSlug: game.slug}) }}" data-turbo-frame="_top">
+                                        <button class="btn btn-primary btn-lg gap-3 shadow-lg hover:shadow-xl transform hover:scale-102 transition-all duration-150 ease-out bg-gradient-to-r from-primary to-primary-focus hover:from-primary-focus hover:to-primary">
+                                            <span class="w-5 h-5">{{ ux_icon('ph:files') }}</span>
+                                            <span class="font-semibold">Voir les rapports</span>
+                                            <span class="w-4 h-4">{{ ux_icon('ph:arrow-right') }}</span>
+                                        </button>
+                                    </a>
                                 </div>
                             </div>
                         </div>
