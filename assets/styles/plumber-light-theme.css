@@ -6,7 +6,7 @@
     --color-base-content: oklch(20% 0.01 240);  /* Text on base colors - Dark text */
 
     /* Primary colors - Nintendo Red */
-    --color-primary: oklch(55% 0.25 12);        /* Nintendo Red - Same as dark */
+    --color-primary: oklch(0.577 0.236 28.125);        /* Nintendo Red */
     --color-primary-content: oklch(98% 0.01 12); /* White text on primary */
 
     /* Secondary colors - Nintendo Switch Neon Blue */
@@ -31,7 +31,7 @@
     --color-warning: oklch(65% 0.20 85);        /* Warning (Nintendo Yellow) - Darker */
     --color-warning-content: oklch(15% 0.05 85); /* Dark text on warning */
 
-    --color-error: oklch(55% 0.25 12);          /* Error (Nintendo Red) - Same as primary */
+    --color-error: oklch(0.577 0.236 28.125);          /* Error (Nintendo Red) */
     --color-error-content: oklch(98% 0.01 12);  /* White text on error */
 
     /* Border radius - Nintendo-inspired rounded corners */
