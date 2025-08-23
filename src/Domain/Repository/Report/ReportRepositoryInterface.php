@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Repository\Game;
+namespace App\Domain\Repository\Report;
 
-use App\Domain\Model\Game\Report;
+use App\Domain\Model\Report\Report;
 
 /**
  * @method ?Report  find(string $id)
@@ -22,5 +22,5 @@ interface ReportRepositoryInterface
     /**
      * @return Report[]
      */
-    public function getAllVisibleReports(): array;
+    public function getAllVisibleReportsForGame(string $gameId): array;
 }

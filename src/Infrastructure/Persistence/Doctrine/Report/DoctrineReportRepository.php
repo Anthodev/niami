@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Persistence\Doctrine\Game\Repository;
+namespace App\Infrastructure\Persistence\Doctrine\Report;
 
-use App\Domain\Model\Game\Report;
-use App\Domain\Repository\Game\ReportRepositoryInterface;
+use App\Domain\Model\Report\Report;
+use App\Domain\Repository\Report\ReportRepositoryInterface;
 use App\Infrastructure\Persistence\Doctrine\Common\DoctrineBaseEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -19,10 +19,14 @@ class DoctrineReportRepository extends DoctrineBaseEntityRepository implements R
     /**
      * @return Report[]
      */
-    public function getAllVisibleReports(): array
+    public function getAllVisibleReportsForGame(string $gameId): array
     {
         $qb = $this->createQueryBuilder('r')
             ->where('r.isVisible = true')
+            ->andWhere('r.game = :game')
+            ->setParameter('game', $gameId)
+            ->orderBy('r.upvoteCount', 'DESC')
+            ->addOrderBy('r.createdAt', 'DESC')
             ->getQuery();
 
         /** @var Report[] */

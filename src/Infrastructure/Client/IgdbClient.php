@@ -49,11 +49,11 @@ class IgdbClient implements ApiClientInterface
      *
      * @throws InvalidArgumentException
      */
-    public function searchGames(string $query, int $limit = 10): array
+    public function searchGames(string $query, int $limit = 25): array
     {
         $searchCacheKey = $this->generateSearchCacheKey($query, $limit);
 
-        return $this->cache->get(
+        $apiGames = $this->cache->get(
             $searchCacheKey,
             function () use ($query, $limit) {
                 return $this->performApiRequest(
@@ -64,6 +64,17 @@ class IgdbClient implements ApiClientInterface
             },
             self::API_RESPONSE_CACHE_TTL,
         );
+
+        foreach ($apiGames as $apiGame) {
+            $this->cache->get(
+                'api_game_'.$apiGame->getSlug(),
+                function () use ($apiGame) {
+                    return $apiGame;
+                }
+            );
+        }
+
+        return $apiGames;
     }
 
     /**

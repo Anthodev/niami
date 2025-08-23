@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Model\Game;
 
 use App\Domain\Model\Common\ModelInterface;
+use App\Domain\Model\Report\Report;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Uid\Uuid;

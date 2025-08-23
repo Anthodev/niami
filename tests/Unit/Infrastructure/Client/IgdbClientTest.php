@@ -42,14 +42,36 @@ it('searches games with default limit', function () {
     // Given
     $query = 'zelda';
     $limit = 10;
-    $accessToken = 'test-access-token';
+
+    $cacheKeyData = [
+        'query' => trim(strtolower($query)),
+        'limit' => $limit,
+        'platform' => IgdbGamePlatformEnum::NINTENDO_SWITCH->value,
+    ];
+
     $expectedGames = [createApiGame($this->faker)];
+    $cacheSearchKey = 'igdb_api_search_' . md5(json_encode($cacheKeyData));
+    $cacheGameKey = 'api_game_' . $expectedGames[0]->getSlug();
 
     $this->cache
-        ->expects($this->once())
+        ->expects($this->exactly(2))
         ->method('get')
-        ->willReturnCallback(function ($cacheKey, $callback) use ($expectedGames) {
-            return $expectedGames;
+        ->with($this->callback(function ($cacheKey) use (
+            $cacheSearchKey,
+            $cacheGameKey,
+        ) {
+            return in_array($cacheKey, [$cacheSearchKey, $cacheGameKey]);
+        }))
+        ->willReturnCallback(function ($cacheKey, $callback) use (
+            $expectedGames,
+            $cacheSearchKey,
+            $cacheGameKey,
+        ) {
+            return match($cacheKey) {
+                $cacheSearchKey => $expectedGames,
+                $cacheGameKey => $expectedGames[0],
+                default => throw new \RuntimeException('Unexpected envelope')
+            };
     });
 
     // When
@@ -66,13 +88,40 @@ it('searches games with custom limit', function () {
     // Given
     $query = 'mario';
     $limit = 5;
+
+    $cacheKeyData = [
+        'query' => trim(strtolower($query)),
+        'limit' => $limit,
+        'platform' => IgdbGamePlatformEnum::NINTENDO_SWITCH->value,
+    ];
+
     $expectedGames = [createApiGame($this->faker), createApiGame($this->faker)];
+    $cacheSearchKey = 'igdb_api_search_' . md5(json_encode($cacheKeyData));
+    $cacheFirstGameKey = 'api_game_' . $expectedGames[0]->getSlug();
+    $cacheSecondGameKey = 'api_game_' . $expectedGames[1]->getSlug();
 
     $this->cache
-        ->expects($this->once())
+        ->expects($this->exactly(3))
         ->method('get')
-        ->willReturnCallback(function ($cacheKey, $callback) use ($expectedGames) {
-            return  $expectedGames;
+        ->with($this->callback(function ($cacheKey) use (
+            $cacheSearchKey,
+            $cacheFirstGameKey,
+            $cacheSecondGameKey,
+        ) {
+            return in_array($cacheKey, [$cacheSearchKey, $cacheFirstGameKey, $cacheSecondGameKey]);;
+        }))
+        ->willReturnCallback(function ($cacheKey, $callback) use (
+            $expectedGames,
+            $cacheSearchKey,
+            $cacheFirstGameKey,
+            $cacheSecondGameKey,
+        ) {
+            return match($cacheKey) {
+                $cacheSearchKey => $expectedGames,
+                $cacheFirstGameKey => $expectedGames[0],
+                $cacheSecondGameKey => $expectedGames[1],
+                default => throw new \RuntimeException('Unexpected envelope')
+            };
         });
 
     // When
@@ -89,13 +138,36 @@ it('returns cached results when available', function () {
     // Given
     $query = 'cached-game';
     $limit = 10;
+
+    $cacheKeyData = [
+        'query' => trim(strtolower($query)),
+        'limit' => $limit,
+        'platform' => IgdbGamePlatformEnum::NINTENDO_SWITCH->value,
+    ];
+
     $expectedGames = [createApiGame($this->faker)];
+    $cacheSearchKey = 'igdb_api_search_' . md5(json_encode($cacheKeyData));
+    $cacheGameKey = 'api_game_' . $expectedGames[0]->getSlug();
 
     $this->cache
-        ->expects($this->once())
+        ->expects($this->exactly(2))
         ->method('get')
-        ->willReturnCallback(function ($cacheKey, $callback) use ($expectedGames) {
-            return  $expectedGames;
+        ->with($this->callback(function ($cacheKey) use (
+            $cacheSearchKey,
+            $cacheGameKey,
+        ) {
+            return in_array($cacheKey, [$cacheSearchKey, $cacheGameKey]);
+        }))
+        ->willReturnCallback(function ($cacheKey, $callback) use (
+            $expectedGames,
+            $cacheSearchKey,
+            $cacheGameKey,
+        ) {
+            return match($cacheKey) {
+                $cacheSearchKey => $expectedGames,
+                $cacheGameKey => $expectedGames[0],
+                default => throw new \RuntimeException('Unexpected envelope')
+            };
         });
 
     // When

@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Model\Game;
+namespace App\Domain\Model\Report;
 
 use App\Domain\Model\Common\ModelInterface;
+use App\Domain\Model\Game\Game;
+use App\Infrastructure\Enum\ReportGameStatusEnum;
 use Symfony\Component\Uid\Uuid;
 
 class Report implements ModelInterface
@@ -25,6 +27,7 @@ class Report implements ModelInterface
         private bool $hasResolutionImprovedDocked = false,
         private bool $isNativeResolutionImprovedDocked = false,
         private bool $hasImprovedLoadingTimes = false,
+        private ReportGameStatusEnum $gameStatus = ReportGameStatusEnum::OK,
         private int $upvoteCount = 0,
         private bool $isVisible = true,
     ) {
@@ -98,6 +101,18 @@ class Report implements ModelInterface
     public function setHasResolutionImprovedPortable(bool $hasResolutionImprovedPortable): self
     {
         $this->hasResolutionImprovedPortable = $hasResolutionImprovedPortable;
+
+        return $this;
+    }
+
+    public function getGameStatus(): ReportGameStatusEnum
+    {
+        return $this->gameStatus;
+    }
+
+    public function setGameStatus(ReportGameStatusEnum $gameStatus): self
+    {
+        $this->gameStatus = $gameStatus;
 
         return $this;
     }

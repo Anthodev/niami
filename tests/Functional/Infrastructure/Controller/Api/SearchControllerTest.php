@@ -18,13 +18,15 @@ it('can search games with valid query', function () {
             'id' => 1,
             'name' => 'The Legend of Zelda: Breath of the Wild',
             'slug' => 'zelda-breath-wild',
-            'summary' => 'An adventure game'
+            'summary' => 'An adventure game',
+            'releaseDate' => new \DateTime(),
         ],
         [
             'id' => 2,
             'name' => 'The Legend of Zelda: Tears of the Kingdom',
             'slug' => 'zelda-tears-kingdom',
-            'summary' => 'Another adventure game'
+            'summary' => 'Another adventure game',
+            'releaseDate' => new \DateTime('-1 week'),
         ]
     ];
 
@@ -189,7 +191,8 @@ it('can handle mixed local and api results', function () {
             'id' => 101,
             'name' => 'Super Mario Bros (Local)',
             'slug' => 'mario-local',
-            'summary' => 'Local game'
+            'summary' => 'Local game',
+            'releaseDate' => new \DateTime(),
         ]
     ];
 
@@ -198,7 +201,8 @@ it('can handle mixed local and api results', function () {
             'id' => 201,
             'name' => 'Super Mario Odyssey (API)',
             'slug' => 'mario-odyssey-api',
-            'summary' => 'API game'
+            'summary' => 'API game',
+            'releaseDate' => new \DateTime('-1 week'),
         ]
     ];
 

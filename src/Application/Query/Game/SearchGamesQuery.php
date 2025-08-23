@@ -8,7 +8,7 @@ class SearchGamesQuery
 {
     public function __construct(
         public readonly ?string $query = '',
-        public readonly int $limit = 10,
+        public readonly int $limit = 25,
         public readonly bool $includeApi = true,
     ) {
     }

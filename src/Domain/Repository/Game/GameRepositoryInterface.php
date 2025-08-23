@@ -30,4 +30,6 @@ interface GameRepositoryInterface
     public function findGamesByNameOrSlug(string $query, int $limit = 10): array;
 
     public function getOneByIdEnabledGame(string $gameId): ?Game;
+
+    public function getOneBySlugEnabledGame(string $slug): ?Game;
 }

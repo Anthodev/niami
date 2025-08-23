@@ -40,18 +40,38 @@ class SearchGamesQueryHandler
 
         $localGames = $this->searchLocalGames($query->query, $query->limit);
 
-        $apiGames = [];
+        $computedApiGames = [];
         if ($query->includeApi) {
             $remainingLimit = $query->limit - count($localGames);
-            if ($remainingLimit > 0) {
-                $apiGames = $this->searchApiGames($query->query, $remainingLimit);
+
+            $apiGames = $this->searchApiGames(
+                $query->query,
+                $remainingLimit,
+            );
+
+            foreach ($apiGames as $apiGame) {
+                if (
+                    !empty($localGames)
+                    && !in_array(
+                        $apiGame->getSlug(),
+                        array_map(
+                            /** @phpstan-ignore-next-line */
+                            static fn (Game $game): string => $game->getSlug(),
+                            $localGames,
+                        ),
+                        true)
+                ) {
+                    $computedApiGames[] = $apiGame;
+                } elseif (empty($localGames)) {
+                    $computedApiGames = $apiGames;
+                }
             }
         }
 
         return [
             'local' => $localGames,
-            'api' => $apiGames,
-            'total' => count($localGames) + count($apiGames),
+            'api' => $computedApiGames,
+            'total' => count($localGames) + count($computedApiGames),
         ];
     }
 
@@ -75,8 +95,10 @@ class SearchGamesQueryHandler
     /**
      * @return ApiGame[]
      */
-    private function searchApiGames(string $query, int $limit): array
-    {
+    private function searchApiGames(
+        string $query,
+        int $limit,
+    ): array {
         try {
             return $this->apiGameRepository->searchGames($query, $limit);
         } catch (\Exception $e) {
