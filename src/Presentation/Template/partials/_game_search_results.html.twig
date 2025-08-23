@@ -38,14 +38,12 @@
                                 {% endif %}
 
                                 <div class="flex flex-wrap items-center gap-3">
-                                    {% if game.releaseDate is defined %}
-                                        <div class="badge badge-outline badge-lg gap-2 border-primary/30 hover:bg-primary/10 transition-colors">
-                                            <span class="w-4 h-4 text-primary">{{ ux_icon('ph:calendar-dots') }}</span>
-                                            <span class="font-medium">{{ game.releaseDate|date('d/m/Y') }}</span>
-                                        </div>
-                                    {% endif %}
+                                    <div class="badge badge-outline badge-lg gap-2 border-primary/30 hover:bg-primary/10 transition-colors">
+                                        <span class="w-4 h-4 text-primary">{{ ux_icon('ph:calendar-dots') }}</span>
+                                        <span class="font-medium">{{ game.releaseDate|date('d/m/Y') }}</span>
+                                    </div>
 
-                                    {% if game.publisher is defined %}
+                                    {% if game.publisher is defined and game.publisher != '' %}
                                         <div class="badge badge-secondary badge-lg font-medium">
                                             {{ game.publisher }}
                                         </div>

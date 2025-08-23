@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Application\Service\Game;
 
+use App\Application\Helper\MessageBusHelper;
 use App\Application\Query\Game\SearchGamesQuery;
 use App\Application\Service\Game\ApiGameSearchService;
+use App\Domain\Model\Game\ApiGame;
 use Faker\Factory;
 use Faker\Generator;
 use Symfony\Component\Messenger\Envelope;
@@ -15,12 +17,15 @@ use Symfony\Component\Messenger\Stamp\HandledStamp;
 beforeEach(function () {
     $this->faker = Factory::create();
     $this->messageBus = $this->createMock(MessageBusInterface::class);
-    $this->apiGameSearchService = new ApiGameSearchService($this->messageBus);
+    $this->messageBusHelper = $this->createMock(MessageBusHelper::class);
+    $this->apiGameSearchService = new ApiGameSearchService($this->messageBus, $this->messageBusHelper);
 });
 
 it('can search games with default limit', function () {
     // Given
     $query = 'zelda';
+    $limit = 25;
+
     $apiGames = [
         createApiGameArray($this->faker),
         createApiGameArray($this->faker),
@@ -39,15 +44,29 @@ it('can search games with default limit', function () {
 
     // Create a HandledStamp with the expected result
     $handledStamp = new HandledStamp($expectedResult, 'handler.service_id');
-    $envelope = new Envelope(new \stdClass(), [$handledStamp]);
+    $envelope = new Envelope(new SearchGamesQuery($query), [$handledStamp]);
 
     $this->messageBus
         ->expects($this->once())
         ->method('dispatch')
-        ->with($this->callback(function (SearchGamesQuery $searchQuery) use ($query) {
-            return $searchQuery->query === $query && $searchQuery->limit === 10;
+        ->with($this->callback(function ($message) use ($query, $limit) {
+            return $message instanceof SearchGamesQuery
+                && $message->query === $query
+                && $message->limit === $limit;
         }))
         ->willReturn($envelope);
+
+
+    $this->messageBusHelper
+        ->expects($this->once())
+        ->method('getContentFromEnvelope')
+        ->with(
+            $envelope,
+            'Error during game search',
+            null,
+            'array',
+        )
+        ->willReturn($expectedResult);
 
     // When
     $result = $this->apiGameSearchService->searchGames($query);
@@ -60,6 +79,7 @@ it('can search games with custom limit', function () {
     // Given
     $query = 'mario';
     $limit = 5;
+
     $apiGames = [
         createApiGameArray($this->faker),
     ];
@@ -77,15 +97,29 @@ it('can search games with custom limit', function () {
 
     // Create a HandledStamp with the expected result
     $handledStamp = new HandledStamp($expectedResult, 'handler.service_id');
-    $envelope = new Envelope(new \stdClass(), [$handledStamp]);
+    $envelope = new Envelope(new SearchGamesQuery($query), [$handledStamp]);
 
     $this->messageBus
         ->expects($this->once())
         ->method('dispatch')
-        ->with($this->callback(function (SearchGamesQuery $searchQuery) use ($query, $limit) {
-            return $searchQuery->query === $query && $searchQuery->limit === $limit;
+        ->with($this->callback(function ($message) use ($query, $limit) {
+            return $message instanceof SearchGamesQuery
+                && $message->query === $query
+                && $message->limit === $limit;
         }))
         ->willReturn($envelope);
+
+
+    $this->messageBusHelper
+        ->expects($this->once())
+        ->method('getContentFromEnvelope')
+        ->with(
+            $envelope,
+            'Error during game search',
+            null,
+            'array',
+        )
+        ->willReturn($expectedResult);
 
     // When
     $result = $this->apiGameSearchService->searchGames($query, $limit);
@@ -97,6 +131,7 @@ it('can search games with custom limit', function () {
 it('returns empty array when no games found', function () {
     // Given
     $query = 'nonexistent-game';
+    $limit = 25;
 
     $expectedResult = [
         'local' => [],
@@ -111,15 +146,29 @@ it('returns empty array when no games found', function () {
 
     // Create a HandledStamp with the expected result
     $handledStamp = new HandledStamp($expectedResult, 'handler.service_id');
-    $envelope = new Envelope(new \stdClass(), [$handledStamp]);
+    $envelope = new Envelope(new SearchGamesQuery($query), [$handledStamp]);
 
     $this->messageBus
         ->expects($this->once())
         ->method('dispatch')
-        ->with($this->callback(function (SearchGamesQuery $searchQuery) use ($query) {
-            return $searchQuery->query === $query && $searchQuery->limit === 10;
+        ->with($this->callback(function ($message) use ($query, $limit) {
+            return $message instanceof SearchGamesQuery
+                && $message->query === $query
+                && $message->limit === $limit;
         }))
         ->willReturn($envelope);
+
+
+    $this->messageBusHelper
+        ->expects($this->once())
+        ->method('getContentFromEnvelope')
+        ->with(
+            $envelope,
+            'Error during game search',
+            null,
+            'array',
+        )
+        ->willReturn($expectedResult);
 
     // When
     $result = $this->apiGameSearchService->searchGames($query);
@@ -133,6 +182,7 @@ it('can search games with large limit', function () {
     // Given
     $query = 'adventure';
     $limit = 100;
+
     $apiGames = array_map(fn() => createApiGameArray($this->faker), range(1, 50));
 
     $expectedResult = [
@@ -148,15 +198,29 @@ it('can search games with large limit', function () {
 
     // Create a HandledStamp with the expected result
     $handledStamp = new HandledStamp($expectedResult, 'handler.service_id');
-    $envelope = new Envelope(new \stdClass(), [$handledStamp]);
+    $envelope = new Envelope(new SearchGamesQuery($query), [$handledStamp]);
 
     $this->messageBus
         ->expects($this->once())
         ->method('dispatch')
-        ->with($this->callback(function (SearchGamesQuery $searchQuery) use ($query, $limit) {
-            return $searchQuery->query === $query && $searchQuery->limit === $limit;
+        ->with($this->callback(function ($message) use ($query, $limit) {
+            return $message instanceof SearchGamesQuery
+                && $message->query === $query
+                && $message->limit === $limit;
         }))
         ->willReturn($envelope);
+
+
+    $this->messageBusHelper
+        ->expects($this->once())
+        ->method('getContentFromEnvelope')
+        ->with(
+            $envelope,
+            'Error during game search',
+            null,
+            'array',
+        )
+        ->willReturn($expectedResult);
 
     // When
     $result = $this->apiGameSearchService->searchGames($query, $limit);
@@ -170,6 +234,7 @@ it('can search games with minimum limit', function () {
     // Given
     $query = 'rpg';
     $limit = 1;
+
     $apiGames = [
         createApiGameArray($this->faker),
     ];
@@ -187,15 +252,29 @@ it('can search games with minimum limit', function () {
 
     // Create a HandledStamp with the expected result
     $handledStamp = new HandledStamp($expectedResult, 'handler.service_id');
-    $envelope = new Envelope(new \stdClass(), [$handledStamp]);
+    $envelope = new Envelope(new SearchGamesQuery($query), [$handledStamp]);
 
     $this->messageBus
         ->expects($this->once())
         ->method('dispatch')
-        ->with($this->callback(function (SearchGamesQuery $searchQuery) use ($query, $limit) {
-            return $searchQuery->query === $query && $searchQuery->limit === $limit;
+        ->with($this->callback(function ($message) use ($query, $limit) {
+            return $message instanceof SearchGamesQuery
+                && $message->query === $query
+                && $message->limit === $limit;
         }))
         ->willReturn($envelope);
+
+
+    $this->messageBusHelper
+        ->expects($this->once())
+        ->method('getContentFromEnvelope')
+        ->with(
+            $envelope,
+            'Error during game search',
+            null,
+            'array',
+        )
+        ->willReturn($expectedResult);
 
     // When
     $result = $this->apiGameSearchService->searchGames($query, $limit);
@@ -208,6 +287,8 @@ it('can search games with minimum limit', function () {
 it('handles special characters in search query', function () {
     // Given
     $query = 'game-with-special:characters!@#$%';
+    $limit = 25;
+
     $apiGames = [
         createApiGameArray($this->faker),
     ];
@@ -225,15 +306,29 @@ it('handles special characters in search query', function () {
 
     // Create a HandledStamp with the expected result
     $handledStamp = new HandledStamp($expectedResult, 'handler.service_id');
-    $envelope = new Envelope(new \stdClass(), [$handledStamp]);
+    $envelope = new Envelope(new SearchGamesQuery($query), [$handledStamp]);
 
     $this->messageBus
         ->expects($this->once())
         ->method('dispatch')
-        ->with($this->callback(function (SearchGamesQuery $searchQuery) use ($query) {
-            return $searchQuery->query === $query && $searchQuery->limit === 10;
+        ->with($this->callback(function ($message) use ($query, $limit) {
+            return $message instanceof SearchGamesQuery
+                && $message->query === $query
+                && $message->limit === $limit;
         }))
         ->willReturn($envelope);
+
+
+    $this->messageBusHelper
+        ->expects($this->once())
+        ->method('getContentFromEnvelope')
+        ->with(
+            $envelope,
+            'Error during game search',
+            null,
+            'array',
+        )
+        ->willReturn($expectedResult);
 
     // When
     $result = $this->apiGameSearchService->searchGames($query);
@@ -245,6 +340,7 @@ it('handles special characters in search query', function () {
 it('handles empty search query', function () {
     // Given
     $query = '';
+    $limit = 25;
 
     $expectedResult = [
         'local' => [],
@@ -259,15 +355,29 @@ it('handles empty search query', function () {
 
     // Create a HandledStamp with the expected result
     $handledStamp = new HandledStamp($expectedResult, 'handler.service_id');
-    $envelope = new Envelope(new \stdClass(), [$handledStamp]);
+    $envelope = new Envelope(new SearchGamesQuery($query), [$handledStamp]);
 
     $this->messageBus
         ->expects($this->once())
         ->method('dispatch')
-        ->with($this->callback(function (SearchGamesQuery $searchQuery) use ($query) {
-            return $searchQuery->query === $query && $searchQuery->limit === 10;
+        ->with($this->callback(function ($message) use ($query, $limit) {
+            return $message instanceof SearchGamesQuery
+                && $message->query === $query
+                && $message->limit === $limit;
         }))
         ->willReturn($envelope);
+
+
+    $this->messageBusHelper
+        ->expects($this->once())
+        ->method('getContentFromEnvelope')
+        ->with(
+            $envelope,
+            'Error during game search',
+            null,
+            'array',
+        )
+        ->willReturn($expectedResult);
 
     // When
     $result = $this->apiGameSearchService->searchGames($query);
@@ -279,6 +389,8 @@ it('handles empty search query', function () {
 it('handles unicode characters in search query', function () {
     // Given
     $query = 'ポケモン';
+    $limit = 25;
+
     $apiGames = [
         createApiGameArray($this->faker),
     ];
@@ -296,15 +408,29 @@ it('handles unicode characters in search query', function () {
 
     // Create a HandledStamp with the expected result
     $handledStamp = new HandledStamp($expectedResult, 'handler.service_id');
-    $envelope = new Envelope(new \stdClass(), [$handledStamp]);
+    $envelope = new Envelope(new SearchGamesQuery($query), [$handledStamp]);
 
     $this->messageBus
         ->expects($this->once())
         ->method('dispatch')
-        ->with($this->callback(function (SearchGamesQuery $searchQuery) use ($query) {
-            return $searchQuery->query === $query && $searchQuery->limit === 10;
+        ->with($this->callback(function ($message) use ($query, $limit) {
+            return $message instanceof SearchGamesQuery
+                && $message->query === $query
+                && $message->limit === $limit;
         }))
         ->willReturn($envelope);
+
+
+    $this->messageBusHelper
+        ->expects($this->once())
+        ->method('getContentFromEnvelope')
+        ->with(
+            $envelope,
+            'Error during game search',
+            null,
+            'array',
+        )
+        ->willReturn($expectedResult);
 
     // When
     $result = $this->apiGameSearchService->searchGames($query);
@@ -313,61 +439,14 @@ it('handles unicode characters in search query', function () {
     expect($result)->toBe($formattedResult);
 });
 
-function createApiGameArray(Generator $faker): array
+function createApiGameArray(Generator $faker): ApiGame
 {
-    return [
-        'id' => $faker->numberBetween(1000, 999999),
-        'name' => $faker->words(3, true),
-        'slug' => $faker->slug(),
-        'cover' => [
-            'id' => $faker->numberBetween(10000, 999999),
-            'url' => '//images.igdb.com/igdb/image/upload/t_thumb/' . $faker->lexify('??????') . '.jpg',
-        ],
-        'first_release_date' => $faker->unixTime(),
-        'involved_companies' => [
-            [
-                'id' => $faker->numberBetween(1000, 99999),
-                'company' => [
-                    'id' => $faker->numberBetween(1, 9999),
-                    'name' => $faker->company(),
-                ],
-            ],
-            [
-                'id' => $faker->numberBetween(1000, 99999),
-                'company' => [
-                    'id' => $faker->numberBetween(1, 9999),
-                    'name' => $faker->company(),
-                ],
-            ],
-        ],
-        'platforms' => [
-            [
-                'id' => $faker->numberBetween(1, 200),
-                'name' => 'Nintendo Switch',
-            ],
-            [
-                'id' => $faker->numberBetween(1, 200),
-                'name' => $faker->randomElement([
-                    'PlayStation 5',
-                    'Xbox Series',
-                    'PC',
-                ]),
-            ],
-        ],
-        'summary' => $faker->paragraph(3),
-        'websites' => [
-            [
-                'id' => $faker->numberBetween(10000, 999999),
-                'url' => $faker->url(),
-            ],
-            [
-                'id' => $faker->numberBetween(10000, 999999),
-                'url' => 'https://en.wikipedia.org/wiki/' . $faker->slug(),
-            ],
-            [
-                'id' => $faker->numberBetween(10000, 999999),
-                'url' => 'https://www.twitch.tv/directory/game/' . urlencode($faker->words(3, true)),
-            ],
-        ],
-    ];
+    return new ApiGame(
+        name: $faker->words(3, true),
+        slug: $faker->slug(),
+        description: $faker->paragraph(3),
+        imageCover: '//images.igdb.com/igdb/image/upload/t_thumb/' . $faker->lexify('??????') . '.jpg',
+        publisher: $faker->company(),
+        releaseDate: date('Y-m-d', new \DateTime()->getTimestamp())
+    );
 }

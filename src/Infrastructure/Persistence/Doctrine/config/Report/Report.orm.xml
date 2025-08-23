@@ -3,7 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
     https://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
-    <entity name="App\Domain\Model\Game\Report" table="reports">
+    <entity name="App\Domain\Model\Report\Report" table="reports">
         <id name="id" type="uuid" column="id">
             <generator strategy="CUSTOM"/>
             <custom-id-generator class="Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator"/>
@@ -66,6 +66,12 @@
         <field name="hasImprovedLoadingTimes" type="boolean" column="has_improved_loading_times">
             <options>
                 <option name="default">false</option>
+            </options>
+        </field>
+
+        <field name="gameStatus" type="ReportGameStatusEnum" column="game_status">
+            <options>
+                <option name="default">ok</option>
             </options>
         </field>
 

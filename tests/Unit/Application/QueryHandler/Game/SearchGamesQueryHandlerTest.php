@@ -111,7 +111,10 @@ test('searches both local and api games when includeApi is true', function () {
     $query = 'zelda';
     $limit = 10;
 
-    $localGames = [new Game()];
+    $localGames = [new Game(
+        slug: 'zelda-test',
+    )];
+
     $gameRepository
         ->method('findGamesByNameOrSlug')
         ->with($query, $limit)
@@ -268,7 +271,12 @@ test('respects the limit parameter for combined results', function () {
     $query = 'zelda';
     $limit = 2;
 
-    $localGames = [new Game(), new Game(), new Game()];
+    $localGames = [
+        new Game(slug: 'zelda-test'),
+        new Game(slug: 'zelda-test-2'),
+        new Game(slug: 'zelda-test-3'),
+    ];
+
     $gameRepository
         ->method('findGamesByNameOrSlug')
         ->willReturn($localGames);

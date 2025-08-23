@@ -54,4 +54,10 @@ class DoctrineGameRepository extends DoctrineBaseEntityRepository implements Gam
         /** @var Game|null */
         return $this->findOneBy(['id' => $gameId, 'isActive' => true]);
     }
+
+    public function getOneBySlugEnabledGame(string $slug): ?Game
+    {
+        /** @var Game|null */
+        return $this->findOneBy(['slug' => $slug, 'isActive' => true]);
+    }
 }

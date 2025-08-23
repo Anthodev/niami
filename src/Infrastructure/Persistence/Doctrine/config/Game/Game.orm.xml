@@ -50,7 +50,7 @@
 
         <one-to-many
             field="reports"
-            target-entity="App\Domain\Model\Game\Report"
+            target-entity="App\Domain\Model\Report\Report"
             mapped-by="game"
         />
 
