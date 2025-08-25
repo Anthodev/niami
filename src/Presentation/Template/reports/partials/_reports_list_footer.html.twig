@@ -1,0 +1,19 @@
+{% if reports|length > 0 %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <th></th>
+                <th colspan="3" class="text-center bg-primary/50">TV</th>
+                <th colspan="3" class="text-center bg-secondary/50">Portable</th>
+                <th colspan="3" class="text-center bg-accent/50">Misc</th>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+    <div class="mt-4 text-base-content/50">
+        <p>*: Target above 30 FPS</p>
+        <p>**: Framerate is consistently at 30 or 60 FPS related to the reported framerate</p>
+        <p>***: Has a better resolution than on Nintendo Switch 1 system in related mode</p>
+    </div>
+{% endif %}

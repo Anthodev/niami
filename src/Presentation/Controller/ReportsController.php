@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Presentation\Controller;
 
 use App\Application\Exception\CannotGetGameException;
-use App\Application\UseCase\Game\GetGameUseCase;
+use App\Application\UseCase\Game\GetOrCreateGameUseCase;
 use App\Domain\Model\Game\Game;
 use App\Domain\Model\Report\Report;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,7 +19,7 @@ class ReportsController extends AbstractController
     #[Route(path: '/{gameSlug}', name: 'reports_for_game', methods: [Request::METHOD_GET])]
     public function reportsForGame(
         string $gameSlug,
-        GetGameUseCase $getGameUseCase,
+        GetOrCreateGameUseCase $getGameUseCase,
     ): Response {
         try {
             /** @var Game $game */

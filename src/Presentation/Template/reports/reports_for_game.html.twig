@@ -6,7 +6,6 @@
         <button class="btn btn-primary">Generate</button>
     </a>
 
-    {% for report in reports %}
-        <h3>{{ report.upvoteCount }}</h3>
-    {% endfor %}
+    {% include '@reports/partials/_reports_list_legends.html.twig' %}
+    {% include '@reports/partials/_reports_list.html.twig' %}
 {% endblock %}

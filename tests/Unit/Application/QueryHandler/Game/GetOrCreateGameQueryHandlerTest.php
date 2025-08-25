@@ -6,8 +6,8 @@ namespace App\Tests\Unit\Application\QueryHandler\Game;
 
 use App\Application\Command\CreateGameCommand;
 use App\Application\Exception\CannotCreateGameException;
-use App\Application\Query\Game\GetGameQuery;
-use App\Application\QueryHandler\Game\GetGameQueryHandler;
+use App\Application\Query\Game\GetOrCreateGameQuery;
+use App\Application\QueryHandler\Game\GetOrCreateGameQueryHandler;
 use App\Domain\Model\Game\ApiGame;
 use App\Domain\Model\Game\Game;
 use App\Domain\Repository\Game\GameRepositoryInterface;
@@ -23,7 +23,7 @@ test('returns game when found in repository', function () {
     $messageBus = $this->createMock(MessageBusInterface::class);
     $logger = $this->createMock(LoggerInterface::class);
 
-    $handler = new GetGameQueryHandler(
+    $handler = new GetOrCreateGameQueryHandler(
         $messageBus,
         $gameRepository,
         $logger,
@@ -52,7 +52,7 @@ test('returns game when found in repository', function () {
         ->expects($this->never())
         ->method('dispatch');
 
-    $query = new GetGameQuery($gameSlug, $apiGame);
+    $query = new GetOrCreateGameQuery($gameSlug, $apiGame);
 
     // When
     $result = $handler->__invoke($query);
@@ -67,7 +67,7 @@ test('creates game via message bus when not found in repository', function () {
     $messageBus = $this->createMock(MessageBusInterface::class);
     $logger = $this->createMock(LoggerInterface::class);
 
-    $handler = new GetGameQueryHandler(
+    $handler = new GetOrCreateGameQueryHandler(
         $messageBus,
         $gameRepository,
         $logger
@@ -107,7 +107,7 @@ test('creates game via message bus when not found in repository', function () {
         }))
         ->willReturn($envelope);
 
-    $query = new GetGameQuery($gameSlug, $apiGame);
+    $query = new GetOrCreateGameQuery($gameSlug, $apiGame);
 
     // When
     $result = $handler->__invoke($query);
@@ -122,7 +122,7 @@ test('throws CannotCreateGameException when message bus dispatch fails with Exce
     $messageBus = $this->createMock(MessageBusInterface::class);
     $logger = $this->createMock(LoggerInterface::class);
 
-    $handler = new GetGameQueryHandler(
+    $handler = new GetOrCreateGameQueryHandler(
         $messageBus,
         $gameRepository,
         $logger
@@ -159,7 +159,7 @@ test('throws CannotCreateGameException when message bus dispatch fails with Exce
         ->method('error')
         ->with('Database error');
 
-    $query = new GetGameQuery($gameSlug, $apiGame);
+    $query = new GetOrCreateGameQuery($gameSlug, $apiGame);
 
     // When & Then
     expect(fn() => $handler->__invoke($query))
@@ -173,7 +173,7 @@ test('throws CannotCreateGameException when message bus dispatch fails with Exce
     $logger = $this->createMock(LoggerInterface::class);
     $exception = new CannotCreateGameException();
 
-    $handler = new GetGameQueryHandler(
+    $handler = new GetOrCreateGameQueryHandler(
         $messageBus,
         $gameRepository,
         $logger
@@ -200,7 +200,7 @@ test('throws CannotCreateGameException when message bus dispatch fails with Exce
         ->method('dispatch')
         ->willThrowException($exception);
 
-    $query = new GetGameQuery($gameSlug, $apiGame);
+    $query = new GetOrCreateGameQuery($gameSlug, $apiGame);
 
     // When & Then
     $handler->__invoke($query);
@@ -212,7 +212,7 @@ test('properly handles different ApiGame properties', function () {
     $messageBus = $this->createMock(MessageBusInterface::class);
     $logger = $this->createMock(LoggerInterface::class);
 
-    $handler = new GetGameQueryHandler(
+    $handler = new GetOrCreateGameQueryHandler(
         $messageBus,
         $gameRepository,
         $logger
@@ -254,7 +254,7 @@ test('properly handles different ApiGame properties', function () {
         }))
     ->willReturn($envelope);
 
-    $query = new GetGameQuery($gameSlug, $apiGame);
+    $query = new GetOrCreateGameQuery($gameSlug, $apiGame);
 
     // When
     $result = $handler->__invoke($query);
@@ -270,12 +270,12 @@ test('can be instantiated with required dependencies', function () {
     $logger = $this->createMock(LoggerInterface::class);
 
     // When
-    $handler = new GetGameQueryHandler(
+    $handler = new GetOrCreateGameQueryHandler(
         $messageBus,
         $gameRepository,
         $logger
     );
 
     // Then
-    expect($handler)->toBeInstanceOf(GetGameQueryHandler::class);
+    expect($handler)->toBeInstanceOf(GetOrCreateGameQueryHandler::class);
 });
