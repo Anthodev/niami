@@ -4,6 +4,7 @@ twig:
     paths:
         'src/Presentation/Template': 'app'
         'src/Presentation/Template/Admin': 'admin'
+        'src/Presentation/Template/reports': 'reports'
         'src/Presentation/Template/turbo': 'turbo'
 
 when@test:
