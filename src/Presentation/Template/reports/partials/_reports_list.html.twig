@@ -75,10 +75,10 @@
             </div>
         </td>
 
-        <td class="flex justify-center hover:bg-base-300 {{ loop.first ? 'bg-yellow-800' : '' }}">
+        <td class="flex justify-center hover:bg-base-300 text-center {{ loop.first ? 'bg-yellow-800' : '' }}">
             <div class="bg-inherit">{{ report.upvoteCount }}</div>
             {% if loop.first %}
-                <div class="w-6 h-6 bg-inherit text-yellow-300 ml-1">{{ ux_icon('ph:star-fill', { fill: 'bg-yellow-300' }) }}</div>
+                <div class="w-6 h-6 bg-inherit text-yellow-300 ml-1">{{ ux_icon('ph:star-fill') }}</div>
             {% endif %}
         </td>
     </tr>
