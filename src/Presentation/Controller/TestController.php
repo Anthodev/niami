@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class TestController extends AbstractController
 {
-    #[Route(path: '/report/new/{gameId}', name: 'create_report', methods: [Request::METHOD_GET], env: 'dev')]
+    #[Route(path: '/test/report/new/{gameId}', name: 'test_create_report', methods: [Request::METHOD_GET], env: 'dev')]
     public function createReport(
         string $gameId,
         GameRepositoryInterface $gameRepository,
@@ -36,10 +36,10 @@ class TestController extends AbstractController
             isSwitch2Edition: $faker->boolean,
             is60FpsPortable: $faker->boolean,
             hasStableFrameratePortable: $faker->boolean,
-            is60FpsDocked: $faker->boolean,
-            hasStableFramerateDocked: $faker->boolean,
             hasResolutionImprovedPortable: $faker->boolean,
             isNativeResolutionPortable: $faker->boolean,
+            is60FpsDocked: $faker->boolean,
+            hasStableFramerateDocked: $faker->boolean,
             hasResolutionImprovedDocked: $faker->boolean,
             isNativeResolutionImprovedDocked: $faker->boolean,
             hasImprovedLoadingTimes: $faker->boolean,

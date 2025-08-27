@@ -8,6 +8,7 @@ use App\Application\Exception\CannotGetGameException;
 use App\Application\UseCase\Game\GetOrCreateGameUseCase;
 use App\Domain\Model\Game\Game;
 use App\Domain\Model\Report\Report;
+use App\Presentation\Form\CreateReportForm;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -46,12 +47,22 @@ class ReportsController extends AbstractController
             });
         }
 
+        $createReportForm = $this->createForm(
+            CreateReportForm::class,
+            null,
+            [
+                'action' => $this->generateUrl('create_report'),
+                'method' => Request::METHOD_POST,
+            ]
+        );
+
         return $this->render(
             '@app/reports/reports_for_game.html.twig',
             [
                 'game' => $game,
                 'reports' => $reports ?? [],
                 'gameSlug' => $game->getSlug(),
+                'createReportForm' => $createReportForm->createView(),
             ]
         );
     }

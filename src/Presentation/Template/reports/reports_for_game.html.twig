@@ -2,9 +2,8 @@
 
 {% block content %}
     <h1>{{ game.name }}</h1>
-    <a href="{{ path('create_report', {gameId: game.id}) }}">
-        <button class="btn btn-primary">Generate</button>
-    </a>
+
+    {% include '@reports/partials/_reports_create_form.html.twig' %}
 
     {% include '@reports/partials/_reports_list_legends.html.twig' %}
     {% include '@reports/partials/_reports_list.html.twig' %}

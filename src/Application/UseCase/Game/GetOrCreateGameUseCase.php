@@ -6,7 +6,7 @@ namespace App\Application\UseCase\Game;
 
 use App\Application\Exception\CannotGetGameException;
 use App\Application\Helper\MessageBusHelper;
-use App\Application\Query\Game\GetGameQuery;
+use App\Application\Query\Game\GetGameBySlugQuery;
 use App\Application\Query\Game\GetOrCreateGameQuery;
 use App\Domain\Model\Game\ApiGame;
 use App\Domain\Model\Game\Game;
@@ -32,7 +32,7 @@ class GetOrCreateGameUseCase
     public function execute(
         string $gameSlug,
     ): ?Game {
-        $gameEnvelope = $this->messageBus->dispatch(new GetGameQuery($gameSlug));
+        $gameEnvelope = $this->messageBus->dispatch(new GetGameBySlugQuery($gameSlug));
 
         /** @var ?Game $game */
         $game = $this->messageBusHelper->getContentFromEnvelope(

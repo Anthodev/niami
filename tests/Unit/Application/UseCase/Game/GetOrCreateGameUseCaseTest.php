@@ -6,7 +6,7 @@ namespace App\Tests\Unit\Application\UseCase\Game;
 
 use App\Application\Exception\CannotGetGameException;
 use App\Application\Helper\MessageBusHelper;
-use App\Application\Query\Game\GetGameQuery;
+use App\Application\Query\Game\GetGameBySlugQuery;
 use App\Application\Query\Game\GetOrCreateGameQuery;
 use App\Application\UseCase\Game\GetOrCreateGameUseCase;
 use App\Domain\Model\Game\ApiGame;
@@ -40,7 +40,7 @@ it('returns existing game when GetGameQuery finds it (early return)', function (
         imageCover: 'https://example.com/existing.jpg'
     );
 
-    $getGameEnvelope = new Envelope(new GetGameQuery($gameSlug), [
+    $getGameEnvelope = new Envelope(new GetGameBySlugQuery($gameSlug), [
         new HandledStamp($existingGame, 'handler.service_id')
     ]);
 
@@ -49,7 +49,7 @@ it('returns existing game when GetGameQuery finds it (early return)', function (
         ->expects($this->once())
         ->method('dispatch')
         ->with($this->callback(function ($query) use ($gameSlug) {
-            return $query instanceof GetGameQuery && $query->gameSlug === $gameSlug;
+            return $query instanceof GetGameBySlugQuery && $query->gameSlug === $gameSlug;
         }))
         ->willReturn($getGameEnvelope);
 
@@ -95,7 +95,7 @@ it('successfully executes when ApiGame found in cache', function () {
     );
 
     $expectedGame = new Game(slug: $gameSlug);
-    $getGameEnvelope = new Envelope(new GetGameQuery($gameSlug));
+    $getGameEnvelope = new Envelope(new GetGameBySlugQuery($gameSlug));
     $getOrCreateGameEnvelope = new Envelope(new GetOrCreateGameQuery($gameSlug, $apiGame), [
         new HandledStamp($expectedGame, 'handler.service_id')
     ]);
@@ -106,7 +106,7 @@ it('successfully executes when ApiGame found in cache', function () {
         ->expects($this->exactly(2))
         ->method('dispatch')
         ->willReturnCallback(function ($query) use ($gameSlug, $apiGame, $getGameEnvelope, $getOrCreateGameEnvelope) {
-            if ($query instanceof GetGameQuery && $query->gameSlug === $gameSlug) {
+            if ($query instanceof GetGameBySlugQuery && $query->gameSlug === $gameSlug) {
                 return $getGameEnvelope;
             }
             if ($query instanceof GetOrCreateGameQuery && $query->gameSlug === $gameSlug && $query->apiGame === $apiGame) {
@@ -163,7 +163,7 @@ it('throws CannotGetGameException when message bus dispatch fails', function () 
         releaseDate: '2017-10-27'
     );
 
-    $getGameEnvelope = new Envelope(new GetGameQuery($gameSlug));
+    $getGameEnvelope = new Envelope(new GetGameBySlugQuery($gameSlug));
     $exception = new \Exception('Message bus error');
 
     // First GetGameQuery succeeds, but GetOrCreateGameQuery fails
@@ -171,7 +171,7 @@ it('throws CannotGetGameException when message bus dispatch fails', function () 
         ->expects($this->exactly(2))
         ->method('dispatch')
         ->willReturnCallback(function ($query) use ($gameSlug, $getGameEnvelope, $exception) {
-            if ($query instanceof GetGameQuery && $query->gameSlug === $gameSlug) {
+            if ($query instanceof GetGameBySlugQuery && $query->gameSlug === $gameSlug) {
                 return $getGameEnvelope;
             }
             if ($query instanceof GetOrCreateGameQuery) {
@@ -210,13 +210,13 @@ it('properly handles cache key format', function () {
     );
 
     $gameSlug = 'hollow-knight';
-    $getGameEnvelope = new Envelope(new GetGameQuery($gameSlug));
+    $getGameEnvelope = new Envelope(new GetGameBySlugQuery($gameSlug));
 
     $messageBus
         ->expects($this->once())
         ->method('dispatch')
         ->with($this->callback(function ($query) use ($gameSlug) {
-            return $query instanceof GetGameQuery && $query->gameSlug === $gameSlug;
+            return $query instanceof GetGameBySlugQuery && $query->gameSlug === $gameSlug;
         }))
         ->willReturn($getGameEnvelope);
 
@@ -271,14 +271,14 @@ it('handles different ApiGame scenarios', function () {
         imageCover: 'https://example.com/hades.jpg'
     );
 
-    $getGameEnvelope = new Envelope(new GetGameQuery($gameSlug));
+    $getGameEnvelope = new Envelope(new GetGameBySlugQuery($gameSlug));
     $getOrCreateGameEnvelope = new Envelope(new GetOrCreateGameQuery($gameSlug, $apiGame));
 
     $messageBus
         ->expects($this->exactly(2))
         ->method('dispatch')
         ->willReturnCallback(function ($query) use ($gameSlug, $apiGame, $getGameEnvelope, $getOrCreateGameEnvelope) {
-            if ($query instanceof GetGameQuery && $query->gameSlug === $gameSlug) {
+            if ($query instanceof GetGameBySlugQuery && $query->gameSlug === $gameSlug) {
                 return $getGameEnvelope;
             }
             if ($query instanceof GetOrCreateGameQuery
@@ -341,14 +341,14 @@ it('handles MessageBusHelper returning null', function () {
         releaseDate: '2018-01-25'
     );
 
-    $getGameEnvelope = new Envelope(new GetGameQuery($gameSlug));
+    $getGameEnvelope = new Envelope(new GetGameBySlugQuery($gameSlug));
     $getOrCreateGameEnvelope = new Envelope(new GetOrCreateGameQuery($gameSlug, $apiGame));
 
     $messageBus
         ->expects($this->exactly(2))
         ->method('dispatch')
         ->willReturnCallback(function ($query) use ($gameSlug, $apiGame, $getGameEnvelope, $getOrCreateGameEnvelope) {
-            if ($query instanceof GetGameQuery && $query->gameSlug === $gameSlug) {
+            if ($query instanceof GetGameBySlugQuery && $query->gameSlug === $gameSlug) {
                 return $getGameEnvelope;
             }
             if ($query instanceof GetOrCreateGameQuery && $query->gameSlug === $gameSlug && $query->apiGame === $apiGame) {
@@ -404,7 +404,7 @@ it('handles RuntimeException from message bus', function () {
         releaseDate: '2020-03-11'
     );
 
-    $getGameEnvelope = new Envelope(new GetGameQuery($gameSlug));
+    $getGameEnvelope = new Envelope(new GetGameBySlugQuery($gameSlug));
     $exception = new \RuntimeException('Runtime error during dispatch');
 
     // First GetGameQuery succeeds, but GetOrCreateGameQuery fails with RuntimeException
@@ -412,7 +412,7 @@ it('handles RuntimeException from message bus', function () {
         ->expects($this->exactly(2))
         ->method('dispatch')
         ->willReturnCallback(function ($query) use ($gameSlug, $getGameEnvelope, $exception) {
-            if ($query instanceof GetGameQuery && $query->gameSlug === $gameSlug) {
+            if ($query instanceof GetGameBySlugQuery && $query->gameSlug === $gameSlug) {
                 return $getGameEnvelope;
             }
             if ($query instanceof GetOrCreateGameQuery) {

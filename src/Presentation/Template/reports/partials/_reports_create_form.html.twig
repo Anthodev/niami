@@ -1,0 +1,206 @@
+<div tabindex="0" class="collapse collapse-arrow bg-base-100 border-base-300 border">
+    <div class="flex collapse-title font-semibold bg-secondary/50">
+        <div class="w-6 h-6">{{ ux_icon('ph:plus-square') }}</div>
+        <div class="ml-2">Add a report</div>
+    </div>
+    <input type="checkbox" />
+
+    <div class="collapse-content text-sm">
+        {{ form_start(createReportForm, {
+            'action': path('create_report'),
+        }) }}
+
+        <div class="text-xl my-4 border-b-2">Portable performances</div>
+        <div class="flex justify-around mb-4">
+            <label for="is60FpsPortable" class="label">
+                {{ form_widget(createReportForm.is60FpsPortable, {
+                    'attr': {
+                        'type': 'checkbox',
+                        'class': 'checkbox border-primary/50 bg-primary/50 checked:border-success checked:bg-success checked:text-base-content',
+                    }
+                }) }}
+                {{ form_label(createReportForm.is60FpsPortable) }}
+            </label>
+
+            <label for="hasStableFrameratePortable" class="label">
+                {{ form_widget(createReportForm.hasStableFrameratePortable, {
+                    'attr': {
+                        'type': 'checkbox',
+                        'class': 'checkbox border-primary/50 bg-primary/50 checked:border-success checked:bg-success checked:text-base-content',
+                    }
+                }) }}
+                {{ form_label(createReportForm.hasStableFrameratePortable) }}
+            </label>
+
+            <label for="hasResolutionImprovedPortable" class="label">
+                {{ form_widget(createReportForm.hasResolutionImprovedPortable, {
+                    'attr': {
+                        'id': 'hasResolutionImprovedPortable',
+                        'type': 'checkbox',
+                        'class': 'checkbox border-primary/50 bg-primary/50 checked:border-success checked:bg-success checked:text-base-content',
+                    }
+                }) }}
+                {{ form_label(createReportForm.hasResolutionImprovedPortable) }}
+            </label>
+
+            <label for="isNativeResolutionPortable" class="label">
+                {{ form_widget(createReportForm.isNativeResolutionPortable, {
+                    'attr': {
+                        'id': 'isNativeResolutionPortable',
+                        'type': 'checkbox',
+                        'class': 'checkbox border-primary/50 bg-primary/50 checked:border-success checked:bg-success checked:text-base-content',
+                    }
+                }) }}
+                {{ form_label(createReportForm.isNativeResolutionPortable) }}
+            </label>
+        </div>
+
+        <div class="text-xl mb-4 border-b-2">TV performances</div>
+        <div class="flex justify-around">
+            <label for="is60FpsDocked" class="label">
+                {{ form_widget(createReportForm.is60FpsDocked, {
+                    'attr': {
+                        'type': 'checkbox',
+                        'class': 'checkbox border-primary/50 bg-primary/50 checked:border-success checked:bg-success checked:text-base-content',
+                    }
+                }) }}
+                {{ form_label(createReportForm.is60FpsDocked) }}
+            </label>
+
+            <label for="hasStableFramerateDocked" class="label">
+                {{ form_widget(createReportForm.hasStableFramerateDocked, {
+                    'attr': {
+                        'type': 'checkbox',
+                        'class': 'checkbox border-primary/50 bg-primary/50 checked:border-success checked:bg-success checked:text-base-content',
+                    }
+                }) }}
+                {{ form_label(createReportForm.hasStableFramerateDocked) }}
+            </label>
+
+            <label for="hasResolutionImprovedDocked" class="label">
+                {{ form_widget(createReportForm.hasResolutionImprovedDocked, {
+                    'attr': {
+                        'id': 'hasResolutionImprovedDocked',
+                        'type': 'checkbox',
+                        'class': 'checkbox border-primary/50 bg-primary/50 checked:border-success checked:bg-success checked:text-base-content',
+                    }
+                }) }}
+                {{ form_label(createReportForm.hasResolutionImprovedDocked) }}
+            </label>
+
+            <label for="isNativeResolutionDocked" class="label">
+                {{ form_widget(createReportForm.isNativeResolutionDocked, {
+                    'attr': {
+                        'id': 'isNativeResolutionDocked',
+                        'type': 'checkbox',
+                        'class': 'checkbox border-primary/50 bg-primary/50 checked:border-success checked:bg-success checked:text-base-content',
+                    }
+                }) }}
+                {{ form_label(createReportForm.isNativeResolutionDocked) }}
+            </label>
+        </div>
+
+        <div class="text-xl mt-4 mb-4 border-b-2">Misc.</div>
+        <div class="flex justify-around mb-4">
+            <label for="hasImprovedLoadingTimes" class="label">
+                {{ form_widget(createReportForm.hasImprovedLoadingTimes, {
+                    'attr': {
+                        'type': 'checkbox',
+                        'class': 'checkbox border-primary/50 bg-primary/50 checked:border-success checked:bg-success checked:text-base-content',
+                    }
+                }) }}
+                {{ form_label(createReportForm.hasImprovedLoadingTimes) }}
+            </label>
+
+            <label for="gameStatus" class="label">
+                {{ form_label(createReportForm.gameStatus) }}
+                {{ form_widget(createReportForm.gameStatus, {
+                    'attr': {
+                        'type': 'select',
+                        'class': 'select',
+                    }
+                }) }}
+            </label>
+
+            <label for="isSwitch2Edition" class="label">
+                {{ form_widget(createReportForm.isSwitch2Edition, {
+                    'attr': {
+                        'type': 'checkbox',
+                        'class': 'checkbox border-primary/50 bg-primary/50 checked:border-success checked:bg-success checked:text-base-content',
+                    }
+                }) }}
+                {{ form_label(createReportForm.isSwitch2Edition) }}
+            </label>
+        </div>
+
+        <p class="text-base-content/50">
+            *: Is the resolution higher than on Switch 1 system?<br>
+            **: Is it reaching native resolution on Switch 2 system? (1080p portable / 1440p or 4k on TV)
+        </p>
+        <br>
+
+        {{ form_widget(createReportForm.gameId, {
+            'attr': {
+                'value': game.id,
+            }
+        }) }}
+
+        {{ form_widget(createReportForm.gameSlug, {
+            'attr': {
+                'value': game.slug,
+            }
+        }) }}
+
+        <div class="flex flex-row-reverse">
+            <button class="btn btn-success mt-2 mb-2">Add</button>
+        </div>
+        {{ form_rest(createReportForm) }}
+
+        {{ form_end(createReportForm) }}
+    </div>
+</div>
+
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        const elements = {
+            hasResolutionImprovedPortable: document.getElementById('create_report_form_hasResolutionImprovedPortable'),
+            isNativeResolutionPortable: document.getElementById('create_report_form_isNativeResolutionPortable'),
+            hasResolutionImprovedDocked: document.getElementById('create_report_form_hasResolutionImprovedDocked'),
+            isNativeResolutionDocked: document.getElementById('create_report_form_isNativeResolutionDocked')
+        };
+
+        // Vérification que tous les éléments existent
+        const missingElements = Object.entries(elements)
+            .filter(([key, element]) => !element)
+            .map(([key]) => key);
+
+        if (missingElements.length > 0) {
+            console.error('Éléments manquants:', missingElements);
+            return;
+        }
+
+        function handleNativeResolutionChange(nativeCheckbox, improvedCheckbox, mode) {
+            nativeCheckbox.addEventListener('change', function() {
+                if (this.checked && !improvedCheckbox.checked) {
+                    this.checked = false;
+                    alert(`Vous devez d'abord cocher "Resolution improved" en mode ${mode} avant de pouvoir cocher "Native resolution".`);
+                }
+            });
+        }
+
+        function handleImprovedResolutionChange(improvedCheckbox, nativeCheckbox) {
+            improvedCheckbox.addEventListener('change', function() {
+                if (!this.checked) {
+                    nativeCheckbox.checked = false;
+                }
+            });
+        }
+
+        // Application des handlers
+        handleNativeResolutionChange(elements.isNativeResolutionPortable, elements.hasResolutionImprovedPortable, 'Portable');
+        handleImprovedResolutionChange(elements.hasResolutionImprovedPortable, elements.isNativeResolutionPortable);
+
+        handleNativeResolutionChange(elements.isNativeResolutionDocked, elements.hasResolutionImprovedDocked, 'TV');
+        handleImprovedResolutionChange(elements.hasResolutionImprovedDocked, elements.isNativeResolutionDocked);
+    });
+</script>
