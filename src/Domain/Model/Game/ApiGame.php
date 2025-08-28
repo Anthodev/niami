@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Model\Game;
 
+use App\Shared\Dto\Game\GameCompanyDataDto;
+
 class ApiGame
 {
     public function __construct(
@@ -11,7 +13,7 @@ class ApiGame
         private string $slug,
         private string $description,
         private string $imageCover,
-        private string $publisher,
+        private GameCompanyDataDto $publisher,
         private string $releaseDate,
     ) {
     }
@@ -36,7 +38,7 @@ class ApiGame
         return $this->imageCover;
     }
 
-    public function getPublisher(): string
+    public function getPublisher(): GameCompanyDataDto
     {
         return $this->publisher;
     }

@@ -8,6 +8,7 @@ use App\Domain\Model\Game\ApiGame;
 use App\Infrastructure\Client\IgdbClient;
 use App\Infrastructure\Enum\IgdbGamePlatformEnum;
 use App\Infrastructure\Exception\Game\IgdbAccessTokenRetrievalException;
+use App\Shared\Dto\Game\GameCompanyDataDto;
 use App\Shared\Dto\Game\IgdbSearchResponseDto;
 use Faker\Factory;
 use Faker\Generator;
@@ -36,6 +37,16 @@ beforeEach(function () {
     $httpClientProperty = $reflection->getProperty('httpClient');
     $httpClientProperty->setAccessible(true);
     $httpClientProperty->setValue($this->igdbClient, $this->httpClient);
+
+    $this->publisherName = $this->faker->company();
+    $this->publisherWebsite = $this->faker->url();
+    $this->publisherApiId = $this->faker->randomNumber(5);
+
+    $this->publisherDto = new GameCompanyDataDto(
+        $this->publisherName,
+        $this->publisherWebsite,
+        $this->publisherApiId,
+    );
 });
 
 it('searches games with default limit', function () {
@@ -49,7 +60,7 @@ it('searches games with default limit', function () {
         'platform' => IgdbGamePlatformEnum::NINTENDO_SWITCH->value,
     ];
 
-    $expectedGames = [createApiGame($this->faker)];
+    $expectedGames = [createApiGame($this->faker, $this->publisherDto)];
     $cacheSearchKey = 'igdb_api_search_' . md5(json_encode($cacheKeyData));
     $cacheGameKey = 'api_game_' . $expectedGames[0]->getSlug();
 
@@ -95,7 +106,7 @@ it('searches games with custom limit', function () {
         'platform' => IgdbGamePlatformEnum::NINTENDO_SWITCH->value,
     ];
 
-    $expectedGames = [createApiGame($this->faker), createApiGame($this->faker)];
+    $expectedGames = [createApiGame($this->faker, $this->publisherDto), createApiGame($this->faker, $this->publisherDto)];
     $cacheSearchKey = 'igdb_api_search_' . md5(json_encode($cacheKeyData));
     $cacheFirstGameKey = 'api_game_' . $expectedGames[0]->getSlug();
     $cacheSecondGameKey = 'api_game_' . $expectedGames[1]->getSlug();
@@ -145,7 +156,7 @@ it('returns cached results when available', function () {
         'platform' => IgdbGamePlatformEnum::NINTENDO_SWITCH->value,
     ];
 
-    $expectedGames = [createApiGame($this->faker)];
+    $expectedGames = [createApiGame($this->faker, $this->publisherDto)];
     $cacheSearchKey = 'igdb_api_search_' . md5(json_encode($cacheKeyData));
     $cacheGameKey = 'api_game_' . $expectedGames[0]->getSlug();
 
@@ -180,7 +191,7 @@ it('returns cached results when available', function () {
 it('gets game by slug successfully', function () {
     // Given
     $slug = 'test-game-slug';
-    $expectedGame = createApiGame($this->faker);
+    $expectedGame = createApiGame($this->faker, $this->publisherDto);
 
     $this->cache
         ->expects($this->once())
@@ -372,14 +383,16 @@ it('throws exception when token retrieval fails', function () {
         ->toThrow(IgdbAccessTokenRetrievalException::class);
 });
 
-function createApiGame(Generator $faker): ApiGame
-{
+function createApiGame(
+    Generator $faker,
+    GameCompanyDataDto $publisherDto,
+): ApiGame {
     return new ApiGame(
         name: $faker->words(3, true),
         slug: $faker->slug(),
         description: $faker->paragraph(),
         imageCover: 'https://images.igdb.com/igdb/image/upload/t_thumb/' . $faker->sha1() . '.jpg',
-        publisher: $faker->company(),
+        publisher: $publisherDto,
         releaseDate: $faker->dateTime()->format(DATE_ATOM)
     );
 }

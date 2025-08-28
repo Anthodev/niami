@@ -1,18 +1,31 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+<?xml version="1.0" encoding="UTF-8" ?>
+<doctrine-mapping
+    xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
-    https://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    https://doctrine-project.org/schemas/orm/doctrine-mapping.xsd"
+>
     <entity name="App\Domain\Model\Game\Publisher" table="publishers">
         <id name="id" type="uuid" column="id">
-            <generator strategy="CUSTOM"/>
-            <custom-id-generator class="Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator"/>
+            <generator strategy="CUSTOM" />
+            <custom-id-generator
+                class="Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator"
+            />
         </id>
 
         <field name="name" type="string" column="name" length="255">
         </field>
 
-        <field name="website" type="string" column="website" length="255" nullable="true">
+        <field
+            name="website"
+            type="string"
+            column="website"
+            length="255"
+            nullable="true"
+        >
+        </field>
+
+        <field name="apiId" type="integer" column="apiId">
         </field>
 
         <field name="createdAt" type="datetime_immutable" column="created_at">
@@ -21,7 +34,12 @@
             </options>
         </field>
 
-        <field name="updatedAt" type="datetime" column="updated_at" nullable="true">
+        <field
+            name="updatedAt"
+            type="datetime"
+            column="updated_at"
+            nullable="true"
+        >
             <options>
                 <option name="default">NOW()</option>
             </options>
@@ -34,11 +52,14 @@
         />
 
         <indexes>
-            <index name="publishers_name" columns="name"/>
+            <index name="publishers_name" columns="name" />
         </indexes>
 
         <unique-constraints>
-            <unique-constraint name="publishers_name_unique_constraint" columns="name"/>
+            <unique-constraint
+                name="publishers_name_unique_constraint"
+                columns="name"
+            />
         </unique-constraints>
     </entity>
 </doctrine-mapping>

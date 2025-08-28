@@ -5,19 +5,20 @@ declare(strict_types=1);
 namespace App\Domain\Model\Game;
 
 use App\Domain\Model\Common\ModelInterface;
+use App\Domain\Trait\TimestampableTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Uid\Uuid;
 
 class Publisher implements ModelInterface
 {
+    use TimestampableTrait;
     private ?string $id = null;
-    private ?\DateTimeImmutable $createdAt = null;
-    private ?\DateTime $updatedAt = null;
 
     public function __construct(
         private ?string $name = null,
         private ?string $website = null,
+        private ?int $apiId = null,
         /** @var Collection<int, Game> */
         private Collection $games = new ArrayCollection(),
     ) {
@@ -59,6 +60,18 @@ class Publisher implements ModelInterface
         return $this;
     }
 
+    public function getApiId(): ?int
+    {
+        return $this->apiId;
+    }
+
+    public function setApiId(int $apiId): self
+    {
+        $this->apiId = $apiId;
+
+        return $this;
+    }
+
     /**
      * @return Collection<int, Game>
      */
@@ -81,30 +94,6 @@ class Publisher implements ModelInterface
         if ($this->games->contains($game)) {
             $this->games->removeElement($game);
         }
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTime
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(\DateTime $updatedAt): self
-    {
-        $this->updatedAt = $updatedAt;
 
         return $this;
     }

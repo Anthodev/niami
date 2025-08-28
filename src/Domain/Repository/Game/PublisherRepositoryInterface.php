@@ -19,4 +19,5 @@ use App\Domain\Model\Game\Publisher;
  */
 interface PublisherRepositoryInterface
 {
+    public function findByName(string $name): ?Publisher;
 }

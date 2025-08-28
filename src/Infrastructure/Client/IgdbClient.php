@@ -11,6 +11,7 @@ use App\Infrastructure\Enum\ApiTypeRequestEnum;
 use App\Infrastructure\Enum\IgdbGamePlatformEnum;
 use App\Infrastructure\Enum\IgdbGameTypeEnum;
 use App\Infrastructure\Exception\Game\IgdbAccessTokenRetrievalException;
+use App\Shared\Dto\Game\GameCompanyDataDto;
 use App\Shared\Dto\Game\IgdbSearchResponseDto;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\HttpClient\HttpClient;
@@ -70,7 +71,7 @@ class IgdbClient implements ApiClientInterface
                 'api_game_'.$apiGame->getSlug(),
                 function () use ($apiGame) {
                     return $apiGame;
-                }
+                },
             );
         }
 
@@ -171,7 +172,7 @@ class IgdbClient implements ApiClientInterface
         }
 
         $body = sprintf(
-            'fields name, slug, involved_companies.company.name, involved_companies.publisher, cover.url, first_release_date, summary, websites.url; where (%s) & platforms = (%d) & %s & version_parent = null & first_release_date < %d; sort first_release_date desc; limit %d;',
+            'fields name, slug, involved_companies.company.name, involved_companies.company.websites.url, involved_companies.publisher, involved_companies.developer, cover.url, first_release_date, summary, websites.url; where (%s) & platforms = (%d) & %s & version_parent = null & first_release_date < %d; sort first_release_date desc; limit %d;',
             $apiQuery,
             IgdbGamePlatformEnum::NINTENDO_SWITCH->value,
             sprintf(
@@ -226,36 +227,17 @@ class IgdbClient implements ApiClientInterface
                 $releaseDate->setTimestamp($firstReleaseTimestamp);
             }
 
-            $publisher = '';
+            $publisher = new GameCompanyDataDto('', '', 0);
             if (!empty($igdbSearchResultItem->involved_companies)) {
                 /** @var array<string, mixed> $company */
                 foreach (
                     $igdbSearchResultItem->involved_companies as $company
                 ) {
-                    $isPublisher = $company['publisher'] ?? false;
+                    $publisher = $this->checkCompany($company, 'publisher');
 
-                    if ($isPublisher) {
-                        /** @var array<string, mixed> $publisherCompany */
-                        $publisherCompany = $company['company'] ?? [];
-                        $publisherCompanyName = !empty($publisherCompany)
-                            ? $publisherCompany['name'] ?? ''
-                            : '';
-
-                        /** @var string $publisher */
-                        $publisher = $publisherCompanyName;
+                    if (!empty($publisher->name)) {
                         break;
                     }
-                }
-
-                if (empty($publisher)) {
-                    /** @var array<string, mixed> $company */
-                    $company = !empty($igdbSearchResultItem->involved_companies)
-                        ? $igdbSearchResultItem->involved_companies[0][
-                                'company'
-                            ] ?? []
-                        : [];
-                    /** @var string $publisher */
-                    $publisher = !empty($company) ? $company['name'] ?? '' : '';
                 }
             }
 
@@ -266,6 +248,10 @@ class IgdbClient implements ApiClientInterface
                 /** @var string $coverUrl */
                 $coverUrl = $igdbSearchResultItem->cover['url'] ?? '';
                 $imageCover = 'https:'.$coverUrl;
+            }
+
+            if ('' === $publisher->name) {
+                throw new \Exception('No publisher found for game '.$slug);
             }
 
             $apiGames[] = ApiGameFactory::create(
@@ -403,5 +389,54 @@ class IgdbClient implements ApiClientInterface
 
             throw $e;
         }
+    }
+
+    /**
+     * @param array<string, mixed> $involvedCompany
+     */
+    private function checkCompany(
+        array $involvedCompany,
+        string $companyType,
+    ): GameCompanyDataDto {
+        $isCompany = $involvedCompany[$companyType] ?? false;
+
+        if ($isCompany) {
+            /** @var array<string, int|string|array<string, string>> $involvedCompany */
+            $company = $involvedCompany['company'] ?? [];
+
+            if (empty($company)) {
+                return new GameCompanyDataDto('', '', 0);
+            }
+
+            $companyName = '';
+            if (isset($company['name']) && is_string($company['name'])) {
+                $companyName = $company['name'];
+            }
+
+            $companyWebsites = [];
+            if (isset($company['websites']) && is_array($company['websites'])) {
+                $companyWebsites = $company['websites'];
+            }
+
+            $companyWebsite = '';
+            if (isset($companyWebsites[0]['url']) && is_array($companyWebsites[0]) && is_string(
+                $companyWebsites[0]['url']
+            )) {
+                $companyWebsite = $companyWebsites[0]['url'];
+            }
+
+            $companyApiId = 0;
+            if (isset($company['id']) && (is_int($company['id']) || is_numeric($company['id']))) {
+                $companyApiId = (int) $company['id'];
+            }
+
+            return new GameCompanyDataDto(
+                name: $companyName,
+                website: $companyWebsite,
+                apiId: $companyApiId,
+            );
+        }
+
+        return new GameCompanyDataDto('', '', 0);
     }
 }

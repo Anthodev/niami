@@ -8,6 +8,7 @@ use App\Application\Helper\MessageBusHelper;
 use App\Application\Query\Game\SearchGamesQuery;
 use App\Application\Service\Game\ApiGameSearchService;
 use App\Domain\Model\Game\ApiGame;
+use App\Shared\Dto\Game\GameCompanyDataDto;
 use Exception;
 use Faker\Factory;
 use Faker\Generator;
@@ -18,10 +19,21 @@ use Symfony\Component\Messenger\Stamp\HandledStamp;
 
 beforeEach(function () {
     $this->faker = Factory::create();
+
     $this->messageBus = $this->createMock(MessageBusInterface::class);
     $this->logger = $this->createMock(LoggerInterface::class);
     $this->messageBusHelper = $this->createMock(MessageBusHelper::class);
     $this->apiGameSearchService = new ApiGameSearchService($this->messageBus, $this->messageBusHelper);
+
+    $this->publisherName = $this->faker->company();
+    $this->publisherWebsite = $this->faker->url();
+    $this->publisherApiId = $this->faker->randomNumber(5);
+
+    $this->publisherDto = new GameCompanyDataDto(
+        $this->publisherName,
+        $this->publisherWebsite,
+        $this->publisherApiId,
+    );
 });
 
 it('delegates searchGames call to message bus with correct parameters', function () {
@@ -31,7 +43,7 @@ it('delegates searchGames call to message bus with correct parameters', function
 
     $expectedResult = [
         'local' => [],
-        'api' => [createApiGameData($this->faker)],
+        'api' => [createApiGameData($this->faker, $this->publisherDto)],
         'total' => 1
     ];
     $formattedResult = [
@@ -122,7 +134,7 @@ it('handles message bus returning large dataset', function () {
     // Given
     $query = 'large-dataset';
     $limit = 100;
-    $largeDataset = array_map(fn() => createApiGameData($this->faker), range(1, 100));
+    $largeDataset = array_map(fn() => createApiGameData($this->faker, $this->publisherDto), range(1, 100));
 
     $expectedResult = [
         'local' => [],
@@ -232,8 +244,8 @@ it('handles multiple consecutive calls to message bus', function () {
     // Given
     $firstQuery = 'first-query';
     $secondQuery = 'second-query';
-    $firstApiResult = [createApiGameData($this->faker)];
-    $secondApiResult = [createApiGameData($this->faker), createApiGameData($this->faker)];
+    $firstApiResult = [createApiGameData($this->faker, $this->publisherDto)];
+    $secondApiResult = [createApiGameData($this->faker, $this->publisherDto), createApiGameData($this->faker, $this->publisherDto)];
 
     $firstExpectedResult = [
         'local' => [],
@@ -353,14 +365,16 @@ it('verifies message bus is called exactly once per service call', function () {
     expect(true)->toBeTrue(); // Assertion to ensure test runs
 });
 
-function createApiGameData(Generator $faker): ApiGame
-{
+function createApiGameData(
+    Generator $faker,
+    GameCompanyDataDto $publisherDto,
+): ApiGame {
     return new ApiGame(
         name: $faker->words(3, true),
         slug: $faker->slug(),
         description: $faker->paragraph(3),
         imageCover: '//images.igdb.com/igdb/image/upload/t_thumb/' . $faker->lexify('??????') . '.jpg',
-        publisher: $faker->company(),
+        publisher: $publisherDto,
         releaseDate: date('Y-m-d', new \DateTime()->getTimestamp())
     );
 }

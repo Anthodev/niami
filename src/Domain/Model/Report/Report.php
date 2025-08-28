@@ -6,14 +6,14 @@ namespace App\Domain\Model\Report;
 
 use App\Domain\Model\Common\ModelInterface;
 use App\Domain\Model\Game\Game;
+use App\Domain\Trait\TimestampableTrait;
 use App\Infrastructure\Enum\ReportGameStatusEnum;
 use Symfony\Component\Uid\Uuid;
 
 class Report implements ModelInterface
 {
+    use TimestampableTrait;
     private ?string $id = null;
-    private ?\DateTimeImmutable $createdAt = null;
-    private ?\DateTime $updatedAt = null;
 
     public function __construct(
         private Game $game,
@@ -24,7 +24,7 @@ class Report implements ModelInterface
         private bool $is60FpsDocked = false,
         private bool $hasStableFramerateDocked = false,
         private bool $hasResolutionImprovedDocked = false,
-        private bool $isNativeResolutionImprovedDocked = false,
+        private bool $isNativeResolutionDocked = false,
         private bool $hasImprovedLoadingTimes = false,
         private bool $isSwitch2Edition = false,
         private ReportGameStatusEnum $gameStatus = ReportGameStatusEnum::OK,
@@ -86,8 +86,9 @@ class Report implements ModelInterface
         return $this->hasStableFrameratePortable;
     }
 
-    public function setHasStableFrameratePortable(bool $hasStableFrameratePortable): self
-    {
+    public function setHasStableFrameratePortable(
+        bool $hasStableFrameratePortable,
+    ): self {
         $this->hasStableFrameratePortable = $hasStableFrameratePortable;
 
         return $this;
@@ -98,8 +99,9 @@ class Report implements ModelInterface
         return $this->hasResolutionImprovedPortable;
     }
 
-    public function setHasResolutionImprovedPortable(bool $hasResolutionImprovedPortable): self
-    {
+    public function setHasResolutionImprovedPortable(
+        bool $hasResolutionImprovedPortable,
+    ): self {
         $this->hasResolutionImprovedPortable = $hasResolutionImprovedPortable;
 
         return $this;
@@ -122,8 +124,9 @@ class Report implements ModelInterface
         return $this->isNativeResolutionPortable;
     }
 
-    public function setIsNativeResolutionPortable(bool $isNativeResolutionPortable): self
-    {
+    public function setIsNativeResolutionPortable(
+        bool $isNativeResolutionPortable,
+    ): self {
         $this->isNativeResolutionPortable = $isNativeResolutionPortable;
 
         return $this;
@@ -146,8 +149,9 @@ class Report implements ModelInterface
         return $this->hasStableFramerateDocked;
     }
 
-    public function setHasStableFramerateDocked(bool $hasStableFramerateDocked): self
-    {
+    public function setHasStableFramerateDocked(
+        bool $hasStableFramerateDocked,
+    ): self {
         $this->hasStableFramerateDocked = $hasStableFramerateDocked;
 
         return $this;
@@ -158,21 +162,23 @@ class Report implements ModelInterface
         return $this->hasResolutionImprovedDocked;
     }
 
-    public function setHasResolutionImprovedDocked(bool $hasResolutionImprovedDocked): self
-    {
+    public function setHasResolutionImprovedDocked(
+        bool $hasResolutionImprovedDocked,
+    ): self {
         $this->hasResolutionImprovedDocked = $hasResolutionImprovedDocked;
 
         return $this;
     }
 
-    public function isNativeResolutionImprovedDocked(): bool
+    public function isNativeResolutionDocked(): bool
     {
-        return $this->isNativeResolutionImprovedDocked;
+        return $this->isNativeResolutionDocked;
     }
 
-    public function setIsNativeResolutionImprovedDocked(bool $isNativeResolutionImprovedDocked): self
-    {
-        $this->isNativeResolutionImprovedDocked = $isNativeResolutionImprovedDocked;
+    public function setIsNativeResolutionDocked(
+        bool $isNativeResolutionDocked,
+    ): self {
+        $this->isNativeResolutionDocked = $isNativeResolutionDocked;
 
         return $this;
     }
@@ -182,8 +188,9 @@ class Report implements ModelInterface
         return $this->hasImprovedLoadingTimes;
     }
 
-    public function setHasImprovedLoadingTimes(bool $hasImprovedLoadingTimes): self
-    {
+    public function setHasImprovedLoadingTimes(
+        bool $hasImprovedLoadingTimes,
+    ): self {
         $this->hasImprovedLoadingTimes = $hasImprovedLoadingTimes;
 
         return $this;
@@ -209,30 +216,6 @@ class Report implements ModelInterface
     public function increaseUpvoteCount(): self
     {
         ++$this->upvoteCount;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(?\DateTimeImmutable $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTime
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(?\DateTime $updatedAt): self
-    {
-        $this->updatedAt = $updatedAt;
 
         return $this;
     }

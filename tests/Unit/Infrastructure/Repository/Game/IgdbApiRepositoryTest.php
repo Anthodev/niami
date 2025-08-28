@@ -7,6 +7,7 @@ namespace App\Tests\Unit\Infrastructure\Repository\Game;
 use App\Domain\Model\Game\ApiGame;
 use App\Infrastructure\Client\IgdbClient;
 use App\Infrastructure\Repository\Game\IgdbApiRepository;
+use App\Shared\Dto\Game\GameCompanyDataDto;
 use Faker\Factory;
 use Faker\Generator;
 
@@ -14,13 +15,23 @@ beforeEach(function () {
     $this->faker = Factory::create();
     $this->igdbClient = $this->createMock(IgdbClient::class);
     $this->repository = new IgdbApiRepository($this->igdbClient);
+
+    $this->publisherName = $this->faker->company();
+    $this->publisherWebsite = $this->faker->url();
+    $this->publisherApiId = $this->faker->randomNumber(5);
+
+    $this->publisherDto = new GameCompanyDataDto(
+        $this->publisherName,
+        $this->publisherWebsite,
+        $this->publisherApiId,
+    );
 });
 
 it('delegates searchGames to IgdbClient', function () {
     // Given
     $query = 'zelda';
     $limit = 15;
-    $expectedGames = [createTestApiGame($this->faker)];
+    $expectedGames = [createTestApiGame($this->faker, $this->publisherDto)];
 
     $this->igdbClient
         ->expects($this->once())
@@ -56,7 +67,7 @@ it('delegates searchGames with default limit', function () {
 it('delegates getGameBySlug to IgdbClient', function () {
     // Given
     $slug = 'test-game-slug';
-    $expectedGame = createTestApiGame($this->faker);
+    $expectedGame = createTestApiGame($this->faker, $this->publisherDto);
 
     $this->igdbClient
         ->expects($this->once())
@@ -92,7 +103,7 @@ it('gets cover for game using IgdbClient', function () {
     // Given
     $slug = 'game-with-cover';
     $coverUrl = 'https://images.igdb.com/igdb/image/upload/t_thumb/cover123.jpg';
-    $game = createTestApiGame($this->faker, imageCover: $coverUrl);
+    $game = createTestApiGame($this->faker, $this->publisherDto, imageCover: $coverUrl);
 
     $this->igdbClient
         ->expects($this->once())
@@ -110,7 +121,7 @@ it('gets cover for game using IgdbClient', function () {
 it('returns empty string when game has no cover', function () {
     // Given
     $slug = 'game-no-cover';
-    $game = createTestApiGame($this->faker, imageCover: '');
+    $game = createTestApiGame($this->faker, $this->publisherDto, imageCover: '');
 
     $this->igdbClient
         ->expects($this->once())
@@ -176,11 +187,11 @@ it('handles exceptions from IgdbClient getGameBySlug', function () {
 
 function createTestApiGame(
     Generator $faker,
+    GameCompanyDataDto $publisherDto,
     ?string $name = null,
     ?string $slug = null,
     ?string $description = null,
     ?string $imageCover = null,
-    ?string $publisher = null,
     ?string $releaseDate = null
 ): ApiGame {
     return new ApiGame(
@@ -188,7 +199,7 @@ function createTestApiGame(
         slug: $slug ?? $faker->slug(),
         description: $description ?? $faker->paragraph(),
         imageCover: $imageCover ?? 'https://images.igdb.com/igdb/image/upload/t_thumb/' . $faker->sha1() . '.jpg',
-        publisher: $publisher ?? $faker->company(),
+        publisher: $publisherDto,
         releaseDate: $releaseDate ?? $faker->dateTime()->format(DATE_ATOM)
     );
 }
