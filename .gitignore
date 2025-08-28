@@ -29,3 +29,8 @@ phpstan.neon
 ###< symfony/asset-mapper ###
 
 .phpactor.json
+
+###> friendsofphp/php-cs-fixer ###
+/.php-cs-fixer.php
+/.php-cs-fixer.cache
+###< friendsofphp/php-cs-fixer ###

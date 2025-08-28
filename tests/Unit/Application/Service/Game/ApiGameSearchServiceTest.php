@@ -8,6 +8,7 @@ use App\Application\Helper\MessageBusHelper;
 use App\Application\Query\Game\SearchGamesQuery;
 use App\Application\Service\Game\ApiGameSearchService;
 use App\Domain\Model\Game\ApiGame;
+use App\Shared\Dto\Game\GameCompanyDataDto;
 use Faker\Factory;
 use Faker\Generator;
 use Symfony\Component\Messenger\Envelope;
@@ -19,6 +20,16 @@ beforeEach(function () {
     $this->messageBus = $this->createMock(MessageBusInterface::class);
     $this->messageBusHelper = $this->createMock(MessageBusHelper::class);
     $this->apiGameSearchService = new ApiGameSearchService($this->messageBus, $this->messageBusHelper);
+
+    $this->publisherName = $this->faker->company();
+    $this->publisherWebsite = $this->faker->url();
+    $this->publisherApiId = $this->faker->randomNumber(5);
+
+    $this->publisherDto = new GameCompanyDataDto(
+        $this->publisherName,
+        $this->publisherWebsite,
+        $this->publisherApiId,
+    );
 });
 
 it('can search games with default limit', function () {
@@ -27,8 +38,8 @@ it('can search games with default limit', function () {
     $limit = 25;
 
     $apiGames = [
-        createApiGameArray($this->faker),
-        createApiGameArray($this->faker),
+        createApiGameArray($this->faker, $this->publisherDto),
+        createApiGameArray($this->faker, $this->publisherDto),
     ];
 
     $expectedResult = [
@@ -81,7 +92,7 @@ it('can search games with custom limit', function () {
     $limit = 5;
 
     $apiGames = [
-        createApiGameArray($this->faker),
+        createApiGameArray($this->faker, $this->publisherDto),
     ];
 
     $expectedResult = [
@@ -183,7 +194,7 @@ it('can search games with large limit', function () {
     $query = 'adventure';
     $limit = 100;
 
-    $apiGames = array_map(fn() => createApiGameArray($this->faker), range(1, 50));
+    $apiGames = array_map(fn() => createApiGameArray($this->faker, $this->publisherDto), range(1, 50));
 
     $expectedResult = [
         'local' => [],
@@ -236,7 +247,7 @@ it('can search games with minimum limit', function () {
     $limit = 1;
 
     $apiGames = [
-        createApiGameArray($this->faker),
+        createApiGameArray($this->faker, $this->publisherDto),
     ];
 
     $expectedResult = [
@@ -290,7 +301,7 @@ it('handles special characters in search query', function () {
     $limit = 25;
 
     $apiGames = [
-        createApiGameArray($this->faker),
+        createApiGameArray($this->faker, $this->publisherDto),
     ];
 
     $expectedResult = [
@@ -392,7 +403,7 @@ it('handles unicode characters in search query', function () {
     $limit = 25;
 
     $apiGames = [
-        createApiGameArray($this->faker),
+        createApiGameArray($this->faker, $this->publisherDto),
     ];
 
     $expectedResult = [
@@ -439,14 +450,16 @@ it('handles unicode characters in search query', function () {
     expect($result)->toBe($formattedResult);
 });
 
-function createApiGameArray(Generator $faker): ApiGame
-{
+function createApiGameArray(
+    Generator $faker,
+    GameCompanyDataDto $publisherDto,
+): ApiGame {
     return new ApiGame(
         name: $faker->words(3, true),
         slug: $faker->slug(),
         description: $faker->paragraph(3),
         imageCover: '//images.igdb.com/igdb/image/upload/t_thumb/' . $faker->lexify('??????') . '.jpg',
-        publisher: $faker->company(),
+        publisher: $publisherDto,
         releaseDate: date('Y-m-d', new \DateTime()->getTimestamp())
     );
 }

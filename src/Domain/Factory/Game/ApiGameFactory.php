@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Factory\Game;
 
 use App\Domain\Model\Game\ApiGame;
+use App\Shared\Dto\Game\GameCompanyDataDto;
 
 class ApiGameFactory
 {
@@ -13,7 +14,7 @@ class ApiGameFactory
         string $slug,
         string $description,
         string $imageCover,
-        string $publisher,
+        GameCompanyDataDto $publisher,
         string $releaseDate,
     ): ApiGame {
         return new ApiGame(

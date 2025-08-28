@@ -29,10 +29,11 @@ class GetOrCreateGameUseCase
      * @throws ExceptionInterface
      * @throws CannotGetGameException
      */
-    public function execute(
-        string $gameSlug,
-    ): ?Game {
-        $gameEnvelope = $this->messageBus->dispatch(new GetGameBySlugQuery($gameSlug));
+    public function execute(string $gameSlug): ?Game
+    {
+        $gameEnvelope = $this->messageBus->dispatch(
+            new GetGameBySlugQuery($gameSlug),
+        );
 
         /** @var ?Game $game */
         $game = $this->messageBusHelper->getContentFromEnvelope(
@@ -45,17 +46,22 @@ class GetOrCreateGameUseCase
             return $game;
         }
 
-        $apiGame = $this->cache->get('api_game_'.$gameSlug, function (): ?ApiGame {
-            return null;
-        });
+        $apiGame = $this->cache->get(
+            'api_game_'.$gameSlug,
+            function (): ?ApiGame {
+                return null;
+            },
+        );
 
         if (null === $apiGame) {
             return null;
         }
 
         try {
-            $gameEnvelope = $this->messageBus->dispatch(new GetOrCreateGameQuery($gameSlug, $apiGame));
-        } catch (\Exception) {
+            $gameEnvelope = $this->messageBus->dispatch(
+                new GetOrCreateGameQuery($gameSlug, $apiGame),
+            );
+        } catch (\Exception $e) {
             throw new CannotGetGameException();
         }
 

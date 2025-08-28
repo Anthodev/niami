@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Command;
 
+use App\Shared\Dto\Game\GameCompanyDataDto;
 use Symfony\Component\Validator\Constraints as Assert;
 
 readonly class CreateGameCommand
@@ -17,6 +18,7 @@ readonly class CreateGameCommand
         public string $releaseDate,
         #[Assert\NotBlank, Assert\Url]
         public string $imageCover,
+        public GameCompanyDataDto $publisher,
         public ?string $description = null,
         private bool $isActive = true,
     ) {

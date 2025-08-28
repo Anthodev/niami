@@ -57,7 +57,7 @@
             </options>
         </field>
 
-        <field name="isNativeResolutionImprovedDocked" type="boolean" column="is_native_resolution_improved_docked">
+        <field name="isNativeResolutionDocked" type="boolean" column="is_native_resolution_docked">
             <options>
                 <option name="default">false</option>
             </options>

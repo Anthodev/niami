@@ -35,7 +35,7 @@ class ReportFactory
             is60FpsDocked: $is60FpsDocked,
             hasStableFramerateDocked: $hasStableFramerateDocked,
             hasResolutionImprovedDocked: $hasResolutionImprovedDocked,
-            isNativeResolutionImprovedDocked: $isNativeResolutionImprovedDocked,
+            isNativeResolutionDocked: $isNativeResolutionImprovedDocked,
             hasImprovedLoadingTimes: $hasImprovedLoadingTimes,
             isSwitch2Edition: $isSwitch2Edition,
             gameStatus: $gameStatus,

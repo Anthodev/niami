@@ -35,7 +35,7 @@
             <constraint name="NotNull"/>
         </property>
 
-        <property name="isNativeResolutionImprovedDocked">
+        <property name="isNativeResolutionDocked">
             <constraint name="NotNull"/>
         </property>
 
