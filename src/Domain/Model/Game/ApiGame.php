@@ -9,13 +9,13 @@ use App\Shared\Dto\Game\GameCompanyDataDto;
 class ApiGame
 {
     public function __construct(
-        private string $name,
-        private string $slug,
-        private string $description,
-        private string $imageCover,
-        private string $releaseDate,
-        private ?GameCompanyDataDto $publisher = null,
-        private ?GameCompanyDataDto $developer = null,
+        private readonly string $name,
+        private readonly string $slug,
+        private readonly string $description,
+        private readonly string $imageCover,
+        private readonly string $releaseDate,
+        private readonly ?GameCompanyDataDto $publisher = null,
+        private readonly ?GameCompanyDataDto $developer = null,
     ) {
     }
 

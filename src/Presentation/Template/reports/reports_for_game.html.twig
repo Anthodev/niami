@@ -1,7 +1,7 @@
 {% extends '@app/base.html.twig' %}
 
 {% block content %}
-    <h1>{{ game.name }}</h1>
+    {% include '@reports/partials/_reports_game_info.html.twig' %}
 
     {% include '@reports/partials/_reports_create_form.html.twig' %}
 
