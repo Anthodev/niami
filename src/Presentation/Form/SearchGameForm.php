@@ -19,12 +19,12 @@ class SearchGameForm extends AbstractType
             'label' => 'Search the game:',
             'required' => false,
             'constraints' => [
-                new Assert\Length([
-                    'min' => 3,
-                    'minMessage' => 'The search query must be at least {{ limit }} characters.',
-                    'max' => 100,
-                    'maxMessage' => 'The search query can\'t be above {{ limit }} characters.',
-                ]),
+                new Assert\Length(
+                    min: 3,
+                    max: 100,
+                    minMessage: 'The search query must be at least {{ limit }} characters.',
+                    maxMessage: 'The search query can\'t be above {{ limit }} characters.',
+                ),
             ],
             'attr' => [
                 'placeholder' => 'Type at least 3 characters...',

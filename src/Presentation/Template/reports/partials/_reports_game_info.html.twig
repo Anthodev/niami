@@ -1,0 +1,60 @@
+<div class="card mb-4 bg-base-100 border-2 border-base-300/50 shadow-2xl overflow-hidden">
+    <div class="card-body p-0">
+        <div class="flex flex-col sm:flex-row">
+            {% if game.imageCover is defined and game.name is defined %}
+                <div class="relative overflow-hidden sm:w-40 sm:h-40 w-full h-48 flex-shrink-0">
+                    <img src="{{ game.imageCover }}" alt="{{ game.name }}"
+                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200 ease-out">
+                </div>
+            {% endif %}
+
+            <div class="flex-1 px-6 pb-6 space-y-4">
+                {% if game.name %}
+                    <h1 class="text-3xl font-mono font-black italic text-primary group-hover:text-primary-focus transition-colors">
+                        {{ game.name }}
+                    </h1>
+
+                    <div class="divider divider-primary"></div>
+                {% endif %}
+
+                <div class="grid grid-cols-3">
+                    <div class="flex content-center">
+                        <div class="text-base-content/80 font-mono mr-2">Release date: </div>
+                        <div class="badge badge-outline gap-2 border-primary/30 hover:bg-primary/10 transition-colors">
+                            <span class="w-4 h-4 text-primary">{{ ux_icon('ph:calendar-dots') }}</span>
+                            <span class="font-medium">{{ game.releaseDate|date('d/m/Y') }}</span>
+                        </div>
+                    </div>
+
+                    <div class="flex content-center justify-center">
+                        {% if game.developer is defined and game.developer != '' %}
+                                <div class="text-base-content/80 font-mono mr-2">Developer: </div>
+                                <div class="flex badge badge-outline badge-secondary font-medium">
+                                    <div class="w-6 h-6">{{ ux_icon('ph:game-controller') }}</div>
+                                    <div>{{ game.developer.name }}</div>
+                                </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="flex content-center justify-end">
+                        {% if game.publisher is defined and game.publisher != '' %}
+                                <div class="text-base-content/80 font-mono mr-2">Publisher: </div>
+                                <div class="flex badge badge-outline badge-accent font-medium">
+                                    <div class="w-6 h-6">{{ ux_icon('ph:building-apartment') }}</div>
+                                    <div>{{ game.publisher.name }}</div>
+                                </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="divider divider-secondary"></div>
+
+                {% if game.description is defined %}
+                    <p class="text-left text-base-content/80 leading-relaxed">
+                        {{ game.description|raw }}
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
