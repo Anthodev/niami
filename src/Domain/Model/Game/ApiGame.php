@@ -13,8 +13,9 @@ class ApiGame
         private string $slug,
         private string $description,
         private string $imageCover,
-        private GameCompanyDataDto $publisher,
         private string $releaseDate,
+        private ?GameCompanyDataDto $publisher = null,
+        private ?GameCompanyDataDto $developer = null,
     ) {
     }
 
@@ -38,9 +39,14 @@ class ApiGame
         return $this->imageCover;
     }
 
-    public function getPublisher(): GameCompanyDataDto
+    public function getPublisher(): ?GameCompanyDataDto
     {
         return $this->publisher;
+    }
+
+    public function getDeveloper(): ?GameCompanyDataDto
+    {
+        return $this->developer;
     }
 
     public function getReleaseDate(): string

@@ -39,11 +39,11 @@ class GetOrCreateGameQueryHandler
                     releaseDate: $query->apiGame->getReleaseDate(),
                     imageCover: $query->apiGame->getImageCover(),
                     publisher: $query->apiGame->getPublisher(),
+                    developer: $query->apiGame->getDeveloper(),
                     description: $query->apiGame->getDescription(),
                 ));
             } catch (\Exception|ExceptionInterface $e) {
                 $this->logger->error($e->getMessage());
-                dump($e->getMessage());
 
                 throw new CannotCreateGameException();
             }

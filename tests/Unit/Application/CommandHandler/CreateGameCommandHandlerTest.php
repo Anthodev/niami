@@ -11,6 +11,7 @@ use App\Application\Helper\MessageBusHelper;
 use App\Domain\Factory\Game\GamePublisherFactory;
 use App\Domain\Model\Game\Game;
 use App\Domain\Model\Game\Publisher;
+use App\Infrastructure\Persistence\Doctrine\Game\Repository\DoctrineDeveloperRepository;
 use App\Infrastructure\Persistence\Doctrine\Game\Repository\DoctrineGameRepository;
 use App\Infrastructure\Persistence\Doctrine\Game\Repository\DoctrinePublisherRepository;
 use App\Shared\Dto\Game\GameCompanyDataDto;
@@ -25,6 +26,7 @@ beforeEach(function () {
 
     $this->gameRepository = $this->createMock(DoctrineGameRepository::class);
     $this->publisherRepository = $this->createMock(DoctrinePublisherRepository::class);
+    $this->developerRepository = $this->createMock(DoctrineDeveloperRepository::class);
     $this->messageBus = $this->createMock(MessageBusInterface::class);
     $this->messageBusHelper = $this->createMock(MessageBusHelper::class);
     $this->logger = $this->createMock(LoggerInterface::class);
@@ -53,6 +55,7 @@ it('successfully creates and saves game', function () {
     $handler = new CreateGameCommandHandler(
         $this->gameRepository,
         $this->publisherRepository,
+        $this->developerRepository,
         $this->messageBus,
         $this->messageBusHelper,
         $this->logger
@@ -97,6 +100,7 @@ it('handles exception during save operation', function () {
     $handler = new CreateGameCommandHandler(
         $this->gameRepository,
         $this->publisherRepository,
+        $this->developerRepository,
         $this->messageBus,
         $this->messageBusHelper,
         $this->logger
@@ -141,6 +145,7 @@ it('properly handles command with null description', function () {
     $handler = new CreateGameCommandHandler(
         $this->gameRepository,
         $this->publisherRepository,
+        $this->developerRepository,
         $this->messageBus,
         $this->messageBusHelper,
         $this->logger
@@ -185,6 +190,7 @@ it('properly handles command with non-null description', function () {
     $handler = new CreateGameCommandHandler(
         $this->gameRepository,
         $this->publisherRepository,
+        $this->developerRepository,
         $this->messageBus,
         $this->messageBusHelper,
         $this->logger
@@ -233,6 +239,7 @@ it('handles different types of exceptions during save', function () {
     $handler = new CreateGameCommandHandler(
         $gameRepository,
         $publisherRepository,
+        $this->developerRepository,
         $messageBus,
         $messageBusHelper,
         $logger,
@@ -287,6 +294,7 @@ it('creates game using GameFactory with correct parameters', function () {
     $handler = new CreateGameCommandHandler(
         $this->gameRepository,
         $this->publisherRepository,
+        $this->developerRepository,
         $this->messageBus,
         $this->messageBusHelper,
         $this->logger
@@ -335,6 +343,7 @@ it('handles command properties validation through CreateGameCommand', function (
     $handler = new CreateGameCommandHandler(
         $this->gameRepository,
         $this->publisherRepository,
+        $this->developerRepository,
         $this->messageBus,
         $this->messageBusHelper,
         $this->logger
@@ -391,6 +400,7 @@ it('creates game and publisher using message bus when publisher does not exist',
     $handler = new CreateGameCommandHandler(
         $gameRepository,
         $publisherRepository,
+        $this->developerRepository,
         $messageBus,
         $messageBusHelper,
         $this->logger,

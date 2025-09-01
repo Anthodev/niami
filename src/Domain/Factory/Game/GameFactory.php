@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Factory\Game;
 
+use App\Domain\Model\Game\Developer;
 use App\Domain\Model\Game\Game;
 use App\Domain\Model\Game\Publisher;
 use App\Domain\Model\Report\Report;
@@ -24,6 +25,7 @@ class GameFactory
         bool $isPatched = false,
         bool $isActive = true,
         ?Publisher $publisher = null,
+        ?Developer $developer = null,
         Collection $reports = new ArrayCollection(),
     ): Game {
         return new Game(
@@ -35,6 +37,7 @@ class GameFactory
             isPatched: $isPatched,
             isActive: $isActive,
             publisher: $publisher,
+            developer: $developer,
             reports: $reports,
         );
     }

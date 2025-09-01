@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Application\QueryHandler\Game;
 
+use App\Application\Command\CreateDeveloperCommand;
 use App\Application\Command\CreateGameCommand;
 use App\Application\Exception\CannotCreateGameException;
 use App\Application\Helper\MessageBusHelper;
@@ -19,7 +20,6 @@ use App\Shared\Dto\Game\GameCompanyDataDto;
 use Faker\Factory;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Envelope;
-use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\HandledStamp;
 
@@ -43,6 +43,16 @@ beforeEach(function () {
     );
 
     $this->createdPublisher = GamePublisherFactory::create($this->publisherName, $this->publisherApiId, $this->publisherWebsite);
+
+    $this->developerName = $this->faker->company();
+    $this->developerWebsite = $this->faker->url();
+    $this->developerApiId = $this->faker->randomNumber(5);
+
+    $this->developerDto = new GameCompanyDataDto(
+        $this->developerName,
+        $this->developerWebsite,
+        $this->developerApiId,
+    );
 });
 
 it('returns game when found in repository', function () {
@@ -59,8 +69,8 @@ it('returns game when found in repository', function () {
         slug: $gameSlug,
         description: 'An open-world adventure game',
         imageCover: 'https://example.com/image.jpg',
-        publisher: $this->publisherDto,
-        releaseDate: '2017-03-03'
+        releaseDate: '2017-03-03',
+        publisher: $this->publisherDto
     );
 
     $existingGame = new Game(slug: $gameSlug);
@@ -99,8 +109,8 @@ it('creates game via message bus when not found in repository', function () {
         slug: $gameSlug,
         description: 'An open-world adventure game',
         imageCover: 'https://example.com/image.jpg',
-        publisher: $this->publisherDto,
-        releaseDate: '2017-03-03'
+        releaseDate: '2017-03-03',
+        publisher: $this->publisherDto
     );
 
     $createdGame = new Game(slug: $gameSlug);
@@ -154,8 +164,8 @@ it('throws CannotCreateGameException when message bus dispatch fails with Except
         slug: $gameSlug,
         description: 'An open-world adventure game',
         imageCover: 'https://example.com/image.jpg',
-        publisher: $this->publisherDto,
-        releaseDate: '2017-03-03'
+        releaseDate: '2017-03-03',
+        publisher: $this->publisherDto
     );
 
     $this->gameRepository
@@ -202,8 +212,8 @@ it('throws CannotCreateGameException when message bus dispatch fails with Except
         slug: $gameSlug,
         description: 'An open-world adventure game',
         imageCover: 'https://example.com/image.jpg',
-        publisher: $this->publisherDto,
-        releaseDate: '2017-03-03'
+        releaseDate: '2017-03-03',
+        publisher: $this->publisherDto
     );
 
     $this->gameRepository
@@ -241,8 +251,8 @@ it('properly handles different ApiGame properties', function () {
         slug: $gameSlug,
         description: 'A 3D platform game',
         imageCover: 'https://example.com/mario.jpg',
-        publisher: $this->publisherDto,
-        releaseDate: '2017-10-27'
+        releaseDate: '2017-10-27',
+        publisher: $this->publisherDto
     );
 
     $createdGame = new Game(slug: $gameSlug);
@@ -269,6 +279,60 @@ it('properly handles different ApiGame properties', function () {
                 && $command->getDescription() === 'A 3D platform game';
         }))
     ->willReturn($envelope);
+
+    $query = new GetOrCreateGameQuery($gameSlug, $apiGame);
+
+    // When
+    $result = $handler->__invoke($query);
+
+    // Then
+    expect($result)->toBe($createdGame);
+});
+
+it('creates game with developer when not found in repository', function () {
+    // Given
+    $handler = new GetOrCreateGameQueryHandler(
+        $this->messageBus,
+        $this->gameRepository,
+        $this->logger
+    );
+
+    $gameSlug = 'witcher-3-wild-hunt';
+    $apiGame = new ApiGame(
+        name: 'The Witcher 3: Wild Hunt',
+        slug: $gameSlug,
+        description: 'An open-world RPG game',
+        imageCover: 'https://example.com/witcher.jpg',
+        releaseDate: '2015-05-19',
+        publisher: $this->publisherDto,
+        developer: $this->developerDto
+    );
+
+    $createdGame = new Game(slug: $gameSlug);
+
+    $handledStamp = new HandledStamp($createdGame, 'handler.service_id');
+    $envelope = new Envelope($handler, [$handledStamp]);
+
+    $this->gameRepository
+        ->expects($this->exactly(2))
+        ->method('getOneBySlugEnabledGame')
+        ->with($gameSlug)
+        ->willReturnOnConsecutiveCalls(null, $createdGame);
+
+    $this->messageBus
+        ->expects($this->once())
+        ->method('dispatch')
+        ->with($this->callback(function ($command) use ($apiGame) {
+            return $command instanceof CreateGameCommand
+                && $command->name === $apiGame->getName()
+                && $command->slug === $apiGame->getSlug()
+                && $command->releaseDate === $apiGame->getReleaseDate()
+                && $command->imageCover === $apiGame->getImageCover()
+                && $command->description === $apiGame->getDescription()
+                && $command->publisher === $apiGame->getPublisher()
+                && $command->developer === $apiGame->getDeveloper();
+        }))
+        ->willReturn($envelope);
 
     $query = new GetOrCreateGameQuery($gameSlug, $apiGame);
 

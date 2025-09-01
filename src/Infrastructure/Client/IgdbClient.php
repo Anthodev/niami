@@ -228,14 +228,31 @@ class IgdbClient implements ApiClientInterface
             }
 
             $publisher = new GameCompanyDataDto('', '', 0);
+            $developer = new GameCompanyDataDto('', '', 0);
+
             if (!empty($igdbSearchResultItem->involved_companies)) {
                 /** @var array<string, mixed> $company */
-                foreach (
-                    $igdbSearchResultItem->involved_companies as $company
-                ) {
-                    $publisher = $this->checkCompany($company, 'publisher');
+                foreach ($igdbSearchResultItem->involved_companies as $company) {
+                    if (empty($publisher->name)) {
+                        $publisher = $this->checkCompany(
+                            involvedCompany: $company,
+                            companyType: 'publisher',
+                            oldCompany: $publisher,
+                        );
+                    }
 
-                    if (!empty($publisher->name)) {
+                    if (empty($developer->name)) {
+                        $developer = $this->checkCompany(
+                            involvedCompany: $company,
+                            companyType: 'developer',
+                            oldCompany: $developer,
+                        );
+                    }
+
+                    if (
+                        !empty($publisher->name)
+                        && !empty($developer->name)
+                    ) {
                         break;
                     }
                 }
@@ -250,19 +267,27 @@ class IgdbClient implements ApiClientInterface
                 $imageCover = 'https:'.$coverUrl;
             }
 
-            if ('' === $publisher->name) {
-                throw new \Exception('No publisher found for game '.$slug);
+            if (
+                empty($publisher->name)
+                || empty($developer->name)
+            ) {
+                if (empty($developer->name)) {
+                    $developer = null;
+                }
+
+                $publisher = null;
             }
 
             $apiGames[] = ApiGameFactory::create(
                 name: $igdbSearchResultItem->name,
                 slug: $slug,
-                description: $igdbSearchResultItem->summary ?? '',
+                description: $igdbSearchResultItem->summary ? nl2br($igdbSearchResultItem->summary) : '',
                 imageCover: $imageCover,
-                publisher: $publisher,
                 releaseDate: $releaseDate
                     ? $releaseDate->format(DATE_ATOM)
                     : '',
+                publisher: $publisher,
+                developer: $developer,
             );
         }
 
@@ -397,7 +422,12 @@ class IgdbClient implements ApiClientInterface
     private function checkCompany(
         array $involvedCompany,
         string $companyType,
+        GameCompanyDataDto $oldCompany,
     ): GameCompanyDataDto {
+        if ('' !== $oldCompany->name) {
+            return $oldCompany;
+        }
+
         $isCompany = $involvedCompany[$companyType] ?? false;
 
         if ($isCompany) {

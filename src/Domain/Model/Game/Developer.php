@@ -10,7 +10,7 @@ use App\Domain\Trait\TimestampableTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
-class Publisher implements ModelInterface
+class Developer implements ModelInterface
 {
     use IdTrait;
     use TimestampableTrait;
@@ -29,7 +29,7 @@ class Publisher implements ModelInterface
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setName(?string $name): self
     {
         $this->name = $name;
 
@@ -41,7 +41,7 @@ class Publisher implements ModelInterface
         return $this->website;
     }
 
-    public function setWebsite(string $website): self
+    public function setWebsite(?string $website): self
     {
         $this->website = $website;
 
@@ -53,16 +53,14 @@ class Publisher implements ModelInterface
         return $this->apiId;
     }
 
-    public function setApiId(int $apiId): self
+    public function setApiId(?int $apiId): self
     {
         $this->apiId = $apiId;
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, Game>
-     */
+    /** @return Collection<int, Game> */
     public function getGames(): Collection
     {
         return $this->games;
