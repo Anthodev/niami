@@ -30,7 +30,7 @@
                                 </div>
                             {% endif %}
 
-                            <div class="flex-1 p-6 space-y-4">
+                            <div class="flex-1 px-6 pb-6 space-y-4">
                                 {% if game.name %}
                                     <h2 class="card-title text-2xl font-black text-primary group-hover:text-primary-focus transition-colors">
                                         {{ game.name }}
@@ -43,16 +43,24 @@
                                         <span class="font-medium">{{ game.releaseDate|date('d/m/Y') }}</span>
                                     </div>
 
+                                    {% if game.developer is defined and game.developer != '' %}
+                                        <div class="flex badge badge-outline badge-secondary badge-lg font-medium">
+                                            <div class="w-6 h-6">{{ ux_icon('ph:game-controller') }}</div>
+                                            <div>{{ game.developer.name }}</div>
+                                        </div>
+                                    {% endif %}
+
                                     {% if game.publisher is defined and game.publisher != '' %}
-                                        <div class="badge badge-secondary badge-lg font-medium">
-                                            {{ game.publisher.name }}
+                                        <div class="flex badge badge-outline badge-accent badge-lg font-medium">
+                                            <div class="w-6 h-6">{{ ux_icon('ph:building-apartment') }}</div>
+                                            <div>{{ game.publisher.name }}</div>
                                         </div>
                                     {% endif %}
                                 </div>
 
                                 {% if game.description is defined %}
-                                    <p class="text-base-content/80 leading-relaxed line-clamp-3">
-                                        {{ game.description|length > 300 ? game.description|slice(0, 300) ~ '...' : game.description }}
+                                    <p class="text-left text-base-content/80 leading-relaxed line-clamp-5">
+                                        {{ game.description|raw }}
                                     </p>
                                 {% endif %}
 

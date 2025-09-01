@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace App\Application\CommandHandler;
 
+use App\Application\Command\CreateDeveloperCommand;
 use App\Application\Command\CreateGameCommand;
 use App\Application\Command\CreateGamePublisherCommand;
 use App\Application\Helper\MessageBusHelper;
+use App\Application\Query\Game\GetDeveloperByNameQuery;
 use App\Application\Query\Game\GetPublisherByNameQuery;
 use App\Domain\Factory\Game\GameFactory;
+use App\Domain\Model\Game\Developer;
 use App\Domain\Model\Game\Publisher;
+use App\Domain\Repository\Game\DeveloperRepositoryInterface;
 use App\Domain\Repository\Game\GameRepositoryInterface;
 use App\Domain\Repository\Game\PublisherRepositoryInterface;
 use Psr\Log\LoggerInterface;
@@ -22,6 +26,7 @@ class CreateGameCommandHandler
     public function __construct(
         private readonly GameRepositoryInterface $gameRepository,
         private readonly PublisherRepositoryInterface $publisherRepository,
+        private readonly DeveloperRepositoryInterface $developerRepository,
         private readonly MessageBusInterface $messageBus,
         private readonly MessageBusHelper $messageBusHelper,
         private readonly LoggerInterface $logger,
@@ -30,12 +35,27 @@ class CreateGameCommandHandler
 
     public function __invoke(CreateGameCommand $command): void
     {
-        /** @var ?Publisher $publisher */
-        $publisher = $this->publisherRepository->findByName(
-            $command->publisher->name,
-        );
+        $publisher = null;
+        $developer = null;
 
-        if (null === $publisher) {
+        if (null !== $command->publisher) {
+            /** @var ?Publisher $publisher */
+            $publisher = $this->publisherRepository->findByName(
+                $command->publisher->name,
+            );
+        }
+
+        if (null !== $command->developer) {
+            /** @var ?Developer $developer */
+            $developer = $this->developerRepository->findByName(
+                $command->developer->name,
+            );
+        }
+
+        if (
+            null !== $command->publisher
+            && null === $publisher
+        ) {
             $this->messageBus->dispatch(
                 new CreateGamePublisherCommand(
                     name: $command->publisher->name,
@@ -56,6 +76,30 @@ class CreateGameCommandHandler
             );
         }
 
+        if (
+            null !== $command->developer
+            && null === $developer
+        ) {
+            $this->messageBus->dispatch(
+                new CreateDeveloperCommand(
+                    name: $command->developer->name,
+                    website: $command->developer->website,
+                    apiId: $command->developer->apiId,
+                ),
+            );
+
+            $developerEnvelope = $this->messageBus->dispatch(
+                new GetDeveloperByNameQuery($command->developer->name),
+            );
+
+            /** @var Developer $developer */
+            $developer = $this->messageBusHelper->getContentFromEnvelope(
+                $developerEnvelope,
+                'Developer not found',
+                Developer::class,
+            );
+        }
+
         $game = GameFactory::create(
             name: $command->name,
             slug: $command->slug,
@@ -63,6 +107,7 @@ class CreateGameCommandHandler
             releaseDate: $command->releaseDate,
             imageCover: $command->imageCover,
             publisher: $publisher,
+            developer: $developer,
         );
 
         try {

@@ -6,15 +6,15 @@ namespace App\Domain\Model\Game;
 
 use App\Domain\Model\Common\ModelInterface;
 use App\Domain\Model\Report\Report;
+use App\Domain\Trait\IdTrait;
+use App\Domain\Trait\TimestampableTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Symfony\Component\Uid\Uuid;
 
 class Game implements ModelInterface
 {
-    private ?string $id = null;
-    private ?\DateTimeImmutable $createdAt = null;
-    private ?\DateTime $updatedAt = null;
+    use IdTrait;
+    use TimestampableTrait;
 
     public function __construct(
         private ?string $name = null,
@@ -25,21 +25,10 @@ class Game implements ModelInterface
         private bool $isPatched = false,
         private bool $isActive = true,
         private ?Publisher $publisher = null,
+        private ?Developer $developer = null,
         /** @var Collection<int, Report> */
         private Collection $reports = new ArrayCollection(),
     ) {
-    }
-
-    public function getId(): ?string
-    {
-        return $this->id;
-    }
-
-    public function setId(string $id): self
-    {
-        $this->id = $id;
-
-        return $this;
     }
 
     public function getName(): ?string
@@ -138,6 +127,18 @@ class Game implements ModelInterface
         return $this;
     }
 
+    public function getDeveloper(): ?Developer
+    {
+        return $this->developer;
+    }
+
+    public function setDeveloper(?Developer $developer): self
+    {
+        $this->developer = $developer;
+
+        return $this;
+    }
+
     /**
      * @return Collection<int, Report>
      */
@@ -160,37 +161,6 @@ class Game implements ModelInterface
         if ($this->reports->contains($report)) {
             $this->reports->removeElement($report);
         }
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTime
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(\DateTime $updatedAt): self
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
-    }
-
-    public function setDefaultId(): self
-    {
-        $this->id = Uuid::v7()->toRfc4122();
 
         return $this;
     }

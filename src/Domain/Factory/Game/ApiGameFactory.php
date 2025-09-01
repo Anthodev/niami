@@ -14,16 +14,18 @@ class ApiGameFactory
         string $slug,
         string $description,
         string $imageCover,
-        GameCompanyDataDto $publisher,
         string $releaseDate,
+        ?GameCompanyDataDto $publisher = null,
+        ?GameCompanyDataDto $developer = null,
     ): ApiGame {
         return new ApiGame(
             name: $name,
             slug: $slug,
             description: $description,
             imageCover: $imageCover,
-            publisher: $publisher,
             releaseDate: $releaseDate,
+            publisher: $publisher,
+            developer: $developer,
         );
     }
 }

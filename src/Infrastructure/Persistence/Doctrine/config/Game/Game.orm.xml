@@ -59,11 +59,18 @@
             target-entity="App\Domain\Model\Game\Publisher"
             inversed-by="games"
         />
+        
+        <many-to-one
+            field="developer"
+            target-entity="App\Domain\Model\Game\Developer"
+            inversed-by="games"
+        />
 
         <indexes>
             <index name="games_name" columns="name"/>
             <index name="games_slug" columns="slug"/>
             <index name="games_publisher_id" columns="publisher_id"/>
+            <index name="games_developer_id" columns="developer_id"/>
         </indexes>
 
         <unique-constraints>

@@ -11,15 +11,17 @@ use Faker\Factory;
 
 class PublisherFixtures extends Fixture
 {
+    public const PUBLISHER_TEST = 'publisher_test';
+
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create();
 
-        $publisher = new Publisher();
-        $publisher->setName('Test Publisher');
-        $publisher->setWebsite($faker->url);
-        $publisher->setApiId($faker->randomNumber());
-        $manager->persist($publisher);
+        $testPublisher = new Publisher();
+        $testPublisher->setName('Test Publisher');
+        $testPublisher->setWebsite($faker->url);
+        $testPublisher->setApiId($faker->randomNumber());
+        $manager->persist($testPublisher);
 
         $publisher = new Publisher();
         $publisher->setName($faker->company);
@@ -28,5 +30,7 @@ class PublisherFixtures extends Fixture
         $manager->persist($publisher);
 
         $manager->flush();
+
+        $this->addReference(self::PUBLISHER_TEST, $testPublisher);
     }
 }

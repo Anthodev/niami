@@ -18,7 +18,8 @@ readonly class CreateGameCommand
         public string $releaseDate,
         #[Assert\NotBlank, Assert\Url]
         public string $imageCover,
-        public GameCompanyDataDto $publisher,
+        public ?GameCompanyDataDto $publisher = null,
+        public ?GameCompanyDataDto $developer = null,
         public ?string $description = null,
         private bool $isActive = true,
     ) {
@@ -47,6 +48,16 @@ readonly class CreateGameCommand
     public function getImageCover(): string
     {
         return $this->imageCover;
+    }
+
+    public function getPublisher(): ?GameCompanyDataDto
+    {
+        return $this->publisher;
+    }
+
+    public function getDeveloper(): ?GameCompanyDataDto
+    {
+        return $this->developer;
     }
 
     public function isActive(): bool

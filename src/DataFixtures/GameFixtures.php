@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\DataFixtures;
 
 use App\Domain\Factory\Game\GameFactory;
+use App\Domain\Model\Game\Publisher;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 
-class GameFixtures extends Fixture
+class GameFixtures extends Fixture implements DependentFixtureInterface
 {
     /**
      * @throws \DateMalformedStringException
@@ -18,12 +20,19 @@ class GameFixtures extends Fixture
     {
         $faker = Factory::create();
 
+        /** @var Publisher $testPublisher */
+        $testPublisher = $this->getReference(
+            PublisherFixtures::PUBLISHER_TEST,
+            Publisher::class,
+        );
+
         $definedGame = GameFactory::create(
             name: 'Splinter Turtle',
             slug: 'splinter-turtle',
             description: $faker->text,
             releaseDate: (string) new \DateTime()->getTimestamp(),
             imageCover: $faker->imageUrl(),
+            publisher: $testPublisher,
         );
 
         $manager->persist($definedGame);
@@ -43,5 +52,13 @@ class GameFixtures extends Fixture
         }
 
         $manager->flush();
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getDependencies(): array
+    {
+        return [PublisherFixtures::class];
     }
 }
