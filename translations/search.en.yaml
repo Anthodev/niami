@@ -1,0 +1,26 @@
+form:
+    label: ' Search the game: '
+    placeholder: 'Type at least 3 characters...'
+    submit: 'Search'
+    helper: 'Search will run automatically from the third character'
+    constraints:
+        min_length_message: 'The search query must be at least %limit% characters'
+        max_length_message: 'The search query cannot exceed %limit% characters'
+    results:
+        label: 'Game%gamePlural% found'
+        label_for: 'for "%searchQuery%"'
+        no_results:
+            label: 'No results found'
+            message: 'No games found for <strong>%searchQuery%</strong>. Search again with different keywords.'
+card:
+    view_reports_button: 'View Reports'
+footer:
+    nintendo_trademarks: 'Nintendo Switch and Nintendo Switch Online are trademarks of Nintendo. All rights reserved.'
+    trademarks: 'All trademarks, assets, and copyrights are the property of their respective owners.'
+    project_description: 'community website non-affiliated with Nintendo. Data provided by the users.'
+results:
+    form:
+        game_input: ' Search the game: '
+        game_placeholder: 'Type at least 3 characters to execute the search'
+        game_submit: 'Search'
+        game_helper: 'Search will run automatically from the third character'

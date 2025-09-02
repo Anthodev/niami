@@ -1,49 +1,25 @@
+{% trans_default_domain 'home' %}
 {% extends "@app/base.html.twig" %}
 
 {% block content %}
-    <div class="hero min-h-[calc(100vh-8rem)]">
+    <div class="hero">
         <div class="hero-content text-center">
             <div class="max-w-6xl space-y-8">
                 <div class="space-y-4">
                     <h1 class="text-4xl md:text-6xl lg:text-7xl font-black leading-tight">
                         <span class="block text-base-content/90 mb-2">Nintendo Switch 2</span>
                         <span class="block bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent animate-gradient-x">
-                            Unofficial Back-compatibility Reports
+                            {{ 'content.title'|trans }}
                         </span>
                     </h1>
                     <p class="text-lg md:text-xl text-base-content/70 max-w-2xl mx-auto leading-relaxed">
-                        Découvrez la compatibilité de vos jeux Nintendo Switch favoris sur la nouvelle console.
-                        Base de données communautaire d'expériences de jeu et d'analyses de performance.
+                        {{ 'content.subtitle'|trans }}
                     </p>
                 </div>
 
                 <div class="flex justify-center">
                     <div class="w-full max-w-4xl">
                         {% include "@app/partials/_home_search_frame.html.twig" %}
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 max-w-5xl mx-auto">
-                    <div class="flex flex-col items-center space-y-3 group">
-                        <div class="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center text-2xl group-hover:scale-110 transition-all duration-300 ease-out group-hover:bg-primary/30 group-hover:shadow-lg animate-float">
-                            🎮
-                        </div>
-                        <h3 class="font-bold text-lg group-hover:text-primary transition-colors duration-300 ease-out">Jeux Testés</h3>
-                        <p class="text-sm text-base-content/70 text-center group-hover:text-base-content/90 transition-colors duration-300 ease-out">Découvrez quels jeux fonctionnent parfaitement</p>
-                    </div>
-                    <div class="flex flex-col items-center space-y-3 group">
-                        <div class="w-16 h-16 bg-secondary/20 rounded-full flex items-center justify-center text-2xl group-hover:scale-110 transition-all duration-300 ease-out group-hover:bg-secondary/30 group-hover:shadow-lg animate-float" style="animation-delay: 0.5s;">
-                            📊
-                        </div>
-                        <h3 class="font-bold text-lg group-hover:text-secondary transition-colors duration-300 ease-out">Rapports Détaillés</h3>
-                        <p class="text-sm text-base-content/70 text-center group-hover:text-base-content/90 transition-colors duration-300 ease-out">Performances et problèmes répertoriés</p>
-                    </div>
-                    <div class="flex flex-col items-center space-y-3 group">
-                        <div class="w-16 h-16 bg-accent/20 rounded-full flex items-center justify-center text-2xl group-hover:scale-110 transition-all duration-300 ease-out group-hover:bg-accent/30 group-hover:shadow-lg animate-float" style="animation-delay: 1s;">
-                            👥
-                        </div>
-                        <h3 class="font-bold text-lg group-hover:text-accent transition-colors duration-300 ease-out">Communauté</h3>
-                        <p class="text-sm text-base-content/70 text-center group-hover:text-base-content/90 transition-colors duration-300 ease-out">Contributeurs du monde entier</p>
                     </div>
                 </div>
             </div>

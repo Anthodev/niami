@@ -1,21 +1,23 @@
+{% trans_default_domain 'report' %}
+
 {% if reports|length > 0 %}
     <div class="overflow-x-auto min-h-32 max-h-151">
         <table class="table table-zebra table-pin-rows table-pin-cols table-fixed w-full">
             <thead>
-            <tr>
-                <th class="text-center">Status</th>
-                <th class="text-center">60 FPS*</th>
-                <th class="text-center">Stable FPS**</th>
-                <th class="text-center">Better res***</th>
-                <th class="text-center">Native res****</th>
-                <th class="text-center">60 FPS*</th>
-                <th class="text-center">Stable FPS**</th>
-                <th class="text-center">Better res***</th>
-                <th class="text-center">Native res****</th>
-                <th class="text-center">Better loading</th>
-                <th class="text-center">Switch 2 Edition</th>
-                <th class="text-center">Upvoted</th>
-            </tr>
+                <tr>
+                    <th class="text-center">{{ 'list.table.header.status'|trans }}</th>
+                    <th class="text-center">{{ 'list.table.header.60fps'|trans }}</th>
+                    <th class="text-center">{{ 'list.table.header.stable_FPS'|trans }}</th>
+                    <th class="text-center">{{ 'list.table.header.better_resolution'|trans }}</th>
+                    <th class="text-center">{{ 'list.table.header.native_resolution'|trans }}</th>
+                    <th class="text-center">{{ 'list.table.header.60fps'|trans }}</th>
+                    <th class="text-center">{{ 'list.table.header.stable_FPS'|trans }}</th>
+                    <th class="text-center">{{ 'list.table.header.better_resolution'|trans }}</th>
+                    <th class="text-center">{{ 'list.table.header.native_resolution'|trans }}</th>
+                    <th class="text-center">{{ 'list.table.header.better_loading_times'|trans }}</th>
+                    <th class="text-center">{{ 'list.table.header.switch_2_edition'|trans }}</th>
+                    <th class="text-center">{{ 'list.table.header.upvoted'|trans }}</th>
+                </tr>
             </thead>
             <tbody>
 {% endif %}

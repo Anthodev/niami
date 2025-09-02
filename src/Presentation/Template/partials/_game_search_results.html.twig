@@ -1,3 +1,5 @@
+{% trans_default_domain 'search' %}
+
 {% if games is not empty %}
     <div class="game-results animate-fade-in">
 
@@ -11,9 +13,10 @@
                     </div>
                 </div>
                 <div class="stat-value text-success text-4xl font-black">{{ games|length }}</div>
-                <div class="stat-title text-lg font-semibold">Jeu{{ games|length > 1 ? 'x' : '' }} trouvé{{ games|length > 1 ? 's' : '' }}</div>
+                {% set gamePlural = games|length > 1 ? 's' : '' %}
+                <div class="stat-title text-lg font-semibold">{{ 'form.results.label'|trans({'%gamePlural%': gamePlural}) }}</div>
                 {% if searchQuery %}
-                    <div class="stat-desc text-base-content/70">pour "{{ searchQuery }}"</div>
+                    <div class="stat-desc text-base-content/70">{{ 'form.results.label_for'|trans({'%searchQuery%': searchQuery}) }}"</div>
                 {% endif %}
             </div>
         </div>
@@ -68,7 +71,7 @@
                                     <a href="{{ path('reports_for_game', {gameSlug: game.slug}) }}" data-turbo-frame="_top">
                                         <button class="btn btn-primary btn-lg gap-3 shadow-lg hover:shadow-xl transform hover:scale-102 transition-all duration-150 ease-out bg-gradient-to-r from-primary to-primary-focus hover:from-primary-focus hover:to-primary">
                                             <span class="w-5 h-5">{{ ux_icon('ph:files') }}</span>
-                                            <span class="font-semibold">Voir les rapports</span>
+                                            <span class="font-semibold">{{ 'card.view_reports_button'|trans }}</span>
                                             <span class="w-4 h-4">{{ ux_icon('ph:arrow-right') }}</span>
                                         </button>
                                     </a>
@@ -88,8 +91,8 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
                 <div>
-                    <h3 class="font-bold">No results found</h3>
-                    <div class="text-xs">No game found for <strong>"{{ searchQuery }}"</strong>. Search again with others terms.</div>
+                    <h3 class="font-bold">{{ 'form.results.no_results.label'|trans }}</h3>
+                    <div class="text-xs">{{ 'form.results.no_results.message'|trans({'%searchQuery%': searchQuery})|raw }}</div>
                 </div>
             </div>
         {% endif %}
