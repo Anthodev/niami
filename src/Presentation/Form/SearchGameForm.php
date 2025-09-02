@@ -29,13 +29,13 @@ class SearchGameForm extends AbstractType
                     min: 3,
                     max: 100,
                     minMessage: $this->translator->trans(
-                        'form.constraint.min_length_message',
-                        ['limit' => '{{ limit }}'],
+                        'form.constraints.min_length_message',
+                        ['%limit%' => '{{ limit }}'],
                         'search',
                     ),
                     maxMessage: $this->translator->trans(
-                        'form.constraint.max_length_message',
-                        ['limit' => '{{ limit }}'],
+                        'form.constraints.max_length_message',
+                        ['%limit%' => '{{ limit }}'],
                         'search',
                     ),
                 ),
