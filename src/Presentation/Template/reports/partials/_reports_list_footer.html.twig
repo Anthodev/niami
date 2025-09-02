@@ -1,3 +1,5 @@
+{% trans_default_domain 'report' %}
+
 {% if reports|length > 0 %}
         </tbody>
         <tfoot>
@@ -12,9 +14,9 @@
 </div>
 
     <div class="mt-4 text-base-content/50">
-        <p>*: Target above 30 FPS</p>
-        <p>**: Framerate is consistently at 30 or 60 FPS related to the reported framerate</p>
-        <p>***: Has a better resolution than on Nintendo Switch 1 system in related mode</p>
-        <p>****: Can hit 1080p in portable mode and/or 4K in TV mode on Nintendo Switch 2 system</p>
+        <p>{{ 'list.table.notice.60fps'|trans }}</p>
+        <p>{{ 'list.table.notice.stable_FPS'|trans }}</p>
+        <p>{{ 'list.table.notice.better_resolution'|trans }}</p>
+        <p>{{ 'list.table.notice.native_resolution'|trans }}</p>
     </div>
 {% endif %}

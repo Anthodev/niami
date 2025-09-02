@@ -1,3 +1,5 @@
+{% trans_default_domain 'search' %}
+
 <turbo-frame id="search-frame">
     {{ form_start(searchGamesForm, {
         'action': path('search_games'),
@@ -16,20 +18,19 @@
             'attr': {
                 'data-search-debounce-target': 'input',
                 'data-action': 'input->search-debounce#search',
-                'class': 'input input-bordered input-primary w-full text-lg',
-                'placeholder': 'Type at least 3 characters to run the search...'
+                'class': 'input input-bordered input-primary w-full text-lg'
             }
         }) }}
         <button type="submit" class="btn btn-primary gap-2 ml-1">
             <span class="w-6 h-6">{{ ux_icon('ph:magnifying-glass') }}</span>
-            Search
+            {{ 'form.submit'|trans }}
         </button>
     </div>
 
     {{ form_rest(searchGamesForm) }}
 
     <label class="label">
-        <span class="label-text-alt">Search will run automatically from the third character</span>
+        <span class="label-text-alt">{{ 'form.helper'|trans }}</span>
     </label>
 
     {{ form_end(searchGamesForm) }}

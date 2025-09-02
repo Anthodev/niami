@@ -13,76 +13,126 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CreateReportForm extends AbstractType
 {
+    public function __construct(
+        private readonly TranslatorInterface $translator,
+    ) {
+    }
+
     public function buildForm(
         FormBuilderInterface $builder,
         array $options,
     ): void {
         $builder
             ->add('is60FpsPortable', CheckboxType::class, [
-                'label' => 'Target 60fps?',
+                'label' => $this->translator->trans(
+                    'add_report.form.portable.is_60fps',
+                    [],
+                    'report',
+                ),
                 'empty_data' => false,
                 'data' => false,
                 'required' => false,
             ])
             ->add('hasStableFrameratePortable', CheckboxType::class, [
-                'label' => 'Stable framerate? (mostly keeping maximum framerate)',
+                'label' => $this->translator->trans(
+                    'add_report.form.portable.has_stable_framerate',
+                    [],
+                    'report',
+                ),
                 'empty_data' => true,
                 'data' => true,
                 'required' => false,
             ])
             ->add('hasResolutionImprovedPortable', CheckboxType::class, [
-                'label' => 'Resolution improved?*',
+                'label' => $this->translator->trans(
+                    'add_report.form.portable.has_resolution_improved',
+                    [],
+                    'report',
+                ),
                 'empty_data' => false,
                 'data' => false,
                 'required' => false,
             ])
             ->add('isNativeResolutionPortable', CheckboxType::class, [
-                'label' => 'Native resolution?**',
+                'label' => $this->translator->trans(
+                    'add_report.form.portable.is_native_resolution',
+                    [],
+                    'report',
+                ),
                 'empty_data' => false,
                 'data' => false,
                 'required' => false,
             ])
             ->add('is60FpsDocked', CheckboxType::class, [
-                'label' => 'Target 60fps?',
+                'label' => $this->translator->trans(
+                    'add_report.form.tv.is_60fps',
+                    [],
+                    'report',
+                ),
                 'empty_data' => false,
                 'data' => false,
                 'required' => false,
             ])
             ->add('hasStableFramerateDocked', CheckboxType::class, [
-                'label' => 'Stable framerate? (mostly keeping maximum framerate)',
+                'label' => $this->translator->trans(
+                    'add_report.form.tv.has_stable_framerate',
+                    [],
+                    'report',
+                ),
                 'empty_data' => true,
                 'data' => true,
                 'required' => false,
             ])
             ->add('hasResolutionImprovedDocked', CheckboxType::class, [
-                'label' => 'Resolution improved?*',
+                'label' => $this->translator->trans(
+                    'add_report.form.tv.has_resolution_improved',
+                    [],
+                    'report',
+                ),
                 'empty_data' => false,
                 'data' => false,
                 'required' => false,
             ])
             ->add('isNativeResolutionDocked', CheckboxType::class, [
-                'label' => 'Native resolution?**',
+                'label' => $this->translator->trans(
+                    'add_report.form.tv.is_native_resolution',
+                    [],
+                    'report',
+                ),
                 'empty_data' => false,
                 'data' => false,
                 'required' => false,
             ])
             ->add('hasImprovedLoadingTimes', CheckboxType::class, [
-                'label' => 'Improved loading times?',
+                'label' => $this->translator->trans(
+                    'add_report.form.misc.has_improved_loading_times',
+                    [],
+                    'report',
+                ),
                 'empty_data' => true,
                 'data' => true,
                 'required' => false,
             ])
             ->add('isSwitch2Edition', CheckboxType::class, [
-                'label' => 'Is this a "Switch 2 Edition"?',
+                'label' => $this->translator->trans(
+                    'add_report.form.misc.is_switch_2_editon',
+                    [],
+                    'report',
+                ),
                 'empty_data' => false,
                 'data' => false,
                 'required' => false,
             ])
             ->add('gameStatus', EnumType::class, [
-                'label' => 'How run the game on Switch 2 system?',
+                'label' => $this->translator->trans(
+                    'add_report.form.misc.game_status',
+                    [],
+                    'report',
+                ),
                 'class' => ReportGameStatusEnum::class,
                 'choice_attr' => [
                     ReportGameStatusEnum::OK->name => ['selected' => true],
@@ -92,17 +142,12 @@ class CreateReportForm extends AbstractType
             ])
             ->add('gameId', HiddenType::class, [
                 'required' => true,
-                'constraints' => [
-                    new Assert\NotBlank(),
-                ],
+                'constraints' => [new Assert\NotBlank()],
             ])
             ->add('gameSlug', HiddenType::class, [
                 'required' => true,
-                'constraints' => [
-                    new Assert\NotBlank(),
-                ],
-            ])
-        ;
+                'constraints' => [new Assert\NotBlank()],
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

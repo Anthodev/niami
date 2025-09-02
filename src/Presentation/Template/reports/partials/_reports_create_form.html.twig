@@ -1,7 +1,9 @@
+{% trans_default_domain 'report' %}
+
 <div tabindex="0" class="collapse collapse-arrow bg-base-100 border-base-300 border">
     <div class="flex collapse-title font-semibold bg-secondary/50">
         <div class="w-6 h-6">{{ ux_icon('ph:plus-square') }}</div>
-        <div class="ml-2">Add a report</div>
+        <div class="ml-2">{{ 'add_report.label'|trans }}</div>
     </div>
     <input type="checkbox" />
 
@@ -10,7 +12,7 @@
             'action': path('create_report'),
         }) }}
 
-        <div class="text-xl my-4 border-b-2">Portable performances</div>
+        <div class="text-xl my-4 border-b-2">{{ 'add_report.form.portable.label'|trans }}</div>
         <div class="flex justify-around mb-4">
             <label for="is60FpsPortable" class="label">
                 {{ form_widget(createReportForm.is60FpsPortable, {
@@ -55,7 +57,7 @@
             </label>
         </div>
 
-        <div class="text-xl mb-4 border-b-2">TV performances</div>
+        <div class="text-xl mb-4 border-b-2">{{ 'add_report.form.tv.label'|trans }}</div>
         <div class="flex justify-around">
             <label for="is60FpsDocked" class="label">
                 {{ form_widget(createReportForm.is60FpsDocked, {
@@ -134,8 +136,9 @@
         </div>
 
         <p class="text-base-content/50">
-            *: Is the resolution higher than on Switch 1 system?<br>
-            **: Is it reaching native resolution on Switch 2 system? (1080p portable / 1440p or 4k on TV)
+            {{ 'add_report.notice.stable_framerate'|trans }}<br>
+            {{ 'add_report.notice.resolution_improved'|trans }}<br>
+            {{ 'add_report.notice.native_resolution'|trans }}
         </p>
         <br>
 

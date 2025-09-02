@@ -96,7 +96,7 @@ it('returns validation error for query too long', function () {
     expect($response->getStatusCode())->toBe(Response::HTTP_OK);
 
     $content = $response->getContent();
-    expect($content)->toContain(htmlspecialchars('can\'t be above 100 characters'));
+    expect($content)->toContain(htmlspecialchars('cannot exceed 100 characters'));
 });
 
 it('returns custom error for minimum search length', function () {
