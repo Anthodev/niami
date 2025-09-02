@@ -19,7 +19,8 @@ class CreateReportForm extends AbstractType
 {
     public function __construct(
         private readonly TranslatorInterface $translator,
-    ) {}
+    ) {
+    }
 
     public function buildForm(
         FormBuilderInterface $builder,
