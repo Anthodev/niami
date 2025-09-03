@@ -13,6 +13,9 @@ use Faker\Factory;
 
 class GameFixtures extends Fixture implements DependentFixtureInterface
 {
+    public const string FIRST_GAME_SLUG = 'splinter-turtle';
+    public const string RANDOM_GAME_SLUG = 'random-game-';
+
     /**
      * @throws \DateMalformedStringException
      */
@@ -28,7 +31,7 @@ class GameFixtures extends Fixture implements DependentFixtureInterface
 
         $definedGame = GameFactory::create(
             name: 'Splinter Turtle',
-            slug: 'splinter-turtle',
+            slug: self::FIRST_GAME_SLUG,
             description: $faker->text,
             releaseDate: (string) new \DateTime()->getTimestamp(),
             imageCover: $faker->imageUrl(),
@@ -49,9 +52,13 @@ class GameFixtures extends Fixture implements DependentFixtureInterface
             );
 
             $manager->persist($game);
+
+            $this->addReference(self::RANDOM_GAME_SLUG.$i, $game);
         }
 
         $manager->flush();
+
+        $this->addReference(self::FIRST_GAME_SLUG, $definedGame);
     }
 
     /**
@@ -59,6 +66,8 @@ class GameFixtures extends Fixture implements DependentFixtureInterface
      */
     public function getDependencies(): array
     {
-        return [PublisherFixtures::class];
+        return [
+            PublisherFixtures::class,
+        ];
     }
 }

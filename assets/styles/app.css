@@ -13,6 +13,14 @@ body {
     scroll-behavior: smooth;
 }
 
+[data-report-upvote].upvoted .text-green-200 {
+    @apply text-gray-400;
+}
+
+[data-report-upvote].upvoted .group-hover\:text-green-700:hover {
+    @apply text-gray-400;
+}
+
 /* Optimize animations for better performance */
 @media (prefers-reduced-motion: reduce) {
     *,
@@ -90,9 +98,9 @@ body {
 }
 
 
-.line-clamp-3 {
+.line-clamp-5 {
     display: -webkit-box;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 5;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }

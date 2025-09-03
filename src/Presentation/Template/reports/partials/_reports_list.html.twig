@@ -90,10 +90,23 @@
         </td>
 
         <td class="flex justify-center hover:bg-base-300 text-center {{ loop.first ? mostUpvotedBg : '' }}">
-            <div class="bg-inherit">{{ report.upvoteCount }}</div>
-            {% if loop.first %}
-                <div class="w-6 h-6 bg-inherit text-yellow-300 ml-1">{{ ux_icon('ph:star-fill') }}</div>
-            {% endif %}
+            <turbo-frame class="flex" id="report-{{ report.id }}">
+                <div data-report-upvote data-report-id="{{ report.id }}">
+                    <a href="{{ path('report_increase_upvote', {id: report.id}) }}"
+                        data-turbo-method="patch"
+                        data-turbo-frame="report-{{ report.id }}"
+                        class="flex cursor-pointer group text-decoration-none"
+                    >
+                        <div id="upvote-count-{{ report.id }}" class="bg-inherit">{{ report.upvoteCount }}</div>
+                        <div class="w-6 h-6 bg-inherit text-green-200 group-hover:text-green-700 ml-1">
+                            {{ ux_icon('ph:arrow-fat-up-duotone') }}
+                        </div>
+                    </a>
+                </div>
+                {% if loop.first %}
+                    <div class="w-6 h-6 bg-inherit text-yellow-300 ml-1">{{ ux_icon('ph:star-fill') }}</div>
+                {% endif %}
+            </turbo-frame>
         </td>
     </tr>
 {% endfor %}

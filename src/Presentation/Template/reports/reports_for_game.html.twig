@@ -8,3 +8,8 @@
     {% include '@reports/partials/_reports_list_legends.html.twig' %}
     {% include '@reports/partials/_reports_list.html.twig' %}
 {% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ importmap('upvote-manager') }}
+{% endblock %}
