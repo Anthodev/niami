@@ -32,4 +32,18 @@ class DoctrineReportRepository extends DoctrineBaseEntityRepository implements R
         /** @var Report[] */
         return $qb->getResult();
     }
+
+    public function findMostUpvotedReportForGame(string $gameId): ?Report
+    {
+        $qb = $this->createQueryBuilder('r')
+            ->where('r.isVisible = true')
+            ->andWhere('r.game = :game')
+            ->setParameter('game', $gameId)
+            ->orderBy('r.upvoteCount', 'DESC')
+            ->addOrderBy('r.createdAt', 'DESC')
+            ->setMaxResults(1);
+
+        /** @var Report|null */
+        return $qb->getQuery()->getOneOrNullResult();
+    }
 }

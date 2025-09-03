@@ -11,7 +11,7 @@ use Faker\Factory;
 
 class PublisherFixtures extends Fixture
 {
-    public const PUBLISHER_TEST = 'publisher_test';
+    public const string PUBLISHER_TEST = 'publisher_test';
 
     public function load(ObjectManager $manager): void
     {

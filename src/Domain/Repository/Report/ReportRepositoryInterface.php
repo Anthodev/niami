@@ -23,4 +23,6 @@ interface ReportRepositoryInterface
      * @return Report[]
      */
     public function getAllVisibleReportsForGame(string $gameId): array;
+
+    public function findMostUpvotedReportForGame(string $gameId): ?Report;
 }

@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-class CreateReportController extends AbstractController
+class ReportCreateController extends AbstractController
 {
     #[Route(path: '/reports/new', name: 'create_report', methods: [Request::METHOD_POST])]
     public function __invoke(
