@@ -3,6 +3,7 @@ form:
     placeholder: 'Type at least 3 characters...'
     submit: 'Search'
     helper: 'Search will run automatically from the third character'
+    errorMessage: 'Type at least %minLength% characters...'
     constraints:
         min_length_message: 'The search query must be at least %limit% characters'
         max_length_message: 'The search query cannot exceed %limit% characters'
