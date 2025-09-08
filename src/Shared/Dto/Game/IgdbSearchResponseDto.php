@@ -10,6 +10,7 @@ readonly class IgdbSearchResponseDto
         public int $id,
         public string $name,
         public string $slug,
+        public int $updatedAt,
         /** @var array<string, mixed> $involved_companies */
         public array $involved_companies = [],
         /** @var array<string, mixed>|null $cover */

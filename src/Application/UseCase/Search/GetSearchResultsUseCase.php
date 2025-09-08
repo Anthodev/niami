@@ -44,7 +44,7 @@ class GetSearchResultsUseCase
                 /**
                  * @var FormError $error
                  */
-                foreach ($searchGamesForm->getErrors(true, true) as $error) {
+                foreach ($searchGamesForm->getErrors(true) as $error) {
                     $errors[] = $error->getMessage();
                 }
 

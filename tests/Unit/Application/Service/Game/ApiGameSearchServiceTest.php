@@ -459,7 +459,8 @@ function createApiGameArray(
         slug: $faker->slug(),
         description: $faker->paragraph(3),
         imageCover: '//images.igdb.com/igdb/image/upload/t_thumb/' . $faker->lexify('??????') . '.jpg',
+        releaseDate: date('Y-m-d', new \DateTime()->getTimestamp()),
+        updatedAt: new \DateTimeImmutable('now'),
         publisher: $publisherDto,
-        releaseDate: date('Y-m-d', new \DateTime()->getTimestamp())
     );
 }

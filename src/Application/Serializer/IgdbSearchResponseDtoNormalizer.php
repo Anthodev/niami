@@ -30,6 +30,7 @@ class IgdbSearchResponseDtoNormalizer implements NormalizerInterface, Denormaliz
             'first_release_date' => $object->first_release_date,
             'involved_companies' => $object->involved_companies,
             'websites' => $object->websites,
+            'updated_at' => $object->updatedAt,
         ];
     }
 
@@ -58,6 +59,7 @@ class IgdbSearchResponseDtoNormalizer implements NormalizerInterface, Denormaliz
         $firstReleaseDate = isset($data['first_release_date']) && is_int($data['first_release_date']) ? $data['first_release_date'] : null;
         $involvedCompanies = isset($data['involved_companies']) && is_array($data['involved_companies']) ? $data['involved_companies'] : [];
         $websites = isset($data['websites']) && is_array($data['websites']) ? $data['websites'] : [];
+        $updatedAt = isset($data['updated_at']) && is_int($data['updated_at']) ? $data['updated_at'] : 0;
 
         return new IgdbSearchResponseDto(
             id: $id,
@@ -68,6 +70,7 @@ class IgdbSearchResponseDtoNormalizer implements NormalizerInterface, Denormaliz
             first_release_date: $firstReleaseDate,
             summary: $summary,
             websites: $websites,
+            updatedAt: $updatedAt,
         );
     }
 

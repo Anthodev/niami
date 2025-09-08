@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Application\CommandHandler;
 
-use App\Application\Command\CreateGamePublisherCommand;
-use App\Application\CommandHandler\CreateGamePublisherCommandHandler;
+use App\Application\Command\Game\CreatePublisherCommand;
+use App\Application\CommandHandler\Game\CreatePublisherCommandHandler;
 use App\Domain\Factory\Game\GamePublisherFactory;
 use App\Domain\Model\Game\Publisher;
 use App\Infrastructure\Persistence\Doctrine\Game\Repository\DoctrinePublisherRepository;
@@ -51,12 +51,12 @@ it('successfully creates and saves publisher when publisher does not exist', fun
         ->expects($this->never())
         ->method('error');
 
-    $handler = new CreateGamePublisherCommandHandler(
+    $handler = new CreatePublisherCommandHandler(
         $this->publisherRepository,
         $this->logger
     );
 
-    $command = new CreateGamePublisherCommand(
+    $command = new CreatePublisherCommand(
         name: $this->publisherName,
         website: $this->publisherWebsite,
         apiId: $this->publisherApiId,
@@ -85,12 +85,12 @@ it('returns early when publisher already exists', function () {
         ->expects($this->never())
         ->method('error');
 
-    $handler = new CreateGamePublisherCommandHandler(
+    $handler = new CreatePublisherCommandHandler(
         $this->publisherRepository,
         $this->logger
     );
 
-    $command = new CreateGamePublisherCommand(
+    $command = new CreatePublisherCommand(
         name: $this->publisherName,
         website: $this->publisherWebsite,
         apiId: $this->publisherApiId,
@@ -123,12 +123,12 @@ it('handles exception during save operation', function () {
         ->method('error')
         ->with('Database connection failed');
 
-    $handler = new CreateGamePublisherCommandHandler(
+    $handler = new CreatePublisherCommandHandler(
         $this->publisherRepository,
         $this->logger
     );
 
-    $command = new CreateGamePublisherCommand(
+    $command = new CreatePublisherCommand(
         name: $this->publisherName,
         website: $this->publisherWebsite,
         apiId: $this->publisherApiId,
@@ -161,12 +161,12 @@ it('handles different types of exceptions during save', function () {
         ->method('error')
         ->with('Runtime error occurred');
 
-    $handler = new CreateGamePublisherCommandHandler(
+    $handler = new CreatePublisherCommandHandler(
         $this->publisherRepository,
         $this->logger
     );
 
-    $command = new CreateGamePublisherCommand(
+    $command = new CreatePublisherCommand(
         name: $this->publisherName,
         website: $this->publisherWebsite,
         apiId: $this->publisherApiId,
@@ -201,12 +201,12 @@ it('creates publisher using GamePublisherFactory with correct parameters', funct
                 && $publisher->getApiId() === $publisherApiId;
         }));
 
-    $handler = new CreateGamePublisherCommandHandler(
+    $handler = new CreatePublisherCommandHandler(
         $this->publisherRepository,
         $this->logger
     );
 
-    $command = new CreateGamePublisherCommand(
+    $command = new CreatePublisherCommand(
         name: $publisherName,
         website: $publisherWebsite,
         apiId: $publisherApiId,
@@ -240,12 +240,12 @@ it('handles command with null website', function () {
                 && $publisher->getApiId() === $publisherApiId;
         }));
 
-    $handler = new CreateGamePublisherCommandHandler(
+    $handler = new CreatePublisherCommandHandler(
         $this->publisherRepository,
         $this->logger
     );
 
-    $command = new CreateGamePublisherCommand(
+    $command = new CreatePublisherCommand(
         name: $publisherName,
         website: null,
         apiId: $publisherApiId,

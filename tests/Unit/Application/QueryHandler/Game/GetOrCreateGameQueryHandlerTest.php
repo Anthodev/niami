@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Application\QueryHandler\Game;
 
-use App\Application\Command\CreateDeveloperCommand;
-use App\Application\Command\CreateGameCommand;
+use App\Application\Command\Game\CreateGameCommand;
 use App\Application\Exception\CannotCreateGameException;
 use App\Application\Helper\MessageBusHelper;
 use App\Application\Query\Game\GetOrCreateGameQuery;
@@ -70,7 +69,8 @@ it('returns game when found in repository', function () {
         description: 'An open-world adventure game',
         imageCover: 'https://example.com/image.jpg',
         releaseDate: '2017-03-03',
-        publisher: $this->publisherDto
+        updatedAt: new \DateTimeImmutable('now'),
+        publisher: $this->publisherDto,
     );
 
     $existingGame = new Game(slug: $gameSlug);
@@ -110,7 +110,8 @@ it('creates game via message bus when not found in repository', function () {
         description: 'An open-world adventure game',
         imageCover: 'https://example.com/image.jpg',
         releaseDate: '2017-03-03',
-        publisher: $this->publisherDto
+        updatedAt: new \DateTimeImmutable('now'),
+        publisher: $this->publisherDto,
     );
 
     $createdGame = new Game(slug: $gameSlug);
@@ -165,7 +166,8 @@ it('throws CannotCreateGameException when message bus dispatch fails with Except
         description: 'An open-world adventure game',
         imageCover: 'https://example.com/image.jpg',
         releaseDate: '2017-03-03',
-        publisher: $this->publisherDto
+        updatedAt: new \DateTimeImmutable('now'),
+        publisher: $this->publisherDto,
     );
 
     $this->gameRepository
@@ -213,7 +215,8 @@ it('throws CannotCreateGameException when message bus dispatch fails with Except
         description: 'An open-world adventure game',
         imageCover: 'https://example.com/image.jpg',
         releaseDate: '2017-03-03',
-        publisher: $this->publisherDto
+        updatedAt: new \DateTimeImmutable('now'),
+        publisher: $this->publisherDto,
     );
 
     $this->gameRepository
@@ -252,7 +255,8 @@ it('properly handles different ApiGame properties', function () {
         description: 'A 3D platform game',
         imageCover: 'https://example.com/mario.jpg',
         releaseDate: '2017-10-27',
-        publisher: $this->publisherDto
+        updatedAt: new \DateTimeImmutable('now'),
+        publisher: $this->publisherDto,
     );
 
     $createdGame = new Game(slug: $gameSlug);
@@ -304,8 +308,9 @@ it('creates game with developer when not found in repository', function () {
         description: 'An open-world RPG game',
         imageCover: 'https://example.com/witcher.jpg',
         releaseDate: '2015-05-19',
+        updatedAt: new \DateTimeImmutable('now'),
         publisher: $this->publisherDto,
-        developer: $this->developerDto
+        developer: $this->developerDto,
     );
 
     $createdGame = new Game(slug: $gameSlug);

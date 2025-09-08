@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Command;
+namespace App\Application\Command\Game;
 
 use App\Shared\Dto\Game\GameCompanyDataDto;
 use Symfony\Component\Validator\Constraints as Assert;

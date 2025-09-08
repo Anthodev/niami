@@ -21,4 +21,10 @@ class DoctrinePublisherRepository extends DoctrineBaseEntityRepository implement
         /** @var ?Publisher */
         return $this->findOneBy(['name' => $name]);
     }
+
+    public function findByApiId(int $apiId): ?Publisher
+    {
+        /** @var ?Publisher */
+        return $this->findOneBy(['apiId' => $apiId]);
+    }
 }

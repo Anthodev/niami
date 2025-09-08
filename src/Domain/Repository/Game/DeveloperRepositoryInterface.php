@@ -20,4 +20,6 @@ use App\Domain\Model\Game\Developer;
 interface DeveloperRepositoryInterface
 {
     public function findByName(string $name): ?Developer;
+
+    public function findByApiId(int $apiId): ?Developer;
 }

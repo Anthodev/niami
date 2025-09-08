@@ -199,7 +199,8 @@ function createTestApiGame(
         slug: $slug ?? $faker->slug(),
         description: $description ?? $faker->paragraph(),
         imageCover: $imageCover ?? 'https://images.igdb.com/igdb/image/upload/t_thumb/' . $faker->sha1() . '.jpg',
+        releaseDate: $releaseDate ?? $faker->dateTime()->format(DATE_ATOM),
+        updatedAt: new \DateTimeImmutable('now'),
         publisher: $publisherDto,
-        releaseDate: $releaseDate ?? $faker->dateTime()->format(DATE_ATOM)
     );
 }

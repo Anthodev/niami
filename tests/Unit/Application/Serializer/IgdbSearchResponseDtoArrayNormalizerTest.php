@@ -240,6 +240,7 @@ function createIgdbSearchResponseDto(Generator $faker): IgdbSearchResponseDto
         summary: $faker->paragraph(),
         websites: [
             ['url' => $faker->url()]
-        ]
+        ],
+        updatedAt: new \DateTime('now')->getTimestamp(),
     );
 }
