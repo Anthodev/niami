@@ -97,8 +97,9 @@ it('successfully executes when ApiGame found in cache', function () {
         slug: $gameSlug,
         description: 'An open-world adventure game',
         imageCover: 'https://example.com/zelda.jpg',
+        releaseDate: '2017-03-03',
+        updatedAt: new \DateTimeImmutable('now'),
         publisher: $this->publisherDto,
-        releaseDate: '2017-03-03'
     );
 
     $expectedGame = new Game(slug: $gameSlug);
@@ -156,8 +157,9 @@ it('throws CannotGetGameException when message bus dispatch fails', function () 
         slug: $gameSlug,
         description: 'A 3D platform game',
         imageCover: 'https://example.com/mario.jpg',
+        releaseDate: '2017-10-27',
+        updatedAt: new \DateTimeImmutable('now'),
         publisher: $this->publisherDto,
-        releaseDate: '2017-10-27'
     );
 
     $getGameEnvelope = new Envelope(new GetGameBySlugQuery($gameSlug));
@@ -236,8 +238,9 @@ it('handles different ApiGame scenarios', function () {
         slug: $gameSlug,
         description: 'A rogue-like dungeon crawler',
         imageCover: 'https://example.com/hades.jpg',
+        releaseDate: '2020-09-17',
+        updatedAt: new \DateTimeImmutable('now'),
         publisher: $this->publisherDto,
-        releaseDate: '2020-09-17'
     );
 
     $publisher = $this->createdPublisher = GamePublisherFactory::create($this->publisherName, $this->publisherApiId, $this->publisherWebsite);
@@ -304,8 +307,9 @@ it('handles MessageBusHelper returning null', function () {
         slug: $gameSlug,
         description: 'A challenging platformer',
         imageCover: 'https://example.com/celeste.jpg',
+        releaseDate: '2018-01-25',
+        updatedAt: new \DateTimeImmutable('now'),
         publisher: $this->publisherDto,
-        releaseDate: '2018-01-25'
     );
 
     $getGameEnvelope = new Envelope(new GetGameBySlugQuery($gameSlug));
@@ -357,8 +361,9 @@ it('handles RuntimeException from message bus', function () {
         slug: $gameSlug,
         description: 'A beautiful Metroidvania',
         imageCover: 'https://example.com/ori.jpg',
+        releaseDate: '2020-03-11',
+        updatedAt: new \DateTimeImmutable('now'),
         publisher: $this->publisherDto,
-        releaseDate: '2020-03-11'
     );
 
     $getGameEnvelope = new Envelope(new GetGameBySlugQuery($gameSlug));

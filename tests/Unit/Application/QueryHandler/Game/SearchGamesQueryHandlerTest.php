@@ -6,6 +6,7 @@ namespace App\Tests\Unit\Application\QueryHandler\Game;
 
 use App\Application\Query\Game\SearchGamesQuery;
 use App\Application\QueryHandler\Game\SearchGamesQueryHandler;
+use App\Application\UseCase\Game\UpdateGameFromApiUseCase;
 use App\Domain\Model\Game\ApiGame;
 use App\Domain\Model\Game\Game;
 use App\Domain\Repository\Game\ApiGameRepositoryInterface;
@@ -20,6 +21,7 @@ beforeEach(function () {
 
     $this->gameRepository = $this->createMock(DoctrineGameRepository::class);
     $this->apiGameRepository = $this->createMock(ApiGameRepositoryInterface::class);
+    $this->updateGameFromApiUseCase = $this->createMock(UpdateGameFromApiUseCase::class);
     $this->logger = $this->createMock(LoggerInterface::class);
 
     $this->publisherName = $this->faker->company();
@@ -35,6 +37,7 @@ beforeEach(function () {
     $this->handler = new SearchGamesQueryHandler(
         $this->gameRepository,
         $this->apiGameRepository,
+        $this->updateGameFromApiUseCase,
         $this->logger,
     );
 });
@@ -115,8 +118,9 @@ it('searches both local and api games when includeApi is true', function () {
         slug: 'zelda',
         description: 'Game description',
         imageCover: 'image.jpg',
-        publisher: $this->publisherDto,
         releaseDate: '2023-01-01',
+        updatedAt: new \DateTimeImmutable('now'),
+        publisher: $this->publisherDto,
     )];
 
     $this->apiGameRepository
@@ -163,8 +167,9 @@ it('handles exceptions during local search', function () {
         slug: 'zelda',
         description: 'Game description',
         imageCover: 'image.jpg',
+        releaseDate: '2023-01-01',
+        updatedAt: new \DateTimeImmutable('now'),
         publisher: $this->publisherDto,
-        releaseDate: '2023-01-01'
     )];
 
     $this->apiGameRepository
@@ -250,15 +255,17 @@ it('respects the limit parameter for combined results', function () {
             slug: 'zelda',
             description: 'Game description',
             imageCover: 'image.jpg',
+            releaseDate: '2023-01-01',
+            updatedAt: new \DateTimeImmutable('now'),
             publisher: $this->publisherDto,
-            releaseDate: '2023-01-01'
         ), new ApiGame(
             name: 'Zelda 2',
             slug: 'zelda-2',
             description: 'Game description 2',
             imageCover: 'image2.jpg',
+            releaseDate: '2023-01-02',
+            updatedAt: new \DateTimeImmutable('now'),
             publisher: $this->publisherDto,
-            releaseDate: '2023-01-02'
         )]);
 
     $limit = 5;

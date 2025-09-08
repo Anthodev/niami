@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Application\CommandHandler;
+namespace App\Application\CommandHandler\Game;
 
-use App\Application\Command\CreateGamePublisherCommand;
+use App\Application\Command\Game\CreatePublisherCommand;
 use App\Domain\Factory\Game\GamePublisherFactory;
 use App\Domain\Repository\Game\PublisherRepositoryInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
-class CreateGamePublisherCommandHandler
+class CreatePublisherCommandHandler
 {
     public function __construct(
         private readonly PublisherRepositoryInterface $publisherRepository,
@@ -19,7 +19,7 @@ class CreateGamePublisherCommandHandler
     ) {
     }
 
-    public function __invoke(CreateGamePublisherCommand $command): void
+    public function __invoke(CreatePublisherCommand $command): void
     {
         $publisher = $this->publisherRepository->findByName($command->name);
 

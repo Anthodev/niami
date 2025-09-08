@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Application\CommandHandler;
 
-use App\Application\Command\CreateGameCommand;
-use App\Application\Command\CreateGamePublisherCommand;
-use App\Application\CommandHandler\CreateGameCommandHandler;
+use App\Application\Command\Game\CreateGameCommand;
+use App\Application\Command\Game\CreatePublisherCommand;
+use App\Application\CommandHandler\Game\CreateGameCommandHandler;
 use App\Application\Helper\MessageBusHelper;
 use App\Domain\Factory\Game\GamePublisherFactory;
 use App\Domain\Model\Game\Game;
@@ -148,7 +148,7 @@ it('properly handles command with null description', function () {
         $this->developerRepository,
         $this->messageBus,
         $this->messageBusHelper,
-        $this->logger
+        $this->logger,
     );
 
     $command = new CreateGameCommand(
@@ -193,7 +193,7 @@ it('properly handles command with non-null description', function () {
         $this->developerRepository,
         $this->messageBus,
         $this->messageBusHelper,
-        $this->logger
+        $this->logger,
     );
 
     $command = new CreateGameCommand(
@@ -251,7 +251,7 @@ it('handles different types of exceptions during save', function () {
         ->expects($this->exactly(2))
         ->method('dispatch')
         ->willReturnOnConsecutiveCalls(
-            new Envelope(new CreateGamePublisherCommand($this->publisherName, $this->publisherWebsite, $this->publisherApiId)),
+            new Envelope(new CreatePublisherCommand($this->publisherName, $this->publisherWebsite, $this->publisherApiId)),
             $publisherEnvelope,
         );
 
@@ -297,7 +297,7 @@ it('creates game using GameFactory with correct parameters', function () {
         $this->developerRepository,
         $this->messageBus,
         $this->messageBusHelper,
-        $this->logger
+        $this->logger,
     );
 
     $command = new CreateGameCommand(
@@ -346,7 +346,7 @@ it('handles command properties validation through CreateGameCommand', function (
         $this->developerRepository,
         $this->messageBus,
         $this->messageBusHelper,
-        $this->logger
+        $this->logger,
     );
 
     $command = new CreateGameCommand(
@@ -421,7 +421,7 @@ it('creates game and publisher using message bus when publisher does not exist',
         ->expects($this->exactly(2))
         ->method('dispatch')
         ->willReturnOnConsecutiveCalls(
-            new Envelope(new CreateGamePublisherCommand($this->publisherName, $this->publisherWebsite, $this->publisherApiId)),
+            new Envelope(new CreatePublisherCommand($this->publisherName, $this->publisherWebsite, $this->publisherApiId)),
             $publisherEnvelope,
         );
 

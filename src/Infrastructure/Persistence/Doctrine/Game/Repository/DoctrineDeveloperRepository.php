@@ -21,4 +21,10 @@ class DoctrineDeveloperRepository extends DoctrineBaseEntityRepository implement
         /** @var ?Developer */
         return $this->findOneBy(['name' => $name]);
     }
+
+    public function findByApiId(int $apiId): ?Developer
+    {
+        /** @var ?Developer */
+        return $this->findOneBy(['apiId' => $apiId]);
+    }
 }

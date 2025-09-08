@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\QueryHandler\Game;
 
-use App\Application\Command\CreateGameCommand;
+use App\Application\Command\Game\CreateGameCommand;
 use App\Application\Exception\CannotCreateGameException;
 use App\Application\Query\Game\GetOrCreateGameQuery;
 use App\Domain\Model\Game\Game;

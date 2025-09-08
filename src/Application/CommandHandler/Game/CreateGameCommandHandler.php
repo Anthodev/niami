@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Application\CommandHandler;
+namespace App\Application\CommandHandler\Game;
 
-use App\Application\Command\CreateDeveloperCommand;
-use App\Application\Command\CreateGameCommand;
-use App\Application\Command\CreateGamePublisherCommand;
+use App\Application\Command\Game\CreateDeveloperCommand;
+use App\Application\Command\Game\CreateGameCommand;
+use App\Application\Command\Game\CreatePublisherCommand;
 use App\Application\Helper\MessageBusHelper;
 use App\Application\Query\Game\GetDeveloperByNameQuery;
 use App\Application\Query\Game\GetPublisherByNameQuery;
@@ -57,7 +57,7 @@ class CreateGameCommandHandler
             && null === $publisher
         ) {
             $this->messageBus->dispatch(
-                new CreateGamePublisherCommand(
+                new CreatePublisherCommand(
                     name: $command->publisher->name,
                     website: $command->publisher->website,
                     apiId: $command->publisher->apiId,

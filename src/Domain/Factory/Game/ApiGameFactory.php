@@ -15,6 +15,7 @@ class ApiGameFactory
         string $description,
         string $imageCover,
         string $releaseDate,
+        \DateTimeImmutable $updatedAt,
         ?GameCompanyDataDto $publisher = null,
         ?GameCompanyDataDto $developer = null,
     ): ApiGame {
@@ -24,6 +25,7 @@ class ApiGameFactory
             description: $description,
             imageCover: $imageCover,
             releaseDate: $releaseDate,
+            updatedAt: $updatedAt,
             publisher: $publisher,
             developer: $developer,
         );

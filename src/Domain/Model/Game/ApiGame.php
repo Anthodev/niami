@@ -14,6 +14,7 @@ class ApiGame
         private readonly string $description,
         private readonly string $imageCover,
         private readonly string $releaseDate,
+        private readonly \DateTimeImmutable $updatedAt,
         private readonly ?GameCompanyDataDto $publisher = null,
         private readonly ?GameCompanyDataDto $developer = null,
     ) {
@@ -37,6 +38,11 @@ class ApiGame
     public function getImageCover(): string
     {
         return $this->imageCover;
+    }
+
+    public function getUpdatedAt(): \DateTimeImmutable
+    {
+        return $this->updatedAt;
     }
 
     public function getPublisher(): ?GameCompanyDataDto

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Application\CommandHandler;
+namespace App\Application\CommandHandler\Game;
 
-use App\Application\Command\CreateDeveloperCommand;
+use App\Application\Command\Game\CreateDeveloperCommand;
 use App\Domain\Factory\Game\DeveloperFactory;
 use App\Domain\Repository\Game\DeveloperRepositoryInterface;
 use Psr\Log\LoggerInterface;

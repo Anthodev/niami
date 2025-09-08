@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\QueryHandler\Game;
 
 use App\Application\Query\Game\SearchGamesQuery;
+use App\Application\UseCase\Game\UpdateGameFromApiUseCase;
 use App\Domain\Model\Game\ApiGame;
 use App\Domain\Model\Game\Game;
 use App\Domain\Repository\Game\ApiGameRepositoryInterface;
@@ -18,6 +19,7 @@ class SearchGamesQueryHandler
     public function __construct(
         private readonly GameRepositoryInterface $gameRepository,
         private readonly ApiGameRepositoryInterface $apiGameRepository,
+        private readonly UpdateGameFromApiUseCase $updateGameFromApiUseCase,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -49,20 +51,34 @@ class SearchGamesQueryHandler
                 $remainingLimit,
             );
 
+            $localGamesBySlug = [];
+            foreach ($localGames as $localGame) {
+                $slug = $localGame->getSlug();
+                if (null !== $slug) {
+                    $localGamesBySlug[$slug] = $localGame;
+                }
+            }
+
             foreach ($apiGames as $apiGame) {
+                $apiSlug = $apiGame->getSlug();
+
+                if (isset($localGamesBySlug[$apiSlug])) {
+                    $localGame = $localGamesBySlug[$apiSlug];
+
+                    if ($localGame->getUpdatedAt() < $apiGame->getUpdatedAt()) {
+                        $this->updateGameFromApiUseCase->execute(
+                            game: $localGame,
+                            apiGame: $apiGame,
+                        );
+                    }
+                }
+
                 if (
-                    !empty($localGames)
-                    && !in_array(
-                        $apiGame->getSlug(),
-                        array_map(
-                            /** @phpstan-ignore-next-line */
-                            static fn (Game $game): string => $game->getSlug(),
-                            $localGames,
-                        ),
-                        true)
+                    !empty($localGamesBySlug)
+                    && !isset($localGamesBySlug[$apiSlug])
                 ) {
                     $computedApiGames[] = $apiGame;
-                } elseif (empty($localGames)) {
+                } elseif (empty($localGamesBySlug)) {
                     $computedApiGames = $apiGames;
                 }
             }

@@ -172,7 +172,26 @@ class IgdbClient implements ApiClientInterface
         }
 
         $body = sprintf(
-            'fields name, slug, involved_companies.company.name, involved_companies.company.websites.url, involved_companies.publisher, involved_companies.developer, cover.url, first_release_date, summary, websites.url; where (%s) & platforms = (%d) & %s & version_parent = null & first_release_date < %d; sort first_release_date desc; limit %d;',
+            '
+                    fields name,
+                    slug,
+                    involved_companies.company.name,
+                    involved_companies.company.websites.url,
+                    involved_companies.publisher,
+                    involved_companies.developer,
+                    cover.url,
+                    first_release_date,
+                    summary,
+                    websites.url,
+                    updated_at;
+                    where (%s)
+                    & platforms = (%d)
+                    & %s
+                    & version_parent = null
+                    & first_release_date < %d;
+                    sort first_release_date desc;
+                    limit %d;
+                ',
             $apiQuery,
             IgdbGamePlatformEnum::NINTENDO_SWITCH->value,
             sprintf(
@@ -278,6 +297,8 @@ class IgdbClient implements ApiClientInterface
                 $publisher = null;
             }
 
+            $updatedAt = new \DateTimeImmutable()->setTimestamp($igdbSearchResultItem->updatedAt);
+
             $apiGames[] = ApiGameFactory::create(
                 name: $igdbSearchResultItem->name,
                 slug: $slug,
@@ -286,6 +307,7 @@ class IgdbClient implements ApiClientInterface
                 releaseDate: $releaseDate
                     ? $releaseDate->format(DATE_ATOM)
                     : '',
+                updatedAt: $updatedAt,
                 publisher: $publisher,
                 developer: $developer,
             );
