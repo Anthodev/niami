@@ -1,63 +1,97 @@
-# Symfony Docker Supercharged
+# Game Compatibility Reporting Platform
 
-This repo is a fork from the [Symfony Docker](https://www.github.com/dunglas/docker-symfony) repo from [dunglas](https://www.github.com/dunglas/) with added improvements:
-- Added `make` and `bash` into the php container.
-- Added a `Makefile` file to run most of the usual Docker and Symfony commands with more ease
-- Build the docker containers with the user and group id of the user running the command (preventing permission issues)
-- Modified the `ci.yml` file in the `.github` folder to get quicker ci runs (while checking more thing in your project)
-- Trigger the CI on pull requests by default
-- Modified the `docker-compose.yml` file to set a name for the php container (for easier use of the `make` commands)
+A modern web application built with Symfony that allows users to search for video games and submit compatibility reports. Users can report how well games perform with different statuses and vote on existing reports to help the gaming community make informed decisions.
 
-Below the original `README` of the project.
+## 🎮 What This Project Does
+
+This platform provides:
+
+### Game Management
+- **Game Search**: Search for video games using integration with the IGDB (Internet Game Database) API
+- **Game Details**: View comprehensive game information including developers, publishers, and metadata
+- **Automatic Data Sync**: Games are automatically created and updated from IGDB API data
+
+### Compatibility Reporting System
+- **Status Reports**: Users can submit reports with four different compatibility statuses:
+    - `GREAT` - Game works perfectly
+    - `OK` - Game works with minor issues
+    - `BAD` - Game has significant problems
+    - `BUGGED` - Game is broken or unplayable
+
+### Community Features
+- **Voting System**: Users can upvote helpful reports to increase their visibility
+- **Report Ranking**: Reports are automatically sorted by upvote count and creation date
+- **User-Generated Content**: Community-driven compatibility database
+
+## 🛠 Technical Architecture
+
+This application follows **Clean Architecture** principles with **CQRS** (Command Query Responsibility Segregation) pattern:
+
+### Backend Stack
+- **Framework**: Symfony 7.3 with PHP 8.4+
+- **Database**: Doctrine ORM with PostgreSQL/MySQL support
+- **Architecture**: Domain-Driven Design (DDD) with separated layers:
+    - `Domain/` - Business logic and entities
+    - `Application/` - Use cases, commands, and handlers
+    - `Infrastructure/` - External services and persistence
+    - `Presentation/` - Controllers, forms, and templates
+
+### Frontend Stack
+- **UI Framework**: Twig templates with Tailwind CSS and Daisy UI
+- **Interactivity**: Symfony UX with Turbo and Stimulus
+- **Real-time Updates**: Turbo frames for dynamic content loading
+
+### External Integrations
+- **IGDB API**: For comprehensive game database access
+- **Caching**: Symfony Cache for API response optimization
+- **Authentication**: Lexik JWT Authentication Bundle
+
+## 🚀 Key Features
+
+### For Users
+- Search and discover games from the IGDB database
+- Submit detailed compatibility reports
+- Vote on community reports
+- View aggregated compatibility data per game
+
+### For Developers
+- Clean, testable codebase with 95%+ test coverage
+- Docker-ready development environment
+- Modern PHP 8.4 features with strict typing
+- Comprehensive test suite with Pest PHP
+
+## 🔧 Development Setup
+
+This project uses a **Docker-based development environment** with FrankenPHP and Caddy:
+
+1. **Prerequisites**: Docker Compose v2.10+
+2. **Build**: `docker compose build --no-cache`
+3. **Start**: `docker compose up --pull always -d --wait`
+4. **Access**: Visit `https://localhost` (accept the self-signed certificate)
+5. **Stop**: `docker compose down --remove-orphans`
+
+## 🎯 Use Cases
+
+This platform is ideal for:
+- **Gaming Communities** wanting to track game compatibility
+- **Platform-Specific Gaming** (e.g., Steam Deck, gaming handhelds)
+- **Beta Testing Communities** reporting game issues
+- **Gaming Forums** needing structured compatibility data
+
+## 📊 Project Statistics
+
+- **Architecture**: Clean Architecture + CQRS
+- **Test Coverage**: Comprehensive unit and integration tests
+- **Code Quality**: Enforced with PHPStan (level 9) and PHP-CS-Fixer
+- **Performance**: Optimized with FrankenPHP worker mode and caching
+- **Security**: JWT authentication with proper validation
+
+## 🚦 Production Features
+
+- **Security**: HTTPS by default with automatic TLS certificates
+- **Scalability**: HTTP/3 and Early Hints support
+- **Real-time**: Mercure hub integration for live updates
 
 ---
 
-A [Docker](https://www.docker.com/)-based installer and runtime for the [Symfony](https://symfony.com) web framework,
-with [FrankenPHP](https://frankenphp.dev) and [Caddy](https://caddyserver.com/) inside!
-
-![CI](https://github.com/anthodev/ns2-ubcr/workflows/CI/badge.svg)
-
-## Getting Started
-
-1. If not already done, [install Docker Compose](https://docs.docker.com/compose/install/) (v2.10+)
-2. Run `docker compose build --no-cache` to build fresh images
-3. Run `docker compose up --pull always -d --wait` to set up and start a fresh Symfony project
-4. Open `https://localhost` in your favorite web browser and [accept the auto-generated TLS certificate](https://stackoverflow.com/a/15076602/1352334)
-5. Run `docker compose down --remove-orphans` to stop the Docker containers.
-
-## Features
-
-* Production, development and CI ready
-* Just 1 service by default
-* Blazing-fast performance thanks to [the worker mode of FrankenPHP](https://github.com/dunglas/frankenphp/blob/main/docs/worker.md) (automatically enabled in prod mode)
-* [Installation of extra Docker Compose services](docs/extra-services.md) with Symfony Flex
-* Automatic HTTPS (in dev and prod)
-* HTTP/3 and [Early Hints](https://symfony.com/blog/new-in-symfony-6-3-early-hints) support
-* Real-time messaging thanks to a built-in [Mercure hub](https://symfony.com/doc/current/mercure.html)
-* [Vulcain](https://vulcain.rocks) support
-* Native [XDebug](docs/xdebug.md) integration
-* Super-readable configuration
-
-**Enjoy!**
-
-## Docs
-
-1. [Options available](docs/options.md)
-2. [Using Symfony Docker with an existing project](docs/existing-project.md)
-3. [Support for extra services](docs/extra-services.md)
-4. [Deploying in production](docs/production.md)
-5. [Debugging with Xdebug](docs/xdebug.md)
-6. [TLS Certificates](docs/tls.md)
-7. [Using MySQL instead of PostgreSQL](docs/mysql.md)
-8. [Using Alpine Linux instead of Debian](docs/alpine.md)
-9. [Using a Makefile](docs/makefile.md)
-10. [Updating the template](docs/updating.md)
-11. [Troubleshooting](docs/troubleshooting.md)
-
-## License
-
-Symfony Docker is available under the MIT License.
-
-## Credits
-
-Created by [Kévin Dunglas](https://dunglas.dev), co-maintained by [Maxime Helias](https://twitter.com/maxhelias) and sponsored by [Les-Tilleuls.coop](https://les-tilleuls.coop).
+This project transforms game compatibility tracking from scattered forum posts into a structured, community-driven database that helps gamers make informed decisions about their gaming experience.
