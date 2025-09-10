@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace App\Application\QueryHandler\Game;
 
+use App\Application\Command\Game\UpdateGameFromApiCommand;
+use App\Application\Exception\Game\CannotUpdateGameException;
 use App\Application\Query\Game\SearchGamesQuery;
-use App\Application\UseCase\Game\UpdateGameFromApiUseCase;
 use App\Domain\Model\Game\ApiGame;
 use App\Domain\Model\Game\Game;
 use App\Domain\Repository\Game\ApiGameRepositoryInterface;
 use App\Domain\Repository\Game\GameRepositoryInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 #[AsMessageHandler]
 class SearchGamesQueryHandler
@@ -19,13 +21,15 @@ class SearchGamesQueryHandler
     public function __construct(
         private readonly GameRepositoryInterface $gameRepository,
         private readonly ApiGameRepositoryInterface $apiGameRepository,
-        private readonly UpdateGameFromApiUseCase $updateGameFromApiUseCase,
+        private readonly MessageBusInterface $messageBus,
         private readonly LoggerInterface $logger,
     ) {
     }
 
     /**
      * @return array{local: Game[], api: ApiGame[], total: int}
+     *
+     * @throws CannotUpdateGameException
      */
     public function __invoke(SearchGamesQuery $query): array
     {
@@ -66,10 +70,16 @@ class SearchGamesQueryHandler
                     $localGame = $localGamesBySlug[$apiSlug];
 
                     if ($localGame->getUpdatedAt() < $apiGame->getUpdatedAt()) {
-                        $this->updateGameFromApiUseCase->execute(
-                            game: $localGame,
-                            apiGame: $apiGame,
-                        );
+                        try {
+                            $this->messageBus->dispatch(
+                                new UpdateGameFromApiCommand(
+                                    game: $localGame,
+                                    apiGame: $apiGame,
+                                )
+                            );
+                        } catch (\Exception $e) {
+                            throw new CannotUpdateGameException();
+                        }
                     }
                 }
 

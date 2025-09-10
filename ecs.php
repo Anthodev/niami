@@ -10,7 +10,7 @@ return ECSConfig::configure()
     ->withPhpCsFixerSets(
         doctrineAnnotation: true,
         per: true,
-        perCS20: true,
+        perCS: true,
         symfony: true,
     )
     ->withSkip([

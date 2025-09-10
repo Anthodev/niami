@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Application\QueryHandler\Game;
 
 use App\Application\Command\Game\CreateGameCommand;
-use App\Application\Exception\CannotCreateGameException;
+use App\Application\Exception\Game\CannotCreateGameException;
 use App\Application\Helper\MessageBusHelper;
 use App\Application\Query\Game\GetOrCreateGameQuery;
 use App\Application\QueryHandler\Game\GetOrCreateGameQueryHandler;
