@@ -2,17 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Application\UseCase\Search;
+namespace App\Application\QueryHandler\Search;
 
+use App\Application\Query\Search\GetSearchResultsQuery;
 use App\Application\Service\Game\ApiGameSearchService;
 use App\Shared\Dto\Game\SearchResultsOutputDto;
 use App\Shared\Enum\SearchParameterEnum;
 use Symfony\Component\Form\FormError;
-use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class GetSearchResultsUseCase
+#[AsMessageHandler]
+class GetSearchResultsQueryHandler
 {
     public function __construct(
         private readonly ApiGameSearchService $apiGameSearchService,
@@ -23,7 +25,7 @@ class GetSearchResultsUseCase
     /**
      * @throws ExceptionInterface
      */
-    public function execute(FormInterface $searchGamesForm): SearchResultsOutputDto
+    public function __invoke(GetSearchResultsQuery $query): SearchResultsOutputDto
     {
         $results = [
             'games' => [],
@@ -33,18 +35,18 @@ class GetSearchResultsUseCase
         $hasError = false;
         $errorMessage = '';
 
-        if ($searchGamesForm->isSubmitted()) {
-            $gameData = $searchGamesForm->get('game')->getData();
+        if ($query->form->isSubmitted()) {
+            $gameData = $query->form->get('game')->getData();
             $searchQuery = is_string($gameData) ? trim($gameData) : '';
 
-            if (!$searchGamesForm->isValid()) {
+            if (!$query->form->isValid()) {
                 $hasError = true;
                 $errors = [];
 
                 /**
                  * @var FormError $error
                  */
-                foreach ($searchGamesForm->getErrors(true) as $error) {
+                foreach ($query->form->getErrors(true) as $error) {
                     $errors[] = $error->getMessage();
                 }
 

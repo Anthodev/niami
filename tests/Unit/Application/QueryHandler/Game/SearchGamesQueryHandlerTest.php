@@ -6,22 +6,22 @@ namespace App\Tests\Unit\Application\QueryHandler\Game;
 
 use App\Application\Query\Game\SearchGamesQuery;
 use App\Application\QueryHandler\Game\SearchGamesQueryHandler;
-use App\Application\UseCase\Game\UpdateGameFromApiUseCase;
+use App\Application\Exception\Game\CannotUpdateGameException;
 use App\Domain\Model\Game\ApiGame;
 use App\Domain\Model\Game\Game;
 use App\Domain\Repository\Game\ApiGameRepositoryInterface;
-use App\Domain\Repository\Game\GameRepositoryInterface;
 use App\Infrastructure\Persistence\Doctrine\Game\Repository\DoctrineGameRepository;
 use App\Shared\Dto\Game\GameCompanyDataDto;
 use Faker\Factory;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 beforeEach(function () {
     $this->faker = Factory::create();
 
     $this->gameRepository = $this->createMock(DoctrineGameRepository::class);
     $this->apiGameRepository = $this->createMock(ApiGameRepositoryInterface::class);
-    $this->updateGameFromApiUseCase = $this->createMock(UpdateGameFromApiUseCase::class);
+    $this->messageBus = $this->createMock(MessageBusInterface::class);
     $this->logger = $this->createMock(LoggerInterface::class);
 
     $this->publisherName = $this->faker->company();
@@ -37,7 +37,7 @@ beforeEach(function () {
     $this->handler = new SearchGamesQueryHandler(
         $this->gameRepository,
         $this->apiGameRepository,
-        $this->updateGameFromApiUseCase,
+        $this->messageBus,
         $this->logger,
     );
 });
@@ -233,8 +233,8 @@ it('handles exceptions during api search', function () {
 
 it('respects the limit parameter for combined results', function () {
     // Given
-    $query = 'zelda';
-    $limit = 2;
+    $queryString = 'zelda';
+    $limit = 5;
 
     $localGames = [
         new Game(slug: 'zelda-test'),
@@ -246,10 +246,11 @@ it('respects the limit parameter for combined results', function () {
         ->method('findGamesByNameOrSlug')
         ->willReturn($localGames);
 
+    // API should get remaining limit (5 - 3 = 2)
     $this->apiGameRepository
         ->expects($this->once())
         ->method('searchGames')
-        ->with($query, $limit)
+        ->with($queryString, 2)
         ->willReturn([new ApiGame(
             name: 'Zelda',
             slug: 'zelda',
@@ -268,8 +269,7 @@ it('respects the limit parameter for combined results', function () {
             publisher: $this->publisherDto,
         )]);
 
-    $limit = 5;
-    $query = new SearchGamesQuery($query, $limit, true);
+    $query = new SearchGamesQuery($queryString, $limit, true);
 
     // When
     $result = $this->handler->__invoke($query);
@@ -281,4 +281,44 @@ it('respects the limit parameter for combined results', function () {
         ->and($result['local'])->toHaveCount(3)
         ->and($result['api'])->toHaveCount(2)
         ->and($result['total'])->toBe(5);
+});
+
+it('throws CannotUpdateGameException when message bus dispatch fails', function () {
+    // Given
+    $queryString = 'zelda';
+    $limit = 10;
+
+    $localGame = new Game(
+        slug: 'zelda-test',
+    );
+
+    $this->gameRepository
+        ->method('findGamesByNameOrSlug')
+        ->willReturn([$localGame]);
+
+    $apiGame = new ApiGame(
+        name: 'Zelda Test',
+        slug: 'zelda-test',
+        description: 'Game description',
+        imageCover: 'image.jpg',
+        releaseDate: '2023-01-01',
+        updatedAt: new \DateTimeImmutable('2023-02-01'), // Newer than local game
+        publisher: $this->publisherDto,
+    );
+
+    $this->apiGameRepository
+        ->method('searchGames')
+        ->willReturn([$apiGame]);
+
+    // Mock message bus to throw exception
+    $this->messageBus
+        ->expects($this->once())
+        ->method('dispatch')
+        ->willThrowException(new \Exception('Message bus error'));
+
+    $query = new SearchGamesQuery($queryString, $limit, true);
+
+    // When & Then
+    expect(fn() => $this->handler->__invoke($query))
+        ->toThrow(CannotUpdateGameException::class);
 });

@@ -6,6 +6,7 @@ namespace App\Tests\Unit\Application\CommandHandler;
 
 use App\Application\Command\Game\CreatePublisherCommand;
 use App\Application\CommandHandler\Game\CreatePublisherCommandHandler;
+use App\Application\Exception\Game\CannotCreatePublisherException;
 use App\Domain\Factory\Game\GamePublisherFactory;
 use App\Domain\Model\Game\Publisher;
 use App\Infrastructure\Persistence\Doctrine\Game\Repository\DoctrinePublisherRepository;
@@ -125,7 +126,7 @@ it('handles exception during save operation', function () {
 
     $handler = new CreatePublisherCommandHandler(
         $this->publisherRepository,
-        $this->logger
+        $this->logger,
     );
 
     $command = new CreatePublisherCommand(
@@ -139,7 +140,7 @@ it('handles exception during save operation', function () {
 
     // Then
     expect(true)->toBeTrue();
-});
+})->throws(CannotCreatePublisherException::class);
 
 it('handles different types of exceptions during save', function () {
     // Given
@@ -177,7 +178,7 @@ it('handles different types of exceptions during save', function () {
 
     // Then
     expect(true)->toBeTrue();
-});
+})->throws(CannotCreatePublisherException::class);
 
 it('creates publisher using GamePublisherFactory with correct parameters', function () {
     // Given

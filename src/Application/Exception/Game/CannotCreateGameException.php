@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Exception;
+namespace App\Application\Exception\Game;
 
 class CannotCreateGameException extends \Exception
 {

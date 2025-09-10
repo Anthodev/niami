@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\CommandHandler\Game;
 
 use App\Application\Command\Game\CreatePublisherCommand;
+use App\Application\Exception\Game\CannotCreatePublisherException;
 use App\Domain\Factory\Game\GamePublisherFactory;
 use App\Domain\Repository\Game\PublisherRepositoryInterface;
 use Psr\Log\LoggerInterface;
@@ -19,6 +20,9 @@ class CreatePublisherCommandHandler
     ) {
     }
 
+    /**
+     * @throws CannotCreatePublisherException
+     */
     public function __invoke(CreatePublisherCommand $command): void
     {
         $publisher = $this->publisherRepository->findByName($command->name);
@@ -37,6 +41,7 @@ class CreatePublisherCommandHandler
             $this->publisherRepository->save($publisher);
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
+            throw new CannotCreatePublisherException();
         }
     }
 }

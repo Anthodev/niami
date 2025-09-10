@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controller;
 
-use App\Application\Exception\CannotGetGameException;
-use App\Application\UseCase\Game\GetOrCreateGameUseCase;
+use App\Application\Command\Game\CreateGameWithCacheCheckCommand;
+use App\Application\Helper\MessageBusHelper;
+use App\Application\Query\Game\GetGameBySlugQuery;
 use App\Domain\Model\Game\Game;
 use App\Domain\Model\Report\Report;
 use App\Presentation\Form\CreateReportForm;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\Exception\ExceptionInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(path: '/reports')]
@@ -20,16 +23,45 @@ class ReportsController extends AbstractController
     #[Route(path: '/{gameSlug}', name: 'reports_for_game', methods: [Request::METHOD_GET])]
     public function reportsForGame(
         string $gameSlug,
-        GetOrCreateGameUseCase $getGameUseCase,
+        MessageBusInterface $messageBus,
+        MessageBusHelper $messageBusHelper,
     ): Response {
-        try {
-            /** @var Game $game */
-            $game = $getGameUseCase->execute($gameSlug);
-        } catch (CannotGetGameException $e) {
+        $gameEnvelope = $messageBus->dispatch(new GetGameBySlugQuery($gameSlug));
+
+        /** @var ?Game $game */
+        $game = $messageBusHelper->getContentFromEnvelope(
+            envelope: $gameEnvelope,
+            logErrorMessage: 'Game retrieval failed',
+            class: Game::class,
+        );
+
+        if (null === $game) {
+            try {
+                $messageBus->dispatch(new CreateGameWithCacheCheckCommand($gameSlug));
+
+                $gameEnvelope = $messageBus->dispatch(new GetGameBySlugQuery($gameSlug));
+
+                /** @var ?Game $game */
+                $game = $messageBusHelper->getContentFromEnvelope(
+                    envelope: $gameEnvelope,
+                    logErrorMessage: 'Game retrieval failed',
+                    class: Game::class,
+                );
+            } catch (ExceptionInterface $e) {
+                return $this->render(
+                    '@app/reports/reports_for_game.html.twig',
+                    [
+                        'error' => $e->getMessage(),
+                    ]
+                );
+            }
+        }
+
+        if (null === $game) {
             return $this->render(
                 '@app/reports/reports_for_game.html.twig',
                 [
-                    'error' => $e->getMessage(),
+                    'error' => 'Game retrieval failed',
                 ]
             );
         }
