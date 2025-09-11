@@ -105,6 +105,12 @@
             inversed-by="reports"
         />
 
+        <one-to-many
+            field="reportComments"
+            target-entity="App\Domain\Model\Report\ReportComment"
+            mapped-by="report"
+        />
+
         <indexes>
             <index name="reports_game_id" columns="game_id"/>
             <index name="reports_upvote_count" columns="upvote_count"/>
