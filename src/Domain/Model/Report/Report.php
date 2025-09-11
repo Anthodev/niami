@@ -8,6 +8,8 @@ use App\Domain\Model\Common\ModelInterface;
 use App\Domain\Model\Game\Game;
 use App\Domain\Trait\TimestampableTrait;
 use App\Infrastructure\Enum\ReportGameStatusEnum;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Uid\Uuid;
 
 class Report implements ModelInterface
@@ -30,6 +32,8 @@ class Report implements ModelInterface
         private ReportGameStatusEnum $gameStatus = ReportGameStatusEnum::OK,
         private int $upvoteCount = 0,
         private bool $isVisible = true,
+        /** @var Collection<int, ReportComment> $reportComments */
+        private Collection $reportComments = new ArrayCollection(),
     ) {
     }
 
@@ -216,6 +220,32 @@ class Report implements ModelInterface
     public function increaseUpvoteCount(): self
     {
         ++$this->upvoteCount;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ReportComment>
+     */
+    public function getReportComments(): Collection
+    {
+        return $this->reportComments;
+    }
+
+    public function addReportComment(ReportComment $reportComment): self
+    {
+        if (!$this->reportComments->contains($reportComment)) {
+            $this->reportComments->add($reportComment);
+        }
+
+        return $this;
+    }
+
+    public function removeReportComment(ReportComment $reportComment): self
+    {
+        if ($this->reportComments->contains($reportComment)) {
+            $this->reportComments->removeElement($reportComment);
+        }
 
         return $this;
     }
