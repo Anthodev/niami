@@ -10,6 +10,7 @@ use App\Presentation\Form\CreateReportForm;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -32,7 +33,11 @@ class ReportCreateController extends AbstractController
             /** @var CreateReportFormInputDto $createReportInputDto */
             $createReportInputDto = $createReportForm->getData();
 
-            $messageBus->dispatch(new CreateReportFromDtoCommand($createReportInputDto));
+            try {
+                $messageBus->dispatch(new CreateReportFromDtoCommand($createReportInputDto));
+            } catch (ExceptionInterface) {
+                return $this->json('Error while creating a comment', Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
         }
 
         return $this->redirectToRoute('reports_for_game', ['gameSlug' => $dataGameSlug]);

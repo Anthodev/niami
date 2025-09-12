@@ -1,0 +1,4 @@
+form:
+    create:
+        comment:
+            label: 'Leave a comment'
