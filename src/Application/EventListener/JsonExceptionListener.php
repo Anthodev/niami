@@ -37,9 +37,7 @@ class JsonExceptionListener implements EventSubscriberInterface
             'message' => $this->createMessage($exceptionCode),
         ];
 
-        $event->setResponse(
-            new JsonResponse($content, $content['code'])
-        );
+        $event->setResponse(new JsonResponse($content, $content['code']));
     }
 
     private function createMessage(int $code): string

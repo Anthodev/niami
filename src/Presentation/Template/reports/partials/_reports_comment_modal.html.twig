@@ -1,0 +1,39 @@
+{% trans_default_domain 'reportComment' %}
+
+<dialog id="comment_{{ modal_index }}" class="modal">
+  <div class="modal-box w-full flex-col">
+    <div class="divider divider-start text-lg font-bold">{{ 'reports.modal.title'|trans }}</div>
+
+    <div class="modal-action flex flex-col">
+        {{ form_start(createReportCommentForm, {
+            'action': path('create_report_comment', { reportId: report.id }),
+            'method': 'POST',
+        }) }}
+
+        {{ form_widget(createReportCommentForm.comment, {
+            'attr': {
+                'class': 'textarea textarea-warning'
+            }
+        }) }}
+
+        {{ form_widget(createReportCommentForm.gameSlug, {
+            'attr': {
+                'value': game.slug,
+            }
+        }) }}
+
+        {{ form_widget(createReportCommentForm.ip, {
+            'attr': {
+                'value': app.request.clientIp,
+            }
+        }) }}
+
+        <button class="btn btn-primary">{{ 'reports.modal.submit'|trans }}</button>
+
+        {{ form_rest(createReportCommentForm) }}
+        {{ form_end(createReportCommentForm) }}
+
+        <button type="button" class="btn" formnovalidate onclick="document.getElementById('comment_{{ modal_index }}').close()">{{ 'reports.modal.close'|trans }}</button>
+    </div>
+  </div>
+</dialog>

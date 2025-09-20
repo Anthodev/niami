@@ -9,6 +9,7 @@ use App\Application\Helper\MessageBusHelper;
 use App\Application\Query\Game\GetGameBySlugQuery;
 use App\Domain\Model\Game\Game;
 use App\Domain\Model\Report\Report;
+use App\Presentation\Form\CreateReportCommentForm;
 use App\Presentation\Form\CreateReportForm;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -88,6 +89,11 @@ class ReportsController extends AbstractController
             ]
         );
 
+        $createReportCommentForm = $this->createForm(
+            CreateReportCommentForm::class,
+            null,
+        );
+
         return $this->render(
             '@app/reports/reports_for_game.html.twig',
             [
@@ -95,6 +101,7 @@ class ReportsController extends AbstractController
                 'reports' => $reports ?? [],
                 'gameSlug' => $game->getSlug(),
                 'createReportForm' => $createReportForm->createView(),
+                'createReportCommentForm' => $createReportCommentForm->createView(),
             ]
         );
     }

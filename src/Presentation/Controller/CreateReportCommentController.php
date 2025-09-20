@@ -15,17 +15,27 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class CreateReportCommentController extends AbstractController
 {
-    #[Route(path: '/reports/{reportId}/comment/new', name: 'create_report_comment', methods: [Request::METHOD_POST])]
+    #[
+        Route(
+            path: '/reports/{reportId}/comment/new',
+            name: 'create_report_comment',
+            methods: [Request::METHOD_POST],
+        ),
+    ]
     public function __invoke(
         Request $request,
         string $reportId,
         MessageBusInterface $messageBus,
     ): Response {
-        $createReportCommentForm = $this->createForm(CreateReportCommentForm::class);
+        $createReportCommentForm = $this->createForm(
+            CreateReportCommentForm::class,
+        );
         $createReportCommentForm->handleRequest($request);
 
         /** @var string $formDataGameSlug */
-        $formDataGameSlug = $request->request->all()['create_report_comment_form']['gameSlug'];
+        $formDataGameSlug = $request->request->all()[
+            'create_report_comment_form'
+        ]['gameSlug'];
 
         if (
             $createReportCommentForm->isSubmitted()
@@ -34,13 +44,17 @@ class CreateReportCommentController extends AbstractController
             /** @var CreateReportCommentFormInputDto $createReportCommentFormInputDto */
             $createReportCommentFormInputDto = $createReportCommentForm->getData();
 
-            $messageBus->dispatch(new CreateReportCommentCommand(
-                $createReportCommentFormInputDto->comment,
-                $createReportCommentFormInputDto->ip,
-                $reportId,
-            ));
+            $messageBus->dispatch(
+                new CreateReportCommentCommand(
+                    $createReportCommentFormInputDto->comment,
+                    $createReportCommentFormInputDto->ip,
+                    $reportId,
+                ),
+            );
         }
 
-        return $this->redirectToRoute('reports_for_game', ['gameSlug' => $formDataGameSlug]);
+        return $this->redirectToRoute('reports_for_game', [
+            'gameSlug' => $formDataGameSlug,
+        ]);
     }
 }
