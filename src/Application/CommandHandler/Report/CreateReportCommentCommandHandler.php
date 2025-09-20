@@ -12,8 +12,10 @@ use App\Domain\Factory\Report\ReportCommentFactory;
 use App\Domain\Model\Report\Report;
 use App\Domain\Repository\Report\ReportCommentRepositoryInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 
+#[AsMessageHandler]
 class CreateReportCommentCommandHandler
 {
     public function __construct(
@@ -26,7 +28,9 @@ class CreateReportCommentCommandHandler
 
     public function __invoke(CreateReportCommentCommand $command): void
     {
-        $reportEnvelope = $this->messageBus->dispatch(new GetReportByIdQuery($command->reportId));
+        $reportEnvelope = $this->messageBus->dispatch(
+            new GetReportByIdQuery($command->reportId),
+        );
         /** @var Report $report */
         $report = $this->messageBusHelper->getContentFromEnvelope(
             envelope: $reportEnvelope,

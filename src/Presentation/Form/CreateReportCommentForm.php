@@ -25,7 +25,18 @@ class CreateReportCommentForm extends AbstractType
     ): void {
         $builder
             ->add('comment', TextareaType::class, [
-                'label' => $this->translator->trans('form.create.comment.label', [], 'reportComment'),
+                'label' => $this->translator->trans(
+                    'form.create.comment.label',
+                    [],
+                    'reportComment',
+                ),
+                'attr' => [
+                    'placeholder' => $this->translator->trans(
+                        'form.create.comment.placeholder',
+                        [],
+                        'reportComment',
+                    ),
+                ],
                 'empty_data' => '',
                 'required' => true,
             ])
@@ -34,8 +45,7 @@ class CreateReportCommentForm extends AbstractType
             ])
             ->add('gameSlug', HiddenType::class, [
                 'required' => true,
-            ])
-        ;
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

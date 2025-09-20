@@ -108,6 +108,15 @@
                 {% endif %}
             </turbo-frame>
         </td>
+
+        <td class="text-center hover:bg-base-300">
+            <div class="w-6 h-6 mx-auto">
+                <button class="btn text-warning btn-square -m-2" onclick="comment_{{ loop.index }}.showModal()">
+                    {{ ux_icon('ph:warning') }}
+                </button>
+            </div>
+        </td>
+        {% include '@reports/partials/_reports_comment_modal.html.twig' with { modal_index: loop.index, report: report, game: report.game } %}
     </tr>
 {% endfor %}
 

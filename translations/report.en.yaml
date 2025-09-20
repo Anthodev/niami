@@ -46,6 +46,7 @@ list:
             native_resolution: 'Native Res****'
             better_loading_times: 'Better loading'
             switch_2_edition: 'Switch 2 Edition'
+            issue: 'Issue?'
             upvoted: 'Upvoted'
             portable_label: 'Portable'
             tv_label: 'TV'

@@ -1,4 +1,11 @@
+reports:
+    modal:
+        title: 'Describe the issue with this report'
+        submit: 'Submit'
+        close: 'Close'
+
 form:
     create:
         comment:
             label: 'Leave a comment'
+            placeholder: 'Describe the issue with this report'

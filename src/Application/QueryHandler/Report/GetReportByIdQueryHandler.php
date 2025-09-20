@@ -7,7 +7,9 @@ namespace App\Application\QueryHandler\Report;
 use App\Application\Query\Report\GetReportByIdQuery;
 use App\Domain\Model\Report\Report;
 use App\Domain\Repository\Report\ReportRepositoryInterface;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+#[AsMessageHandler]
 class GetReportByIdQueryHandler
 {
     public function __construct(

@@ -1,16 +1,22 @@
-@import "tailwindcss";
-@import "../vendor/daisyui/daisyui.min.css";
-@import "./plumber-dark-theme.css";
-@import "./plumber-light-theme.css";
+@import 'tailwindcss';
+@import '../vendor/daisyui/daisyui.min.css';
+@import './plumber-dark-theme.css';
+@import './plumber-light-theme.css';
 
 @plugin "../vendor/daisyui/daisyui.index.js" {
-    themes: plumber-light --default, plumber-dark --prefersdark;
+    themes:
+        plumber-light --default,
+        plumber-dark --prefersdark;
 }
 
 @source "../../templates/";
 
 body {
     scroll-behavior: smooth;
+}
+
+textarea {
+    width: 100%;
 }
 
 [data-report-upvote].upvoted .text-green-200 {
@@ -40,7 +46,8 @@ body {
 }
 
 @keyframes gradient-x {
-    0%, 100% {
+    0%,
+    100% {
         background-size: 200% 200%;
         background-position: left center;
     }
@@ -62,7 +69,8 @@ body {
 }
 
 @keyframes float {
-    0%, 100% {
+    0%,
+    100% {
         transform: translateY(0px);
     }
     50% {
@@ -71,7 +79,8 @@ body {
 }
 
 @keyframes pulse-smooth {
-    0%, 100% {
+    0%,
+    100% {
         opacity: 0.5;
         transform: scale(1);
     }
@@ -96,7 +105,6 @@ body {
 .animate-pulse-smooth {
     animation: pulse-smooth 1.5s ease-in-out infinite;
 }
-
 
 .line-clamp-5 {
     display: -webkit-box;
