@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Persistence\Doctrine\Report;
+namespace App\Infrastructure\Persistence\Doctrine\Report\Repository;
 
 use App\Domain\Model\Report\ReportComment;
 use App\Domain\Repository\Report\ReportCommentRepositoryInterface;

@@ -10,7 +10,7 @@ use App\Domain\Model\Game\Game;
 use App\Domain\Model\Report\Report;
 use App\Infrastructure\Enum\ReportGameStatusEnum;
 use App\Infrastructure\Persistence\Doctrine\Game\Repository\DoctrineGameRepository;
-use App\Infrastructure\Persistence\Doctrine\Report\DoctrineReportRepository;
+use App\Infrastructure\Persistence\Doctrine\Report\Repository\DoctrineReportRepository;
 use App\Presentation\Dto\CreateReportFormInputDto;
 use Faker\Factory;
 
