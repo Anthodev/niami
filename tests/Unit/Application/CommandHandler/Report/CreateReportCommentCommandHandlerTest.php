@@ -11,7 +11,7 @@ use App\Application\Helper\MessageBusHelper;
 use App\Application\Query\Report\GetReportByIdQuery;
 use App\Domain\Model\Report\Report;
 use App\Domain\Model\Report\ReportComment;
-use App\Infrastructure\Persistence\Doctrine\Report\DoctrineReportCommentRepository;
+use App\Infrastructure\Persistence\Doctrine\Report\Repository\DoctrineReportCommentRepository;
 use Faker\Factory;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Envelope;

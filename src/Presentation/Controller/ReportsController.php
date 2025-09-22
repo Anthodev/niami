@@ -21,13 +21,21 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route(path: '/reports')]
 class ReportsController extends AbstractController
 {
-    #[Route(path: '/{gameSlug}', name: 'reports_for_game', methods: [Request::METHOD_GET])]
+    #[
+        Route(
+            path: '/{gameSlug}',
+            name: 'reports_for_game',
+            methods: [Request::METHOD_GET],
+        ),
+    ]
     public function reportsForGame(
         string $gameSlug,
         MessageBusInterface $messageBus,
         MessageBusHelper $messageBusHelper,
     ): Response {
-        $gameEnvelope = $messageBus->dispatch(new GetGameBySlugQuery($gameSlug));
+        $gameEnvelope = $messageBus->dispatch(
+            new GetGameBySlugQuery($gameSlug),
+        );
 
         /** @var ?Game $game */
         $game = $messageBusHelper->getContentFromEnvelope(
@@ -38,9 +46,13 @@ class ReportsController extends AbstractController
 
         if (null === $game) {
             try {
-                $messageBus->dispatch(new CreateGameWithCacheCheckCommand($gameSlug));
+                $messageBus->dispatch(
+                    new CreateGameWithCacheCheckCommand($gameSlug),
+                );
 
-                $gameEnvelope = $messageBus->dispatch(new GetGameBySlugQuery($gameSlug));
+                $gameEnvelope = $messageBus->dispatch(
+                    new GetGameBySlugQuery($gameSlug),
+                );
 
                 /** @var ?Game $game */
                 $game = $messageBusHelper->getContentFromEnvelope(
@@ -53,21 +65,19 @@ class ReportsController extends AbstractController
                     '@app/reports/reports_for_game.html.twig',
                     [
                         'error' => $e->getMessage(),
-                    ]
+                    ],
                 );
             }
         }
 
         if (null === $game) {
-            return $this->render(
-                '@app/reports/reports_for_game.html.twig',
-                [
-                    'error' => 'Game retrieval failed',
-                ]
-            );
+            return $this->render('@app/reports/reports_for_game.html.twig', [
+                'error' => 'Game retrieval failed',
+            ]);
         }
 
         $reports = $game->getReports()->toArray();
+        $mostUpvotedReport = null;
 
         if (!empty($reports)) {
             /** @var array<int, Report> $reports */
@@ -78,31 +88,27 @@ class ReportsController extends AbstractController
 
                 return $b->getCreatedAt() <=> $a->getCreatedAt();
             });
+
+            $mostUpvotedReport = $reports[0];
         }
 
-        $createReportForm = $this->createForm(
-            CreateReportForm::class,
-            null,
-            [
-                'action' => $this->generateUrl('create_report'),
-                'method' => Request::METHOD_POST,
-            ]
-        );
+        $createReportForm = $this->createForm(CreateReportForm::class, null, [
+            'action' => $this->generateUrl('create_report'),
+            'method' => Request::METHOD_POST,
+        ]);
 
         $createReportCommentForm = $this->createForm(
             CreateReportCommentForm::class,
             null,
         );
 
-        return $this->render(
-            '@app/reports/reports_for_game.html.twig',
-            [
-                'game' => $game,
-                'reports' => $reports ?? [],
-                'gameSlug' => $game->getSlug(),
-                'createReportForm' => $createReportForm->createView(),
-                'createReportCommentForm' => $createReportCommentForm->createView(),
-            ]
-        );
+        return $this->render('@app/reports/reports_for_game.html.twig', [
+            'game' => $game,
+            'reports' => $reports ?? [],
+            'gameSlug' => $game->getSlug(),
+            'mostUpvotedReport' => $mostUpvotedReport,
+            'createReportForm' => $createReportForm->createView(),
+            'createReportCommentForm' => $createReportCommentForm->createView(),
+        ]);
     }
 }
