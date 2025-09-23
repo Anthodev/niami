@@ -1,0 +1,85 @@
+{% trans_default_domain 'report' %}
+
+{% if topReport is defined and topReport is not null %}
+
+    {% set status = topReport.gameStatus %}
+    {% set statusBg = '' %}
+    {% set statusIcon = '' %}
+
+    {% if status == enum('App\\Infrastructure\\Enum\\ReportGameStatusEnum').OK %}
+        {% set statusIcon = 'ph:smiley' %}
+        {% set statusBg = 'bg-info/50' %}
+    {% elseif status == enum('App\\Infrastructure\\Enum\\ReportGameStatusEnum').BUGGED %}
+        {% set statusIcon = 'ph:smiley-x-eyes' %}
+        {% set statusBg = 'bg-primary/50' %}
+    {% elseif status == enum('App\\Infrastructure\\Enum\\ReportGameStatusEnum').BAD %}
+        {% set statusIcon = 'ph:smiley-nervous' %}
+        {% set statusBg = 'bg-warning/50' %}
+    {% else %}
+        {% set statusIcon = 'ph:sparkle' %}
+
+        {% set statusBg = 'bg-success/50' %}
+    {% endif %}
+
+    <div class="divider divider-start text-lg font-bold flex">
+        <div class="py-0.5 px-2.5 border-2 rounded-xl bg-accent/50 flex items-center">
+            <div class="w-6 h-6 mr-1">{{ ux_icon('ph:medal') }}</div> {{ 'most_upvoted.title'|trans }}
+        </div>
+    </div>
+
+    <div class="flex justify-between">
+        <div class="badge {{ statusBg }} gap-2">
+            <span>Status:</span>
+            <div class="w-4 h-4 tooltip tooltip-right" data-tip="{{ topReport.gameStatus.name }}">
+                {{ ux_icon(statusIcon) }}
+            </div>
+        </div>
+
+        <div class="badge {{ topReport.isSwitch2Edition ? 'bg-accent/50' : 'bg-neutral/50 grayscale text-base-content/20' }}">
+            {{ 'most_upvoted.badge.switch_2_edition'|trans }}
+        </div>
+
+        <div class="badge {{ topReport.hasImprovedLoadingTimes ? 'bg-accent/50' : 'bg-neutral/50 grayscale text-base-content/20' }}">
+            {{ 'most_upvoted.badge.better_loading_times'|trans }}
+        </div>
+    </div>
+
+    <div class="flex justify-between">
+        <div class="badge {{ topReport.is60FpsPortable ? 'bg-secondary/50' : 'bg-neutral/50 grayscale text-base-content/20' }}">
+            {{ 'most_upvoted.badge.60fps_portable'|trans }}
+        </div>
+
+        <div class="badge {{ topReport.hasStableFrameratePortable ? 'bg-secondary/50' : 'bg-neutral/50 grayscale text-base-content/20' }}">
+            {{ 'most_upvoted.badge.stable_fps_portable'|trans }}
+        </div>
+
+        <div class="badge {{ topReport.hasResolutionImprovedPortable ? 'bg-secondary/50' : 'bg-neutral/50 grayscale text-base-content/20' }}">
+            {{ 'most_upvoted.badge.resolution_improved_portable'|trans }}
+        </div>
+
+        <div class="badge {{ topReport.isNativeResolutionPortable ? 'bg-secondary/50' : 'bg-neutral/50 grayscale text-base-content/20' }}">
+            {{ 'most_upvoted.badge.native_resolution_portable'|trans }}
+        </div>
+    </div>
+
+    <div class="flex justify-between">
+        <div class="badge {{ topReport.is60FpsDocked ? 'bg-primary/50' : 'bg-neutral/50 grayscale text-base-content/20' }}">
+            {{ 'most_upvoted.badge.60fps_tv'|trans }}
+        </div>
+
+        <div class="badge {{ topReport.hasStableFramerateDocked ? 'bg-primary/50' : 'bg-neutral/50 grayscale text-base-content/20' }}">
+            {{ 'most_upvoted.badge.stable_fps_tv'|trans }}
+        </div>
+
+        <div class="badge {{ topReport.hasResolutionImprovedDocked ? 'bg-primary/50' : 'bg-neutral/50 grayscale text-base-content/20' }}">
+            {{ 'most_upvoted.badge.resolution_improved_tv'|trans }}
+        </div>
+
+        <div class="badge {{ topReport.isNativeResolutionDocked ? 'bg-primary/50' : 'bg-neutral/50 grayscale text-base-content/20' }}">
+            {{ 'most_upvoted.badge.native_resolution_tv'|trans }}
+        </div>
+    </div>
+
+    <div class="divider divider-accent"></div>
+
+{% endif %}

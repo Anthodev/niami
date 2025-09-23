@@ -1,4 +1,5 @@
 {% trans_default_domain 'report' %}
+{% import '@macro/_ordinal_macro.html.twig' as ordinal %}
 
 {% if reports|length > 0 %}
     <div class="overflow-x-auto min-h-32 max-h-151">
@@ -6,16 +7,16 @@
             <thead>
                 <tr>
                     <th class="text-center">{{ 'list.table.header.status'|trans }}</th>
-                    <th class="text-center">{{ 'list.table.header.60fps'|trans }}</th>
-                    <th class="text-center">{{ 'list.table.header.stable_FPS'|trans }}</th>
-                    <th class="text-center">{{ 'list.table.header.better_resolution'|trans }}</th>
-                    <th class="text-center">{{ 'list.table.header.native_resolution'|trans }}</th>
-                    <th class="text-center">{{ 'list.table.header.60fps'|trans }}</th>
-                    <th class="text-center">{{ 'list.table.header.stable_FPS'|trans }}</th>
-                    <th class="text-center">{{ 'list.table.header.better_resolution'|trans }}</th>
-                    <th class="text-center">{{ 'list.table.header.native_resolution'|trans }}</th>
+                    <th class="text-center">{{ ordinal.ordinal('list.table.header.60fps'|trans) }}</th>
+                    <th class="text-center">{{ ordinal.ordinal('list.table.header.stable_FPS'|trans) }}</th>
+                    <th class="text-center">{{ ordinal.ordinal('list.table.header.better_resolution'|trans) }}</th>
+                    <th class="text-center">{{ ordinal.ordinal('list.table.header.native_resolution'|trans) }}</th>
+                    <th class="text-center">{{ ordinal.ordinal('list.table.header.60fps'|trans) }}</th>
+                    <th class="text-center">{{ ordinal.ordinal('list.table.header.stable_FPS'|trans) }}</th>
+                    <th class="text-center">{{ ordinal.ordinal('list.table.header.better_resolution'|trans) }}</th>
+                    <th class="text-center">{{ ordinal.ordinal('list.table.header.native_resolution'|trans) }}</th>
                     <th class="text-center">{{ 'list.table.header.better_loading_times'|trans }}</th>
-                    <th class="text-center">{{ 'list.table.header.switch_2_edition'|trans }}</th>
+                    <th class="text-center">{{ ordinal.ordinal('list.table.header.switch_2_edition'|trans) }}</th>
                     <th class="text-center">{{ 'list.table.header.upvoted'|trans }}</th>
                     <th class="text-center">{{ 'list.table.header.issue'|trans }}</th>
                 </tr>
