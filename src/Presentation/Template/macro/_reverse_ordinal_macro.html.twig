@@ -1,0 +1,7 @@
+{% macro reverse_ordinal(text) %}
+    {% if text|length > 1 %}
+        <span class="align-super text-xs leading-none">{{ text|first }}</span>{{ text|slice(1) }}
+    {% else %}
+        {{ text }}
+    {% endif %}
+{% endmacro %}

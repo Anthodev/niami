@@ -51,7 +51,11 @@
 
                 <div class="divider divider-secondary"></div>
 
+                {% include '@reports/partials/_reports_top_report.html.twig' %}
+
                 {% if game.description is defined %}
+                    <div class="divider divider-start text-lg font-bold">{{ 'game.description'|trans }}</div>
+
                     <p class="text-left text-base-content/80 leading-relaxed">
                         {{ game.description|raw }}
                     </p>

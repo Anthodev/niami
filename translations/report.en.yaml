@@ -2,6 +2,7 @@ game:
     release_date: 'Release Date'
     developer: 'Developer'
     publisher: 'Publisher'
+    description: 'Description'
 
 add_report:
     label: 'Add a Report'
@@ -40,19 +41,34 @@ list:
     table:
         header:
             status: 'Status'
-            60fps: '60 FPS*'
-            stable_FPS: 'Stable FPS**'
-            better_resolution: 'Better Res***'
-            native_resolution: 'Native Res****'
+            60fps: '60 FPS1'
+            stable_FPS: 'Stable FPS2'
+            better_resolution: 'Better Res3'
+            native_resolution: 'Native Res4'
             better_loading_times: 'Better loading'
-            switch_2_edition: 'Switch 2 Edition'
+            switch_2_edition: 'S2E5'
             issue: 'Issue?'
             upvoted: 'Upvoted'
             portable_label: 'Portable'
             tv_label: 'TV'
             misc_label: 'Misc'
         notice:
-            60fps: '*Target above 30 FPS'
-            stable_FPS: '**Framerate is consistently at 30 or 60 FPS related to the reported framerate'
-            better_resolution: '***Has a better resolution than on Nintendo Switch 1 system in related mode'
-            native_resolution: '****Can hit 1080p in portable mode and/or 4K in TV mode on Nintendo Switch 2 system'
+            60fps: '1: Target above 30 FPS'
+            stable_FPS: '2: Framerate is consistently at 30 or 60 FPS related to the reported framerate'
+            better_resolution: '3: Has a better resolution than on Nintendo Switch 1 system in related mode'
+            native_resolution: '4: Can hit 1080p in portable mode and/or 4K in TV mode on Nintendo Switch 2 system'
+            switch_2_edition: '5: Is a "Switch 2 Edition" or not'
+
+most_upvoted:
+    title: 'Top report'
+    badge:
+        60fps_portable: '60 FPS on portable'
+        stable_fps_portable: 'Stable FPS on portable'
+        resolution_improved_portable: 'Better Resolution on portable'
+        native_resolution_portable: 'Native Resolution on portable'
+        60fps_tv: '60 FPS on TV'
+        stable_fps_tv: 'Stable FPS on TV'
+        resolution_improved_tv: 'Better Resolution on TV'
+        native_resolution_tv: 'Native Resolution on TV'
+        better_loading_times: 'Better loading times'
+        switch_2_edition: 'Switch 2 Edition'

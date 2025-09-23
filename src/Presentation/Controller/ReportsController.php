@@ -77,7 +77,7 @@ class ReportsController extends AbstractController
         }
 
         $reports = $game->getReports()->toArray();
-        $mostUpvotedReport = null;
+        $topReport = null;
 
         if (!empty($reports)) {
             /** @var array<int, Report> $reports */
@@ -89,7 +89,7 @@ class ReportsController extends AbstractController
                 return $b->getCreatedAt() <=> $a->getCreatedAt();
             });
 
-            $mostUpvotedReport = $reports[0];
+            $topReport = $reports[0];
         }
 
         $createReportForm = $this->createForm(CreateReportForm::class, null, [
@@ -106,7 +106,7 @@ class ReportsController extends AbstractController
             'game' => $game,
             'reports' => $reports ?? [],
             'gameSlug' => $game->getSlug(),
-            'mostUpvotedReport' => $mostUpvotedReport,
+            'topReport' => $topReport,
             'createReportForm' => $createReportForm->createView(),
             'createReportCommentForm' => $createReportCommentForm->createView(),
         ]);
