@@ -24,6 +24,7 @@ add_report:
             has_improved_loading_times: 'Improved Loading Times?'
             game_status: 'How the game run on Switch 2 system?'
             is_switch_2_editon: 'Is this a "Switch 2 edition"?'
+            is_patched: 'Patched version for the Switch 2?'
     notice:
         stable_framerate: '*Mostly keeping maximum framerate (30 or 60 fps)'
         resolution_improved: '**Is the resolution higher than on Switch 1 system?'
@@ -46,7 +47,8 @@ list:
             better_resolution: 'Better Res3'
             native_resolution: 'Native Res4'
             better_loading_times: 'Better loading'
-            switch_2_edition: 'S2E5'
+            switch_2_edition: 'S2E?5'
+            is_patched: 'Patched?6'
             issue: 'Issue?'
             upvoted: 'Upvoted'
             portable_label: 'Portable'
@@ -58,6 +60,7 @@ list:
             better_resolution: '3: Has a better resolution than on Nintendo Switch 1 system in related mode'
             native_resolution: '4: Can hit 1080p in portable mode and/or 4K in TV mode on Nintendo Switch 2 system'
             switch_2_edition: '5: Is a "Switch 2 Edition" or not'
+            is_patched: '6: Has the game been patched for the Nintendo Switch 2 system?'
 
 most_upvoted:
     title: 'Top report'
@@ -72,3 +75,4 @@ most_upvoted:
         native_resolution_tv: 'Native Resolution on TV'
         better_loading_times: 'Better loading times'
         switch_2_edition: 'Switch 2 Edition'
+        is_patched: 'Patched'

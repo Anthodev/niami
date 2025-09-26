@@ -1,7 +1,7 @@
 {% extends '@app/base.html.twig' %}
 
 {% block content %}
-    {% include '@reports/partials/_reports_game_info.html.twig' %}
+    {% include '@reports/partials/_reports_game_info.html.twig' with { game: game, topReport: topReport } %}
 
     {% include '@reports/partials/_reports_create_form.html.twig' %}
 

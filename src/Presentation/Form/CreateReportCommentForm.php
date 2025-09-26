@@ -52,6 +52,7 @@ class CreateReportCommentForm extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => CreateReportCommentFormInputDto::class,
+            'csrf_protection' => false,
         ]);
     }
 }

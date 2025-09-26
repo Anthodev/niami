@@ -136,7 +136,7 @@ class IgdbClient implements ApiClientInterface
 
     /**
      * @return ApiGame[]
-     *                                           *
+     *
      * @throws ExceptionInterface
      * @throws ClientExceptionInterface
      * @throws DecodingExceptionInterface
@@ -251,7 +251,9 @@ class IgdbClient implements ApiClientInterface
 
             if (!empty($igdbSearchResultItem->involved_companies)) {
                 /** @var array<string, mixed> $company */
-                foreach ($igdbSearchResultItem->involved_companies as $company) {
+                foreach (
+                    $igdbSearchResultItem->involved_companies as $company
+                ) {
                     if (empty($publisher->name)) {
                         $publisher = $this->checkCompany(
                             involvedCompany: $company,
@@ -268,10 +270,7 @@ class IgdbClient implements ApiClientInterface
                         );
                     }
 
-                    if (
-                        !empty($publisher->name)
-                        && !empty($developer->name)
-                    ) {
+                    if (!empty($publisher->name) && !empty($developer->name)) {
                         break;
                     }
                 }
@@ -286,10 +285,7 @@ class IgdbClient implements ApiClientInterface
                 $imageCover = 'https:'.$coverUrl;
             }
 
-            if (
-                empty($publisher->name)
-                || empty($developer->name)
-            ) {
+            if (empty($publisher->name) || empty($developer->name)) {
                 if (empty($developer->name)) {
                     $developer = null;
                 }
@@ -297,12 +293,16 @@ class IgdbClient implements ApiClientInterface
                 $publisher = null;
             }
 
-            $updatedAt = new \DateTimeImmutable()->setTimestamp($igdbSearchResultItem->updatedAt);
+            $updatedAt = new \DateTimeImmutable()->setTimestamp(
+                $igdbSearchResultItem->updatedAt,
+            );
 
             $apiGames[] = ApiGameFactory::create(
                 name: $igdbSearchResultItem->name,
                 slug: $slug,
-                description: $igdbSearchResultItem->summary ? nl2br($igdbSearchResultItem->summary) : '',
+                description: $igdbSearchResultItem->summary
+                    ? nl2br($igdbSearchResultItem->summary)
+                    : '',
                 imageCover: $imageCover,
                 releaseDate: $releaseDate
                     ? $releaseDate->format(DATE_ATOM)
@@ -471,14 +471,19 @@ class IgdbClient implements ApiClientInterface
             }
 
             $companyWebsite = '';
-            if (isset($companyWebsites[0]['url']) && is_array($companyWebsites[0]) && is_string(
-                $companyWebsites[0]['url']
-            )) {
+            if (
+                isset($companyWebsites[0]['url'])
+                && is_array($companyWebsites[0])
+                && is_string($companyWebsites[0]['url'])
+            ) {
                 $companyWebsite = $companyWebsites[0]['url'];
             }
 
             $companyApiId = 0;
-            if (isset($company['id']) && (is_int($company['id']) || is_numeric($company['id']))) {
+            if (
+                isset($company['id'])
+                && (is_int($company['id']) || is_numeric($company['id']))
+            ) {
                 $companyApiId = (int) $company['id'];
             }
 

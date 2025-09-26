@@ -19,10 +19,6 @@
             <constraint name="NotBlank"/>
         </property>
 
-        <property name="isPatched">
-            <constraint name="NotNull"/>
-        </property>
-
         <property name="isActive">
             <constraint name="NotNull"/>
         </property>

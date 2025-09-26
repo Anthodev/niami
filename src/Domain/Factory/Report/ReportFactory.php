@@ -23,6 +23,7 @@ class ReportFactory
         bool $isNativeResolutionImprovedDocked = false,
         bool $hasImprovedLoadingTimes = true,
         ReportGameStatusEnum $gameStatus = ReportGameStatusEnum::OK,
+        bool $isPatched = false,
         int $upvoteCount = 0,
         bool $isVisible = true,
     ): Report {
@@ -39,6 +40,7 @@ class ReportFactory
             hasImprovedLoadingTimes: $hasImprovedLoadingTimes,
             isSwitch2Edition: $isSwitch2Edition,
             gameStatus: $gameStatus,
+            isPatched: $isPatched,
             upvoteCount: $upvoteCount,
             isVisible: $isVisible,
         );

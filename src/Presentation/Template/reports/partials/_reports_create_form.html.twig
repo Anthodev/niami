@@ -124,6 +124,16 @@
                 }) }}
             </label>
 
+            <label for="isPatched" class="label">
+                {{ form_widget(createReportForm.isPatched, {
+                    'attr': {
+                        'type': 'checkbox',
+                        'class': 'checkbox border-primary/50 bg-primary/50 checked:border-success checked:bg-success checked:text-base-content',
+                    }
+                }) }}
+                {{ form_label(createReportForm.isPatched) }}
+            </label>
+
             <label for="isSwitch2Edition" class="label">
                 {{ form_widget(createReportForm.isSwitch2Edition, {
                     'attr': {
@@ -172,7 +182,6 @@
             isNativeResolutionDocked: document.getElementById('create_report_form_isNativeResolutionDocked')
         };
 
-        // Vérification que tous les éléments existent
         const missingElements = Object.entries(elements)
             .filter(([key, element]) => !element)
             .map(([key]) => key);
@@ -199,7 +208,6 @@
             });
         }
 
-        // Application des handlers
         handleNativeResolutionChange(elements.isNativeResolutionPortable, elements.hasResolutionImprovedPortable, 'Portable');
         handleImprovedResolutionChange(elements.hasResolutionImprovedPortable, elements.isNativeResolutionPortable);
 

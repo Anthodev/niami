@@ -1,4 +1,6 @@
 {% include '@reports/partials/_reports_list_header.html.twig' %}
+{% set modal_index = 'report-comment-modal' %}
+{% include '@reports/partials/_reports_comment_modal.html.twig' with { modal_index: modal_index } %}
 
 {% for report in reports %}
     {% set status = report.gameStatus %}
@@ -84,6 +86,12 @@
         </td>
 
         <td class="text-center hover:bg-base-300 {{ loop.first ? mostUpvotedBg : '' }}">
+            <div class="w-6 h-6 mx-auto {{ report.isPatched ? 'text-green-400' : 'text-red-400' }}">
+                {{ report.isPatched ? ux_icon('ph:check-square') : ux_icon('ph:x-square') }}
+            </div>
+        </td>
+
+        <td class="text-center hover:bg-base-300 {{ loop.first ? mostUpvotedBg : '' }}">
             <div class="w-6 h-6 mx-auto {{ report.switch2Edition ? 'text-green-400' : 'text-red-400' }}">
                 {{ report.switch2Edition ? ux_icon('ph:check-square') : ux_icon('ph:x-square') }}
             </div>
@@ -111,13 +119,51 @@
 
         <td class="text-center hover:bg-base-300">
             <div class="w-6 h-6 mx-auto">
-                <button class="btn text-warning btn-square -m-2" onclick="comment_{{ loop.index }}.showModal()">
+                <button class="btn text-warning btn-square -m-2"
+                        data-report-id="{{ report.id }}"
+                        data-game-slug="{{ report.game.slug }}"
+                        data-report-path="{{ path('create_report_comment', { reportId: report.id }) }}"
+                        onclick="openReportCommentModal(this)">
                     {{ ux_icon('ph:warning') }}
                 </button>
             </div>
         </td>
-        {% include '@reports/partials/_reports_comment_modal.html.twig' with { modal_index: loop.index, report: report, game: report.game } %}
     </tr>
 {% endfor %}
 
 {% include '@reports/partials/_reports_list_footer.html.twig' %}
+
+{% block javascripts %}
+    <script type="text/javascript">
+        function openReportCommentModal(button) {
+            const modal = document.getElementById('comment_report-comment-modal');
+            const reportId = button.dataset.reportId;
+            const gameSlug = button.dataset.gameSlug;
+            const reportPath = button.dataset.reportPath;
+
+            if (!modal) {
+                console.error('Modal not found!');
+                return;
+            }
+
+            const form = modal.querySelector('form');
+            if (!form) {
+                console.error('Form not found in modal!');
+                return;
+            }
+
+            const basePath = form.getAttribute('data-base-path');
+            if (basePath) {
+                form.action = basePath.replace('REPORT_ID_PLACEHOLDER', reportId);
+            }
+
+            form.action = reportPath;
+
+            let gameSlugInput = document.getElementById('create_report_comment_form_gameSlug');
+            gameSlugInput.value = gameSlug;
+
+            modal.showModal();
+        }
+    </script>
+
+{% endblock %}

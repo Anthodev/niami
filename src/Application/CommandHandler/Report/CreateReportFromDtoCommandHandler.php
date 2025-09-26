@@ -42,6 +42,7 @@ class CreateReportFromDtoCommandHandler
             isNativeResolutionImprovedDocked: $command->formInputDto->isNativeResolutionDocked,
             hasImprovedLoadingTimes: $command->formInputDto->hasImprovedLoadingTimes,
             gameStatus: $command->formInputDto->gameStatus,
+            isPatched: $command->formInputDto->isPatched,
         );
 
         $this->reportRepository->save($newReport);

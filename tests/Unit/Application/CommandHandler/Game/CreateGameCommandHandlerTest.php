@@ -319,7 +319,6 @@ it('creates game using GameFactory with correct parameters', function () {
                 && $game->getDescription() === 'A rogue-like dungeon crawler'
                 && $game->getReleaseDate() === '2020-09-17'
                 && $game->getImageCover() === 'https://example.com/hades.jpg'
-                && $game->isPatched() === false
                 && $game->isActive() === true
                 && $game->getPublisher() === $this->createdPublisher
                 && $game->getReports()->isEmpty();
