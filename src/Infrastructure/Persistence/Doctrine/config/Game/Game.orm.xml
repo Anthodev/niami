@@ -24,12 +24,6 @@
         <field name="imageCover" type="string" column="imageCover" length="255">
         </field>
 
-        <field name="isPatched" type="boolean" column="isPatched">
-            <options>
-                <option name="default">false</option>
-            </options>
-        </field>
-
         <field name="isActive" type="boolean" column="isActive">
             <options>
                 <option name="default">true</option>

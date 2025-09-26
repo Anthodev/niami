@@ -40,6 +40,7 @@ beforeEach(function () {
         isNativeResolutionDocked: true,
         hasImprovedLoadingTimes: true,
         isSwitch2Edition: false,
+        isPatched: false,
     );
 });
 
@@ -66,7 +67,8 @@ it('successfully creates and saves report when game exists', function () {
                 && $report->isNativeResolutionDocked() === $this->createReportDto->isNativeResolutionDocked
                 && $report->isHasImprovedLoadingTimes() === $this->createReportDto->hasImprovedLoadingTimes
                 && $report->isSwitch2Edition() === $this->createReportDto->isSwitch2Edition
-                && $report->getGameStatus() === $this->createReportDto->gameStatus;
+                && $report->getGameStatus() === $this->createReportDto->gameStatus
+                && $report->isPatched() === $this->createReportDto->isPatched;
         }));
 
     $handler = new CreateReportFromDtoCommandHandler(
@@ -152,6 +154,7 @@ it('creates report with correct parameters from DTO', function () {
         isNativeResolutionDocked: false,
         hasImprovedLoadingTimes: false,
         isSwitch2Edition: true,
+        isPatched: false,
     );
 
     $this->gameRepository
@@ -175,7 +178,8 @@ it('creates report with correct parameters from DTO', function () {
                 && $report->isNativeResolutionDocked() === $customDto->isNativeResolutionDocked
                 && $report->isHasImprovedLoadingTimes() === $customDto->hasImprovedLoadingTimes
                 && $report->isSwitch2Edition() === $customDto->isSwitch2Edition
-                && $report->getGameStatus() === $customDto->gameStatus;
+                && $report->getGameStatus() === $customDto->gameStatus
+                && $report->isPatched() === $customDto->isPatched;
         }));
 
     $handler = new CreateReportFromDtoCommandHandler(
@@ -208,6 +212,7 @@ it('handles different game status values', function () {
         isNativeResolutionDocked: false,
         hasImprovedLoadingTimes: false,
         isSwitch2Edition: false,
+        isPatched: false,
     );
 
     $this->gameRepository
@@ -231,7 +236,8 @@ it('handles different game status values', function () {
                 && $report->isNativeResolutionDocked() === $dtoWithBadStatus->isNativeResolutionDocked
                 && $report->isHasImprovedLoadingTimes() === $dtoWithBadStatus->hasImprovedLoadingTimes
                 && $report->isSwitch2Edition() === $dtoWithBadStatus->isSwitch2Edition
-                && $report->getGameStatus() === $dtoWithBadStatus->gameStatus;
+                && $report->getGameStatus() === $dtoWithBadStatus->gameStatus
+                && $report->isPatched() === $dtoWithBadStatus->isPatched;
         }));
 
     $handler = new CreateReportFromDtoCommandHandler(

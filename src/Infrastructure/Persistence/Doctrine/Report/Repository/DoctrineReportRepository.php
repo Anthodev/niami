@@ -26,7 +26,7 @@ class DoctrineReportRepository extends DoctrineBaseEntityRepository implements R
             ->andWhere('r.game = :game')
             ->setParameter('game', $gameId)
             ->orderBy('r.upvoteCount', 'DESC')
-            ->addOrderBy('r.createdAt', 'DESC')
+            ->addOrderBy('r.createdAt', 'ASC')
             ->getQuery();
 
         /** @var Report[] */
@@ -40,7 +40,7 @@ class DoctrineReportRepository extends DoctrineBaseEntityRepository implements R
             ->andWhere('r.game = :game')
             ->setParameter('game', $gameId)
             ->orderBy('r.upvoteCount', 'DESC')
-            ->addOrderBy('r.createdAt', 'DESC')
+            ->addOrderBy('r.createdAt', 'ASC')
             ->setMaxResults(1);
 
         /** @var Report|null */

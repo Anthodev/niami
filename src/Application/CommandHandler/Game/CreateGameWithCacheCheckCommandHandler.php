@@ -7,6 +7,8 @@ namespace App\Application\CommandHandler\Game;
 use App\Application\Command\Game\CreateGameCommand;
 use App\Application\Command\Game\CreateGameWithCacheCheckCommand;
 use App\Application\Exception\Game\CannotCreateGameException;
+use App\Application\Helper\MessageBusHelper;
+use App\Application\Query\Game\GetGameBySlugOnApiQuery;
 use App\Domain\Model\Game\ApiGame;
 use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
@@ -21,6 +23,7 @@ class CreateGameWithCacheCheckCommandHandler
     public function __construct(
         private readonly CacheInterface $cache,
         private readonly MessageBusInterface $messageBus,
+        private readonly MessageBusHelper $messageBusHelper,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -40,7 +43,19 @@ class CreateGameWithCacheCheckCommandHandler
         );
 
         if (null === $apiGame) {
-            return;
+            $gameEnvelope = $this->messageBus->dispatch(
+                new GetGameBySlugOnApiQuery($command->gameSlug),
+            );
+
+            /** @var ?ApiGame $apiGame */
+            $apiGame = $this->messageBusHelper->getContentFromEnvelope(
+                $gameEnvelope,
+                'Failed to fetch game from API',
+            );
+        }
+
+        if (null === $apiGame) {
+            throw new CannotCreateGameException('Failed to fetch game from API');
         }
 
         try {
@@ -53,7 +68,7 @@ class CreateGameWithCacheCheckCommandHandler
                     publisher: $apiGame->getPublisher(),
                     developer: $apiGame->getDeveloper(),
                     description: $apiGame->getDescription(),
-                )
+                ),
             );
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());

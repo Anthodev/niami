@@ -6,8 +6,9 @@
 
     <div class="modal-action flex flex-col">
         {{ form_start(createReportCommentForm, {
-            'action': path('create_report_comment', { reportId: report.id }),
+            'action': path('create_report_comment', { reportId: 'REPORT_ID_PLACEHOLDER' }),
             'method': 'POST',
+            'id': 'comment-form-' ~ modal_index,
         }) }}
 
         {{ form_widget(createReportCommentForm.comment, {
@@ -18,7 +19,7 @@
 
         {{ form_widget(createReportCommentForm.gameSlug, {
             'attr': {
-                'value': game.slug,
+                'placeholder': 'Game slug will be set dynamically'
             }
         }) }}
 
@@ -28,9 +29,10 @@
             }
         }) }}
 
+        {{ form_rest(createReportCommentForm) }}
+
         <button class="btn btn-primary">{{ 'reports.modal.submit'|trans }}</button>
 
-        {{ form_rest(createReportCommentForm) }}
         {{ form_end(createReportCommentForm) }}
 
         <button type="button" class="btn" formnovalidate onclick="document.getElementById('comment_{{ modal_index }}').close()">{{ 'reports.modal.close'|trans }}</button>

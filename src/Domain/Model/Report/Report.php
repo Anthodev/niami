@@ -6,16 +6,16 @@ namespace App\Domain\Model\Report;
 
 use App\Domain\Model\Common\ModelInterface;
 use App\Domain\Model\Game\Game;
+use App\Domain\Trait\IdTrait;
 use App\Domain\Trait\TimestampableTrait;
 use App\Infrastructure\Enum\ReportGameStatusEnum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Symfony\Component\Uid\Uuid;
 
 class Report implements ModelInterface
 {
+    use IdTrait;
     use TimestampableTrait;
-    private ?string $id = null;
 
     public function __construct(
         private Game $game,
@@ -30,23 +30,12 @@ class Report implements ModelInterface
         private bool $hasImprovedLoadingTimes = false,
         private bool $isSwitch2Edition = false,
         private ReportGameStatusEnum $gameStatus = ReportGameStatusEnum::OK,
+        private bool $isPatched = false,
         private int $upvoteCount = 0,
         private bool $isVisible = true,
         /** @var Collection<int, ReportComment> $reportComments */
         private Collection $reportComments = new ArrayCollection(),
     ) {
-    }
-
-    public function getId(): ?string
-    {
-        return $this->id;
-    }
-
-    public function setId(string $id): self
-    {
-        $this->id = $id;
-
-        return $this;
     }
 
     public function getGame(): Game
@@ -119,6 +108,18 @@ class Report implements ModelInterface
     public function setGameStatus(ReportGameStatusEnum $gameStatus): self
     {
         $this->gameStatus = $gameStatus;
+
+        return $this;
+    }
+
+    public function isPatched(): bool
+    {
+        return $this->isPatched;
+    }
+
+    public function setIsPatched(bool $isPatched): self
+    {
+        $this->isPatched = $isPatched;
 
         return $this;
     }
@@ -246,13 +247,6 @@ class Report implements ModelInterface
         if ($this->reportComments->contains($reportComment)) {
             $this->reportComments->removeElement($reportComment);
         }
-
-        return $this;
-    }
-
-    public function setDefaultId(): self
-    {
-        $this->id = Uuid::v7()->toRfc4122();
 
         return $this;
     }

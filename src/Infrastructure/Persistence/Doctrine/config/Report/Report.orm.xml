@@ -74,6 +74,12 @@
                 <option name="default">ok</option>
             </options>
         </field>
+        
+        <field name="isPatched" type="boolean" column="is_patched">
+            <options>
+                <option name="default">false</option>
+            </options>
+        </field>
 
         <field name="upvoteCount" type="integer" column="upvote_count">
             <options>

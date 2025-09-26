@@ -140,6 +140,16 @@ class CreateReportForm extends AbstractType
                 'empty_data' => ReportGameStatusEnum::OK->value,
                 'required' => true,
             ])
+            ->add('isPatched', CheckboxType::class, [
+                'label' => $this->translator->trans(
+                    'add_report.form.misc.is_patched',
+                    [],
+                    'report',
+                ),
+                'empty_data' => false,
+                'data' => false,
+                'required' => false,
+            ])
             ->add('gameId', HiddenType::class, [
                 'required' => true,
                 'constraints' => [new Assert\NotBlank()],

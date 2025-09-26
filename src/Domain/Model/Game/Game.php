@@ -22,7 +22,6 @@ class Game implements ModelInterface
         private ?string $description = null,
         private ?string $releaseDate = null,
         private ?string $imageCover = null,
-        private bool $isPatched = false,
         private bool $isActive = true,
         private ?Publisher $publisher = null,
         private ?Developer $developer = null,
@@ -87,18 +86,6 @@ class Game implements ModelInterface
     public function setImageCover(string $imageCover): self
     {
         $this->imageCover = $imageCover;
-
-        return $this;
-    }
-
-    public function isPatched(): bool
-    {
-        return $this->isPatched;
-    }
-
-    public function setIsPatched(bool $isPatched): self
-    {
-        $this->isPatched = $isPatched;
 
         return $this;
     }

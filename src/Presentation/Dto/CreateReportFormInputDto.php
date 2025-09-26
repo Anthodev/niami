@@ -10,10 +10,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 class CreateReportFormInputDto
 {
     public function __construct(
-        #[Assert\NotBlank]
-        public string $gameId = '',
-        #[Assert\NotBlank]
-        public string $gameSlug = '',
+        #[Assert\NotBlank] public string $gameId = '',
+        #[Assert\NotBlank] public string $gameSlug = '',
         public ReportGameStatusEnum $gameStatus = ReportGameStatusEnum::OK,
         public bool $is60FpsPortable = false,
         public bool $hasStableFrameratePortable = true,
@@ -25,6 +23,7 @@ class CreateReportFormInputDto
         public bool $isNativeResolutionDocked = false,
         public bool $hasImprovedLoadingTimes = true,
         public bool $isSwitch2Edition = false,
+        public bool $isPatched = false,
     ) {
     }
 }

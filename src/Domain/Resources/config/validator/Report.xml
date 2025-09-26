@@ -50,6 +50,10 @@
             </constraint>
         </property>
 
+        <property name="isPatched">
+            <constraint name="NotNull"/>
+        </property>
+
         <property name="isVisible">
             <constraint name="NotNull"/>
         </property>
