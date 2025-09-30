@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Application\CommandHandler\Report;
 
 use App\Application\Command\Report\CreateReportFromDtoCommand;
+use App\Application\Fetcher\Report\ReportFetcher;
+use App\Application\Helper\CacheKeyBuilderHelper;
 use App\Domain\Factory\Report\ReportFactory;
 use App\Domain\Model\Game\Game;
 use App\Domain\Repository\Game\GameRepositoryInterface;
@@ -18,6 +20,7 @@ class CreateReportFromDtoCommandHandler
     public function __construct(
         private readonly ReportRepositoryInterface $reportRepository,
         private readonly GameRepositoryInterface $gameRepository,
+        private readonly ReportFetcher $reportFetcher,
     ) {
     }
 
@@ -46,5 +49,8 @@ class CreateReportFromDtoCommandHandler
         );
 
         $this->reportRepository->save($newReport);
+        $this->reportFetcher->deleteCache(
+            CacheKeyBuilderHelper::build(ReportFetcher::REPORTS_CACHE_KEY, $command->formInputDto->gameSlug)
+        );
     }
 }

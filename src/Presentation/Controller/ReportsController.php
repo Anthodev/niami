@@ -7,6 +7,7 @@ namespace App\Presentation\Controller;
 use App\Application\Command\Game\CreateGameWithCacheCheckCommand;
 use App\Application\Helper\MessageBusHelper;
 use App\Application\Query\Game\GetGameBySlugQuery;
+use App\Application\Query\Report\GetReportsForGameIdQuery;
 use App\Domain\Model\Game\Game;
 use App\Domain\Model\Report\Report;
 use App\Presentation\Form\CreateReportCommentForm;
@@ -76,7 +77,22 @@ class ReportsController extends AbstractController
             ]);
         }
 
-        $reports = $game->getReports()->toArray();
+        /** @var string $gameId */
+        $gameId = $game->getId();
+        /** @var string $gameSlug */
+        $gameSlug = $game->getSlug();
+
+        $reportsEnvelope = $messageBus->dispatch(
+            new GetReportsForGameIdQuery($gameId, $gameSlug),
+        );
+
+        $reports = $messageBusHelper->getContentFromEnvelope(
+            $reportsEnvelope,
+            'Reports not found',
+            Report::class,
+            'array',
+        );
+
         $topReport = null;
 
         if (!empty($reports)) {

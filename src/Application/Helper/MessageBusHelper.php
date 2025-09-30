@@ -13,9 +13,8 @@ use Symfony\Component\Messenger\Stamp\HandledStamp;
 
 class MessageBusHelper
 {
-    public function __construct(
-        private readonly LoggerInterface $logger,
-    ) {
+    public function __construct(private readonly LoggerInterface $logger)
+    {
     }
 
     public function getContentFromEnvelope(
@@ -24,11 +23,10 @@ class MessageBusHelper
         ?string $class = null,
         ?string $type = null,
     ): mixed {
-        if (
-            null === $class
-            && (null === $type || 'array' !== $type)
-        ) {
-            $this->logger->error('Get data from envelope failed: class and type cannot be null together');
+        if (null === $class && (null === $type || 'array' !== $type)) {
+            $this->logger->error(
+                'Get data from envelope failed: class and type cannot be null together',
+            );
             throw new ClassAndTypeCannotBeNullTogetherException('Get data from envelope failed: class and type cannot be null together');
         }
 
@@ -47,9 +45,13 @@ class MessageBusHelper
         }
 
         if (
-            null !== $type
-            && gettype($result) !== $type
+            'array' === $type
+            && empty($result)
         ) {
+            return [];
+        }
+
+        if (null !== $type && gettype($result) !== $type) {
             $this->logger->error($logErrorMessage);
             throw new WrongTypeInMessageBusEnvelopeException(message: sprintf('Expected "%s", returned "%s"', $type, gettype($result)));
         }
@@ -67,10 +69,7 @@ class MessageBusHelper
                 return $result;
             }
 
-            if (
-                !empty($result)
-                && null !== $class
-            ) {
+            if (!empty($result) && null !== $class) {
                 $this->logger->error($logErrorMessage);
 
                 /** @var object $result */
@@ -78,10 +77,7 @@ class MessageBusHelper
             }
         }
 
-        if (
-            null !== $class
-            && !$result instanceof $class
-        ) {
+        if (null !== $class && !$result instanceof $class) {
             $this->logger->error($logErrorMessage);
 
             /** @var object $result */

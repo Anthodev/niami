@@ -51,6 +51,7 @@ class CreateGameWithCacheCheckCommandHandler
             $apiGame = $this->messageBusHelper->getContentFromEnvelope(
                 $gameEnvelope,
                 'Failed to fetch game from API',
+                ApiGame::class,
             );
         }
 

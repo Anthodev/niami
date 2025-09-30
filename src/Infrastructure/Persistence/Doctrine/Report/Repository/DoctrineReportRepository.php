@@ -22,8 +22,10 @@ class DoctrineReportRepository extends DoctrineBaseEntityRepository implements R
     public function getAllVisibleReportsForGame(string $gameId): array
     {
         $qb = $this->createQueryBuilder('r')
+            ->select('r', 'g')
             ->where('r.isVisible = true')
             ->andWhere('r.game = :game')
+            ->innerJoin('r.game', 'g')
             ->setParameter('game', $gameId)
             ->orderBy('r.upvoteCount', 'DESC')
             ->addOrderBy('r.createdAt', 'ASC')
@@ -36,8 +38,10 @@ class DoctrineReportRepository extends DoctrineBaseEntityRepository implements R
     public function findMostUpvotedReportForGame(string $gameId): ?Report
     {
         $qb = $this->createQueryBuilder('r')
+            ->select('r', 'g')
             ->where('r.isVisible = true')
             ->andWhere('r.game = :game')
+            ->innerJoin('r.game', 'g')
             ->setParameter('game', $gameId)
             ->orderBy('r.upvoteCount', 'DESC')
             ->addOrderBy('r.createdAt', 'ASC')

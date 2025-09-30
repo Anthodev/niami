@@ -19,7 +19,7 @@ use App\Domain\Model\Game\Publisher;
  */
 interface PublisherRepositoryInterface
 {
-    public function findByName(string $name): ?Publisher;
+    public function findOneByName(string $name): ?Publisher;
 
-    public function findByApiId(int $apiId): ?Publisher;
+    public function findOneByApiId(int $apiId): ?Publisher;
 }

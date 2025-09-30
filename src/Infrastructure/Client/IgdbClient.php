@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -85,23 +86,29 @@ class IgdbClient implements ApiClientInterface
     {
         $cacheKey = $this->generateGetGameSlugCacheKey($slug, $limit);
 
-        $game = $this->cache->get(
-            $cacheKey,
-            function () use ($slug, $limit) {
-                return $this->performApiRequest(
-                    query: $slug,
-                    type: ApiTypeRequestEnum::SLUG,
-                    limit: $limit,
-                );
-            },
-            self::API_RESPONSE_CACHE_TTL,
-        );
+        $game = $this->cache->get($cacheKey, function (
+            ItemInterface $item,
+        ) use ($slug, $limit) {
+            $games = $this->performApiRequest(
+                query: $slug,
+                type: ApiTypeRequestEnum::SLUG,
+                limit: $limit,
+            );
 
-        if (!empty($game)) {
-            return $game[0];
+            if (empty($games)) {
+                return null;
+            }
+
+            $item->expiresAfter(self::API_RESPONSE_CACHE_TTL);
+
+            return $games[0];
+        });
+
+        if (null === $game) {
+            return null;
         }
 
-        return null;
+        return $game;
     }
 
     private function generateSearchCacheKey(string $query, int $limit): string
@@ -158,18 +165,10 @@ class IgdbClient implements ApiClientInterface
             return [];
         }
 
-        $apiQuery = '';
-
-        if (ApiTypeRequestEnum::SLUG === $type) {
-            $apiQuery = sprintf('slug ~ *"%s";', $query);
-        } else {
-            foreach ($queryTerms as $term) {
-                $apiQuery .=
-                    $term === $queryTerms[0]
-                        ? sprintf('name ~ *"%s"*', $term)
-                        : sprintf(' & name ~ *"%s"*', $term);
-            }
-        }
+        $apiQuery = match ($type) {
+            ApiTypeRequestEnum::SLUG => $this->buildSlugBodyWhereClause($query),
+            default => $this->buildSearchBodyWhereClause($queryTerms),
+        };
 
         $body = sprintf(
             '
@@ -184,7 +183,7 @@ class IgdbClient implements ApiClientInterface
                     summary,
                     websites.url,
                     updated_at;
-                    where (%s)
+                    where %s
                     & platforms = (%d)
                     & %s
                     & version_parent = null
@@ -222,6 +221,28 @@ class IgdbClient implements ApiClientInterface
         );
 
         return $this->formatResponseData($deserializedResponseData);
+    }
+
+    private function buildSlugBodyWhereClause(string $slug): string
+    {
+        return sprintf('slug ~ *"%s"* ', $slug);
+    }
+
+    /**
+     * @param string[] $queryTerms
+     */
+    private function buildSearchBodyWhereClause(array $queryTerms): string
+    {
+        $apiQuery = '';
+
+        foreach ($queryTerms as $term) {
+            $apiQuery .=
+                $term === $queryTerms[0]
+                    ? sprintf('name ~ *"%s"*', $term)
+                    : sprintf(' & name ~ *"%s"*', $term);
+        }
+
+        return '('.$apiQuery.')';
     }
 
     /**
