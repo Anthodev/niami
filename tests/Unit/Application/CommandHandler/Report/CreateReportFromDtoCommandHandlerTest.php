@@ -6,6 +6,7 @@ namespace App\Tests\Unit\Application\CommandHandler\Report;
 
 use App\Application\Command\Report\CreateReportFromDtoCommand;
 use App\Application\CommandHandler\Report\CreateReportFromDtoCommandHandler;
+use App\Application\Fetcher\Report\ReportFetcher;
 use App\Domain\Model\Game\Game;
 use App\Domain\Model\Report\Report;
 use App\Infrastructure\Enum\ReportGameStatusEnum;
@@ -17,8 +18,11 @@ use Faker\Factory;
 beforeEach(function () {
     $this->faker = Factory::create();
 
-    $this->reportRepository = $this->createMock(DoctrineReportRepository::class);
+    $this->reportRepository = $this->createMock(
+        DoctrineReportRepository::class,
+    );
     $this->gameRepository = $this->createMock(DoctrineGameRepository::class);
+    $this->reportFetcher = $this->createMock(ReportFetcher::class);
 
     $this->gameId = $this->faker->uuid();
     $this->gameSlug = $this->faker->slug();
@@ -55,25 +59,41 @@ it('successfully creates and saves report when game exists', function () {
     $this->reportRepository
         ->expects($this->once())
         ->method('save')
-        ->with($this->callback(function ($report) {
-            return $report instanceof Report
-                && $report->is60FpsPortable() === $this->createReportDto->is60FpsPortable
-                && $report->isHasStableFrameratePortable() === $this->createReportDto->hasStableFrameratePortable
-                && $report->isHasResolutionImprovedPortable() === $this->createReportDto->hasResolutionImprovedPortable
-                && $report->isNativeResolutionPortable() === $this->createReportDto->isNativeResolutionPortable
-                && $report->is60FpsDocked() === $this->createReportDto->is60FpsDocked
-                && $report->isHasStableFramerateDocked() === $this->createReportDto->hasStableFramerateDocked
-                && $report->isHasResolutionImprovedDocked() === $this->createReportDto->hasResolutionImprovedDocked
-                && $report->isNativeResolutionDocked() === $this->createReportDto->isNativeResolutionDocked
-                && $report->isHasImprovedLoadingTimes() === $this->createReportDto->hasImprovedLoadingTimes
-                && $report->isSwitch2Edition() === $this->createReportDto->isSwitch2Edition
-                && $report->getGameStatus() === $this->createReportDto->gameStatus
-                && $report->isPatched() === $this->createReportDto->isPatched;
-        }));
+        ->with(
+            $this->callback(function ($report) {
+                return $report instanceof Report &&
+                    $report->is60FpsPortable() ===
+                        $this->createReportDto->is60FpsPortable &&
+                    $report->isHasStableFrameratePortable() ===
+                        $this->createReportDto->hasStableFrameratePortable &&
+                    $report->isHasResolutionImprovedPortable() ===
+                        $this->createReportDto->hasResolutionImprovedPortable &&
+                    $report->isNativeResolutionPortable() ===
+                        $this->createReportDto->isNativeResolutionPortable &&
+                    $report->is60FpsDocked() ===
+                        $this->createReportDto->is60FpsDocked &&
+                    $report->isHasStableFramerateDocked() ===
+                        $this->createReportDto->hasStableFramerateDocked &&
+                    $report->isHasResolutionImprovedDocked() ===
+                        $this->createReportDto->hasResolutionImprovedDocked &&
+                    $report->isNativeResolutionDocked() ===
+                        $this->createReportDto->isNativeResolutionDocked &&
+                    $report->isHasImprovedLoadingTimes() ===
+                        $this->createReportDto->hasImprovedLoadingTimes &&
+                    $report->isSwitch2Edition() ===
+                        $this->createReportDto->isSwitch2Edition &&
+                    $report->getGameStatus() ===
+                        $this->createReportDto->gameStatus &&
+                    $report->isPatched() === $this->createReportDto->isPatched;
+            }),
+        );
+
+    $this->reportFetcher->expects($this->once())->method('deleteCache');
 
     $handler = new CreateReportFromDtoCommandHandler(
         $this->reportRepository,
         $this->gameRepository,
+        $this->reportFetcher,
     );
 
     $command = new CreateReportFromDtoCommand($this->createReportDto);
@@ -93,13 +113,14 @@ it('handles exception when game is not found', function () {
         ->with($this->gameId)
         ->willReturn(null);
 
-    $this->reportRepository
-        ->expects($this->never())
-        ->method('save');
+    $this->reportRepository->expects($this->never())->method('save');
+
+    $this->reportFetcher->expects($this->never())->method('deleteCache');
 
     $handler = new CreateReportFromDtoCommandHandler(
         $this->reportRepository,
         $this->gameRepository,
+        $this->reportFetcher,
     );
 
     $command = new CreateReportFromDtoCommand($this->createReportDto);
@@ -125,9 +146,12 @@ it('handles exception during save operation', function () {
         ->method('save')
         ->willThrowException($exception);
 
+    $this->reportFetcher->expects($this->never())->method('deleteCache');
+
     $handler = new CreateReportFromDtoCommandHandler(
         $this->reportRepository,
-        $this->gameRepository
+        $this->gameRepository,
+        $this->reportFetcher,
     );
 
     $command = new CreateReportFromDtoCommand($this->createReportDto);
@@ -166,25 +190,39 @@ it('creates report with correct parameters from DTO', function () {
     $this->reportRepository
         ->expects($this->once())
         ->method('save')
-        ->with($this->callback(function ($report) use ($customDto) {
-            return $report instanceof Report
-                && $report->is60FpsPortable() === $customDto->is60FpsPortable
-                && $report->isHasStableFrameratePortable() === $customDto->hasStableFrameratePortable
-                && $report->isHasResolutionImprovedPortable() === $customDto->hasResolutionImprovedPortable
-                && $report->isNativeResolutionPortable() === $customDto->isNativeResolutionPortable
-                && $report->is60FpsDocked() === $customDto->is60FpsDocked
-                && $report->isHasStableFramerateDocked() === $customDto->hasStableFramerateDocked
-                && $report->isHasResolutionImprovedDocked() === $customDto->hasResolutionImprovedDocked
-                && $report->isNativeResolutionDocked() === $customDto->isNativeResolutionDocked
-                && $report->isHasImprovedLoadingTimes() === $customDto->hasImprovedLoadingTimes
-                && $report->isSwitch2Edition() === $customDto->isSwitch2Edition
-                && $report->getGameStatus() === $customDto->gameStatus
-                && $report->isPatched() === $customDto->isPatched;
-        }));
+        ->with(
+            $this->callback(function ($report) use ($customDto) {
+                return $report instanceof Report &&
+                    $report->is60FpsPortable() ===
+                        $customDto->is60FpsPortable &&
+                    $report->isHasStableFrameratePortable() ===
+                        $customDto->hasStableFrameratePortable &&
+                    $report->isHasResolutionImprovedPortable() ===
+                        $customDto->hasResolutionImprovedPortable &&
+                    $report->isNativeResolutionPortable() ===
+                        $customDto->isNativeResolutionPortable &&
+                    $report->is60FpsDocked() === $customDto->is60FpsDocked &&
+                    $report->isHasStableFramerateDocked() ===
+                        $customDto->hasStableFramerateDocked &&
+                    $report->isHasResolutionImprovedDocked() ===
+                        $customDto->hasResolutionImprovedDocked &&
+                    $report->isNativeResolutionDocked() ===
+                        $customDto->isNativeResolutionDocked &&
+                    $report->isHasImprovedLoadingTimes() ===
+                        $customDto->hasImprovedLoadingTimes &&
+                    $report->isSwitch2Edition() ===
+                        $customDto->isSwitch2Edition &&
+                    $report->getGameStatus() === $customDto->gameStatus &&
+                    $report->isPatched() === $customDto->isPatched;
+            }),
+        );
+
+    $this->reportFetcher->expects($this->once())->method('deleteCache');
 
     $handler = new CreateReportFromDtoCommandHandler(
         $this->reportRepository,
-        $this->gameRepository
+        $this->gameRepository,
+        $this->reportFetcher,
     );
 
     $command = new CreateReportFromDtoCommand($customDto);
@@ -224,25 +262,41 @@ it('handles different game status values', function () {
     $this->reportRepository
         ->expects($this->once())
         ->method('save')
-        ->with($this->callback(function ($report) use ($dtoWithBadStatus) {
-            return $report instanceof Report
-                && $report->is60FpsPortable() === $dtoWithBadStatus->is60FpsPortable
-                && $report->isHasStableFrameratePortable() === $dtoWithBadStatus->hasStableFrameratePortable
-                && $report->isHasResolutionImprovedPortable() === $dtoWithBadStatus->hasResolutionImprovedPortable
-                && $report->isNativeResolutionPortable() === $dtoWithBadStatus->isNativeResolutionPortable
-                && $report->is60FpsDocked() === $dtoWithBadStatus->is60FpsDocked
-                && $report->isHasStableFramerateDocked() === $dtoWithBadStatus->hasStableFramerateDocked
-                && $report->isHasResolutionImprovedDocked() === $dtoWithBadStatus->hasResolutionImprovedDocked
-                && $report->isNativeResolutionDocked() === $dtoWithBadStatus->isNativeResolutionDocked
-                && $report->isHasImprovedLoadingTimes() === $dtoWithBadStatus->hasImprovedLoadingTimes
-                && $report->isSwitch2Edition() === $dtoWithBadStatus->isSwitch2Edition
-                && $report->getGameStatus() === $dtoWithBadStatus->gameStatus
-                && $report->isPatched() === $dtoWithBadStatus->isPatched;
-        }));
+        ->with(
+            $this->callback(function ($report) use ($dtoWithBadStatus) {
+                return $report instanceof Report &&
+                    $report->is60FpsPortable() ===
+                        $dtoWithBadStatus->is60FpsPortable &&
+                    $report->isHasStableFrameratePortable() ===
+                        $dtoWithBadStatus->hasStableFrameratePortable &&
+                    $report->isHasResolutionImprovedPortable() ===
+                        $dtoWithBadStatus->hasResolutionImprovedPortable &&
+                    $report->isNativeResolutionPortable() ===
+                        $dtoWithBadStatus->isNativeResolutionPortable &&
+                    $report->is60FpsDocked() ===
+                        $dtoWithBadStatus->is60FpsDocked &&
+                    $report->isHasStableFramerateDocked() ===
+                        $dtoWithBadStatus->hasStableFramerateDocked &&
+                    $report->isHasResolutionImprovedDocked() ===
+                        $dtoWithBadStatus->hasResolutionImprovedDocked &&
+                    $report->isNativeResolutionDocked() ===
+                        $dtoWithBadStatus->isNativeResolutionDocked &&
+                    $report->isHasImprovedLoadingTimes() ===
+                        $dtoWithBadStatus->hasImprovedLoadingTimes &&
+                    $report->isSwitch2Edition() ===
+                        $dtoWithBadStatus->isSwitch2Edition &&
+                    $report->getGameStatus() ===
+                        $dtoWithBadStatus->gameStatus &&
+                    $report->isPatched() === $dtoWithBadStatus->isPatched;
+            }),
+        );
+
+    $this->reportFetcher->expects($this->once())->method('deleteCache');
 
     $handler = new CreateReportFromDtoCommandHandler(
         $this->reportRepository,
-        $this->gameRepository
+        $this->gameRepository,
+        $this->reportFetcher,
     );
 
     $command = new CreateReportFromDtoCommand($dtoWithBadStatus);

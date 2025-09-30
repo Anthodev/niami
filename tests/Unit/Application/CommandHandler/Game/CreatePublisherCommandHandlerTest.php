@@ -7,6 +7,7 @@ namespace App\Tests\Unit\Application\CommandHandler;
 use App\Application\Command\Game\CreatePublisherCommand;
 use App\Application\CommandHandler\Game\CreatePublisherCommandHandler;
 use App\Application\Exception\Game\CannotCreatePublisherException;
+use App\Application\Fetcher\Game\PublisherFetcher;
 use App\Domain\Factory\Game\GamePublisherFactory;
 use App\Domain\Model\Game\Publisher;
 use App\Infrastructure\Persistence\Doctrine\Game\Repository\DoctrinePublisherRepository;
@@ -16,7 +17,10 @@ use Psr\Log\LoggerInterface;
 beforeEach(function () {
     $this->faker = Factory::create();
 
-    $this->publisherRepository = $this->createMock(DoctrinePublisherRepository::class);
+    $this->publisherRepository = $this->createMock(
+        DoctrinePublisherRepository::class,
+    );
+    $this->publisherFetcher = $this->createMock(PublisherFetcher::class);
     $this->logger = $this->createMock(LoggerInterface::class);
 
     $this->publisherName = $this->faker->company();
@@ -26,69 +30,77 @@ beforeEach(function () {
     $this->existingPublisher = GamePublisherFactory::create(
         $this->publisherName,
         $this->publisherApiId,
-        $this->publisherWebsite
+        $this->publisherWebsite,
     );
 });
 
-it('successfully creates and saves publisher when publisher does not exist', function () {
-    // Given
-    $this->publisherRepository
-        ->expects($this->once())
-        ->method('findByName')
-        ->with($this->publisherName)
-        ->willReturn(null);
+it(
+    'successfully creates and saves publisher when publisher does not exist',
+    function () {
+        // Given
+        $this->publisherFetcher
+            ->expects($this->once())
+            ->method('findOneByName')
+            ->with($this->publisherName)
+            ->willReturn(null);
 
-    $this->publisherRepository
-        ->expects($this->once())
-        ->method('save')
-        ->with($this->callback(function ($publisher) {
-            return $publisher instanceof Publisher
-                && $publisher->getName() === $this->publisherName
-                && $publisher->getWebsite() === $this->publisherWebsite
-                && $publisher->getApiId() === $this->publisherApiId;
-        }));
+        $this->publisherRepository
+            ->expects($this->once())
+            ->method('save')
+            ->with(
+                $this->callback(function ($publisher) {
+                    return $publisher instanceof Publisher &&
+                        $publisher->getName() === $this->publisherName &&
+                        $publisher->getWebsite() === $this->publisherWebsite &&
+                        $publisher->getApiId() === $this->publisherApiId;
+                }),
+            );
 
-    $this->logger
-        ->expects($this->never())
-        ->method('error');
+        $this->publisherFetcher
+            ->expects($this->once())
+            ->method('deleteCacheName')
+            ->with($this->publisherName);
 
-    $handler = new CreatePublisherCommandHandler(
-        $this->publisherRepository,
-        $this->logger
-    );
+        $this->logger->expects($this->never())->method('error');
 
-    $command = new CreatePublisherCommand(
-        name: $this->publisherName,
-        website: $this->publisherWebsite,
-        apiId: $this->publisherApiId,
-    );
+        $handler = new CreatePublisherCommandHandler(
+            $this->publisherRepository,
+            $this->publisherFetcher,
+            $this->logger,
+        );
 
-    // When
-    $handler->__invoke($command);
+        $command = new CreatePublisherCommand(
+            name: $this->publisherName,
+            website: $this->publisherWebsite,
+            apiId: $this->publisherApiId,
+        );
 
-    // Then
-    expect(true)->toBeTrue();
-});
+        // When
+        $handler->__invoke($command);
+
+        // Then
+        expect(true)->toBeTrue();
+    },
+);
 
 it('returns early when publisher already exists', function () {
     // Given
-    $this->publisherRepository
+    $this->publisherFetcher
         ->expects($this->once())
-        ->method('findByName')
+        ->method('findOneByName')
         ->with($this->publisherName)
         ->willReturn($this->existingPublisher);
 
-    $this->publisherRepository
-        ->expects($this->never())
-        ->method('save');
+    $this->publisherRepository->expects($this->never())->method('save');
 
-    $this->logger
-        ->expects($this->never())
-        ->method('error');
+    $this->publisherFetcher->expects($this->never())->method('deleteCacheName');
+
+    $this->logger->expects($this->never())->method('error');
 
     $handler = new CreatePublisherCommandHandler(
         $this->publisherRepository,
-        $this->logger
+        $this->publisherFetcher,
+        $this->logger,
     );
 
     $command = new CreatePublisherCommand(
@@ -106,9 +118,9 @@ it('returns early when publisher already exists', function () {
 
 it('handles exception during save operation', function () {
     // Given
-    $this->publisherRepository
+    $this->publisherFetcher
         ->expects($this->once())
-        ->method('findByName')
+        ->method('findOneByName')
         ->with($this->publisherName)
         ->willReturn(null);
 
@@ -119,6 +131,8 @@ it('handles exception during save operation', function () {
         ->method('save')
         ->willThrowException($exception);
 
+    $this->publisherFetcher->expects($this->never())->method('deleteCacheName');
+
     $this->logger
         ->expects($this->once())
         ->method('error')
@@ -126,6 +140,7 @@ it('handles exception during save operation', function () {
 
     $handler = new CreatePublisherCommandHandler(
         $this->publisherRepository,
+        $this->publisherFetcher,
         $this->logger,
     );
 
@@ -144,9 +159,9 @@ it('handles exception during save operation', function () {
 
 it('handles different types of exceptions during save', function () {
     // Given
-    $this->publisherRepository
+    $this->publisherFetcher
         ->expects($this->once())
-        ->method('findByName')
+        ->method('findOneByName')
         ->with($this->publisherName)
         ->willReturn(null);
 
@@ -157,6 +172,8 @@ it('handles different types of exceptions during save', function () {
         ->method('save')
         ->willThrowException($exception);
 
+    $this->publisherFetcher->expects($this->never())->method('deleteCacheName');
+
     $this->logger
         ->expects($this->once())
         ->method('error')
@@ -164,7 +181,8 @@ it('handles different types of exceptions during save', function () {
 
     $handler = new CreatePublisherCommandHandler(
         $this->publisherRepository,
-        $this->logger
+        $this->publisherFetcher,
+        $this->logger,
     );
 
     $command = new CreatePublisherCommand(
@@ -180,70 +198,96 @@ it('handles different types of exceptions during save', function () {
     expect(true)->toBeTrue();
 })->throws(CannotCreatePublisherException::class);
 
-it('creates publisher using GamePublisherFactory with correct parameters', function () {
-    // Given
-    $publisherName = 'Nintendo';
-    $publisherWebsite = 'https://www.nintendo.com';
-    $publisherApiId = 123456;
+it(
+    'creates publisher using GamePublisherFactory with correct parameters',
+    function () {
+        // Given
+        $publisherName = 'Nintendo';
+        $publisherWebsite = 'https://www.nintendo.com';
+        $publisherApiId = 123456;
 
-    $this->publisherRepository
-        ->expects($this->once())
-        ->method('findByName')
-        ->with($publisherName)
-        ->willReturn(null);
+        $this->publisherFetcher
+            ->expects($this->once())
+            ->method('findOneByName')
+            ->with($publisherName)
+            ->willReturn(null);
 
-    $this->publisherRepository
-        ->expects($this->once())
-        ->method('save')
-        ->with($this->callback(function ($publisher) use ($publisherName, $publisherWebsite, $publisherApiId) {
-            return $publisher instanceof Publisher
-                && $publisher->getName() === $publisherName
-                && $publisher->getWebsite() === $publisherWebsite
-                && $publisher->getApiId() === $publisherApiId;
-        }));
+        $this->publisherRepository
+            ->expects($this->once())
+            ->method('save')
+            ->with(
+                $this->callback(function ($publisher) use (
+                    $publisherName,
+                    $publisherWebsite,
+                    $publisherApiId,
+                ) {
+                    return $publisher instanceof Publisher &&
+                        $publisher->getName() === $publisherName &&
+                        $publisher->getWebsite() === $publisherWebsite &&
+                        $publisher->getApiId() === $publisherApiId;
+                }),
+            );
 
-    $handler = new CreatePublisherCommandHandler(
-        $this->publisherRepository,
-        $this->logger
-    );
+        $this->publisherFetcher
+            ->expects($this->once())
+            ->method('deleteCacheName')
+            ->with($publisherName);
 
-    $command = new CreatePublisherCommand(
-        name: $publisherName,
-        website: $publisherWebsite,
-        apiId: $publisherApiId,
-    );
+        $handler = new CreatePublisherCommandHandler(
+            $this->publisherRepository,
+            $this->publisherFetcher,
+            $this->logger,
+        );
 
-    // When
-    $handler->__invoke($command);
+        $command = new CreatePublisherCommand(
+            name: $publisherName,
+            website: $publisherWebsite,
+            apiId: $publisherApiId,
+        );
 
-    // Then
-    expect(true)->toBeTrue();
-});
+        // When
+        $handler->__invoke($command);
+
+        // Then
+        expect(true)->toBeTrue();
+    },
+);
 
 it('handles command with null website', function () {
     // Given
     $publisherName = 'Indie Developer';
     $publisherApiId = 789012;
 
-    $this->publisherRepository
+    $this->publisherFetcher
         ->expects($this->once())
-        ->method('findByName')
+        ->method('findOneByName')
         ->with($publisherName)
         ->willReturn(null);
 
     $this->publisherRepository
         ->expects($this->once())
         ->method('save')
-        ->with($this->callback(function ($publisher) use ($publisherName, $publisherApiId) {
-            return $publisher instanceof Publisher
-                && $publisher->getName() === $publisherName
-                && $publisher->getWebsite() === null
-                && $publisher->getApiId() === $publisherApiId;
-        }));
+        ->with(
+            $this->callback(function ($publisher) use (
+                $publisherName,
+                $publisherApiId,
+            ) {
+                return $publisher instanceof Publisher &&
+                    $publisher->getName() === $publisherName &&
+                    $publisher->getWebsite() === null &&
+                    $publisher->getApiId() === $publisherApiId;
+            }),
+        );
+
+    $this->publisherFetcher
+        ->expects($this->once())
+        ->method('deleteCacheName')
+        ->with($publisherName);
 
     $handler = new CreatePublisherCommandHandler(
         $this->publisherRepository,
-        $this->logger
+        $this->publisherFetcher,
+        $this->logger,
     );
 
     $command = new CreatePublisherCommand(

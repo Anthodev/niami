@@ -6,6 +6,7 @@ namespace App\Tests\Unit\Application\QueryHandler\Game;
 
 use App\Application\Command\Game\CreateGameCommand;
 use App\Application\Exception\Game\CannotCreateGameException;
+use App\Application\Fetcher\Game\GameFetcher;
 use App\Application\Helper\MessageBusHelper;
 use App\Application\Query\Game\GetOrCreateGameQuery;
 use App\Application\QueryHandler\Game\GetOrCreateGameQueryHandler;
@@ -26,7 +27,10 @@ beforeEach(function () {
     $this->faker = Factory::create();
 
     $this->gameRepository = $this->createMock(DoctrineGameRepository::class);
-    $this->publisherRepository = $this->createMock(DoctrinePublisherRepository::class);
+    $this->gameFetcher = $this->createMock(GameFetcher::class);
+    $this->publisherRepository = $this->createMock(
+        DoctrinePublisherRepository::class,
+    );
     $this->messageBus = $this->createMock(MessageBusInterface::class);
     $this->messageBusHelper = $this->createMock(MessageBusHelper::class);
     $this->logger = $this->createMock(LoggerInterface::class);
@@ -41,7 +45,11 @@ beforeEach(function () {
         $this->publisherApiId,
     );
 
-    $this->createdPublisher = GamePublisherFactory::create($this->publisherName, $this->publisherApiId, $this->publisherWebsite);
+    $this->createdPublisher = GamePublisherFactory::create(
+        $this->publisherName,
+        $this->publisherApiId,
+        $this->publisherWebsite,
+    );
 
     $this->developerName = $this->faker->company();
     $this->developerWebsite = $this->faker->url();
@@ -58,7 +66,7 @@ it('returns game when found in repository', function () {
     // Given
     $handler = new GetOrCreateGameQueryHandler(
         $this->messageBus,
-        $this->gameRepository,
+        $this->gameFetcher,
         $this->logger,
     );
 
@@ -75,16 +83,14 @@ it('returns game when found in repository', function () {
 
     $existingGame = new Game(slug: $gameSlug);
 
-    $this->gameRepository
+    $this->gameFetcher
         ->expects($this->once())
         ->method('getOneBySlugEnabledGame')
         ->with($gameSlug)
         ->willReturn($existingGame);
 
     // Message bus should not be called when game exists
-    $this->messageBus
-        ->expects($this->never())
-        ->method('dispatch');
+    $this->messageBus->expects($this->never())->method('dispatch');
 
     $query = new GetOrCreateGameQuery($gameSlug, $apiGame);
 
@@ -99,8 +105,8 @@ it('creates game via message bus when not found in repository', function () {
     // Given
     $handler = new GetOrCreateGameQueryHandler(
         $this->messageBus,
-        $this->gameRepository,
-        $this->logger
+        $this->gameFetcher,
+        $this->logger,
     );
 
     $gameSlug = 'zelda-breath-of-the-wild';
@@ -119,7 +125,7 @@ it('creates game via message bus when not found in repository', function () {
     $handledStamp = new HandledStamp($createdGame, 'handler.service_id');
     $envelope = new Envelope($handler, [$handledStamp]);
 
-    $this->gameRepository
+    $this->gameFetcher
         ->expects($this->exactly(2))
         ->method('getOneBySlugEnabledGame')
         ->with($gameSlug)
@@ -128,14 +134,16 @@ it('creates game via message bus when not found in repository', function () {
     $this->messageBus
         ->expects($this->once())
         ->method('dispatch')
-        ->with($this->callback(function ($message) use ($apiGame) {
-            return $message instanceof CreateGameCommand
-                && $message->name === $apiGame->getName()
-                && $message->slug === $apiGame->getSlug()
-                && $message->releaseDate === $apiGame->getReleaseDate()
-                && $message->imageCover === $apiGame->getImageCover()
-                && $message->description === $apiGame->getDescription();
-        }))
+        ->with(
+            $this->callback(function ($message) use ($apiGame) {
+                return $message instanceof CreateGameCommand &&
+                    $message->name === $apiGame->getName() &&
+                    $message->slug === $apiGame->getSlug() &&
+                    $message->releaseDate === $apiGame->getReleaseDate() &&
+                    $message->imageCover === $apiGame->getImageCover() &&
+                    $message->description === $apiGame->getDescription();
+            }),
+        )
         ->willReturn($envelope);
 
     $query = new GetOrCreateGameQuery($gameSlug, $apiGame);
@@ -147,105 +155,112 @@ it('creates game via message bus when not found in repository', function () {
     expect($result)->toBe($createdGame);
 });
 
-it('throws CannotCreateGameException when message bus dispatch fails with Exception', function () {
-    // Given
-    $this->gameRepository = $this->createMock(GameRepositoryInterface::class);
-    $this->messageBus = $this->createMock(MessageBusInterface::class);
-    $this->logger = $this->createMock(LoggerInterface::class);
+it(
+    'throws CannotCreateGameException when message bus dispatch fails with Exception',
+    function () {
+        // Given
+        $gameFetcher = $this->createMock(GameFetcher::class);
+        $messageBus = $this->createMock(MessageBusInterface::class);
+        $logger = $this->createMock(LoggerInterface::class);
 
-    $handler = new GetOrCreateGameQueryHandler(
-        $this->messageBus,
-        $this->gameRepository,
-        $this->logger
-    );
+        $handler = new GetOrCreateGameQueryHandler(
+            $messageBus,
+            $gameFetcher,
+            $logger,
+        );
 
-    $gameSlug = 'zelda-breath-of-the-wild';
-    $apiGame = new ApiGame(
-        name: 'The Legend of Zelda: Breath of the Wild',
-        slug: $gameSlug,
-        description: 'An open-world adventure game',
-        imageCover: 'https://example.com/image.jpg',
-        releaseDate: '2017-03-03',
-        updatedAt: new \DateTimeImmutable('now'),
-        publisher: $this->publisherDto,
-    );
+        $gameSlug = 'zelda-breath-of-the-wild';
+        $apiGame = new ApiGame(
+            name: 'The Legend of Zelda: Breath of the Wild',
+            slug: $gameSlug,
+            description: 'An open-world adventure game',
+            imageCover: 'https://example.com/image.jpg',
+            releaseDate: '2017-03-03',
+            updatedAt: new \DateTimeImmutable('now'),
+            publisher: $this->publisherDto,
+        );
 
-    $this->gameRepository
-        ->expects($this->once())
-        ->method('getOneBySlugEnabledGame')
-        ->with($gameSlug)
-        ->willReturn(null);
+        $gameFetcher
+            ->expects($this->once())
+            ->method('getOneBySlugEnabledGame')
+            ->with($gameSlug)
+            ->willReturn(null);
 
-    $exception = new \Exception('Database error');
+        $exception = new \Exception('Database error');
 
-    $this->messageBus
-        ->expects($this->once())
-        ->method('dispatch')
-        ->willThrowException($exception);
+        $messageBus
+            ->expects($this->once())
+            ->method('dispatch')
+            ->willThrowException($exception);
 
-    $this->logger
-        ->expects($this->once())
-        ->method('error')
-        ->with('Database error');
+        $logger
+            ->expects($this->once())
+            ->method('error')
+            ->with('Database error');
 
-    $query = new GetOrCreateGameQuery($gameSlug, $apiGame);
+        $query = new GetOrCreateGameQuery($gameSlug, $apiGame);
 
-    // When & Then
-    expect(fn() => $handler->__invoke($query))
-        ->toThrow(CannotCreateGameException::class);
-});
+        // When & Then
+        expect(fn() => $handler->__invoke($query))->toThrow(
+            CannotCreateGameException::class,
+        );
+    },
+);
 
-it('throws CannotCreateGameException when message bus dispatch fails with ExceptionInterface', function () {
-    // Given
-    $this->gameRepository = $this->createMock(GameRepositoryInterface::class);
-    $this->messageBus = $this->createMock(MessageBusInterface::class);
-    $this->logger = $this->createMock(LoggerInterface::class);
-    $exception = new CannotCreateGameException();
+it(
+    'throws CannotCreateGameException when message bus dispatch fails with ExceptionInterface',
+    function () {
+        // Given
+        $gameFetcher = $this->createMock(GameFetcher::class);
+        $messageBus = $this->createMock(MessageBusInterface::class);
+        $logger = $this->createMock(LoggerInterface::class);
+        $exception = new CannotCreateGameException();
 
-    $handler = new GetOrCreateGameQueryHandler(
-        $this->messageBus,
-        $this->gameRepository,
-        $this->logger
-    );
+        $handler = new GetOrCreateGameQueryHandler(
+            $messageBus,
+            $gameFetcher,
+            $logger,
+        );
 
-    $gameSlug = 'zelda-breath-of-the-wild';
-    $apiGame = new ApiGame(
-        name: 'The Legend of Zelda: Breath of the Wild',
-        slug: $gameSlug,
-        description: 'An open-world adventure game',
-        imageCover: 'https://example.com/image.jpg',
-        releaseDate: '2017-03-03',
-        updatedAt: new \DateTimeImmutable('now'),
-        publisher: $this->publisherDto,
-    );
+        $gameSlug = 'zelda-breath-of-the-wild';
+        $apiGame = new ApiGame(
+            name: 'The Legend of Zelda: Breath of the Wild',
+            slug: $gameSlug,
+            description: 'An open-world adventure game',
+            imageCover: 'https://example.com/image.jpg',
+            releaseDate: '2017-03-03',
+            updatedAt: new \DateTimeImmutable('now'),
+            publisher: $this->publisherDto,
+        );
 
-    $this->gameRepository
-        ->expects($this->once())
-        ->method('getOneBySlugEnabledGame')
-        ->with($gameSlug)
-        ->willReturn(null);
+        $gameFetcher
+            ->expects($this->once())
+            ->method('getOneBySlugEnabledGame')
+            ->with($gameSlug)
+            ->willReturn(null);
 
-    $this->messageBus
-        ->expects($this->once())
-        ->method('dispatch')
-        ->willThrowException($exception);
+        $messageBus
+            ->expects($this->once())
+            ->method('dispatch')
+            ->willThrowException($exception);
 
-    $query = new GetOrCreateGameQuery($gameSlug, $apiGame);
+        $query = new GetOrCreateGameQuery($gameSlug, $apiGame);
 
-    // When & Then
-    $handler->__invoke($query);
-})->throws(CannotCreateGameException::class);
+        // When & Then
+        $handler->__invoke($query);
+    },
+)->throws(CannotCreateGameException::class);
 
 it('properly handles different ApiGame properties', function () {
     // Given
-    $this->gameRepository = $this->createMock(GameRepositoryInterface::class);
-    $this->messageBus = $this->createMock(MessageBusInterface::class);
-    $this->logger = $this->createMock(LoggerInterface::class);
+    $gameFetcher = $this->createMock(GameFetcher::class);
+    $messageBus = $this->createMock(MessageBusInterface::class);
+    $logger = $this->createMock(LoggerInterface::class);
 
     $handler = new GetOrCreateGameQueryHandler(
-        $this->messageBus,
-        $this->gameRepository,
-        $this->logger
+        $messageBus,
+        $gameFetcher,
+        $logger,
     );
 
     $gameSlug = 'mario-odyssey';
@@ -261,28 +276,30 @@ it('properly handles different ApiGame properties', function () {
 
     $createdGame = new Game(slug: $gameSlug);
 
-    // Game not found initially, then found after creation
-    $this->gameRepository
+    $handledStamp = new HandledStamp($createdGame, 'handler.service_id');
+    $envelope = new Envelope($handler, [$handledStamp]);
+
+    $gameFetcher
         ->expects($this->exactly(2))
         ->method('getOneBySlugEnabledGame')
         ->with($gameSlug)
         ->willReturnOnConsecutiveCalls(null, $createdGame);
 
-    $handledStamp = new HandledStamp($createdGame, 'handler.service_id');
-    $envelope = new Envelope($handler, [$handledStamp]);
-
-    $this->messageBus
+    $messageBus
         ->expects($this->once())
         ->method('dispatch')
-        ->with($this->callback(function ($command) {
-            return $command instanceof CreateGameCommand
-                && $command->getName() === 'Super Mario Odyssey'
-                && $command->getSlug() === 'mario-odyssey'
-                && $command->getReleaseDate() === '2017-10-27'
-                && $command->getImageCover() === 'https://example.com/mario.jpg'
-                && $command->getDescription() === 'A 3D platform game';
-        }))
-    ->willReturn($envelope);
+        ->with(
+            $this->callback(function ($command) {
+                return $command instanceof CreateGameCommand &&
+                    $command->getName() === 'Super Mario Odyssey' &&
+                    $command->getSlug() === 'mario-odyssey' &&
+                    $command->getReleaseDate() === '2017-10-27' &&
+                    $command->getImageCover() ===
+                        'https://example.com/mario.jpg' &&
+                    $command->getDescription() === 'A 3D platform game';
+            }),
+        )
+        ->willReturn($envelope);
 
     $query = new GetOrCreateGameQuery($gameSlug, $apiGame);
 
@@ -297,16 +314,16 @@ it('creates game with developer when not found in repository', function () {
     // Given
     $handler = new GetOrCreateGameQueryHandler(
         $this->messageBus,
-        $this->gameRepository,
-        $this->logger
+        $this->gameFetcher,
+        $this->logger,
     );
 
     $gameSlug = 'witcher-3-wild-hunt';
     $apiGame = new ApiGame(
         name: 'The Witcher 3: Wild Hunt',
         slug: $gameSlug,
-        description: 'An open-world RPG game',
-        imageCover: 'https://example.com/witcher.jpg',
+        description: 'An open world RPG',
+        imageCover: 'https://example.com/witcher3.jpg',
         releaseDate: '2015-05-19',
         updatedAt: new \DateTimeImmutable('now'),
         publisher: $this->publisherDto,
@@ -318,7 +335,7 @@ it('creates game with developer when not found in repository', function () {
     $handledStamp = new HandledStamp($createdGame, 'handler.service_id');
     $envelope = new Envelope($handler, [$handledStamp]);
 
-    $this->gameRepository
+    $this->gameFetcher
         ->expects($this->exactly(2))
         ->method('getOneBySlugEnabledGame')
         ->with($gameSlug)
@@ -327,16 +344,18 @@ it('creates game with developer when not found in repository', function () {
     $this->messageBus
         ->expects($this->once())
         ->method('dispatch')
-        ->with($this->callback(function ($command) use ($apiGame) {
-            return $command instanceof CreateGameCommand
-                && $command->name === $apiGame->getName()
-                && $command->slug === $apiGame->getSlug()
-                && $command->releaseDate === $apiGame->getReleaseDate()
-                && $command->imageCover === $apiGame->getImageCover()
-                && $command->description === $apiGame->getDescription()
-                && $command->publisher === $apiGame->getPublisher()
-                && $command->developer === $apiGame->getDeveloper();
-        }))
+        ->with(
+            $this->callback(function ($command) use ($apiGame) {
+                return $command instanceof CreateGameCommand &&
+                    $command->name === $apiGame->getName() &&
+                    $command->slug === $apiGame->getSlug() &&
+                    $command->releaseDate === $apiGame->getReleaseDate() &&
+                    $command->imageCover === $apiGame->getImageCover() &&
+                    $command->description === $apiGame->getDescription() &&
+                    $command->publisher === $apiGame->getPublisher() &&
+                    $command->developer === $apiGame->getDeveloper();
+            }),
+        )
         ->willReturn($envelope);
 
     $query = new GetOrCreateGameQuery($gameSlug, $apiGame);
