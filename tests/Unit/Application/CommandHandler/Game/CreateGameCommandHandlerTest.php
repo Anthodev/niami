@@ -7,6 +7,7 @@ namespace App\Tests\Unit\Application\CommandHandler;
 use App\Application\Command\Game\CreateGameCommand;
 use App\Application\Command\Game\CreatePublisherCommand;
 use App\Application\CommandHandler\Game\CreateGameCommandHandler;
+use App\Application\Fetcher\Game\GameFetcher;
 use App\Application\Helper\MessageBusHelper;
 use App\Domain\Factory\Game\GamePublisherFactory;
 use App\Domain\Model\Game\Game;
@@ -25,8 +26,13 @@ beforeEach(function () {
     $this->faker = Factory::create();
 
     $this->gameRepository = $this->createMock(DoctrineGameRepository::class);
-    $this->publisherRepository = $this->createMock(DoctrinePublisherRepository::class);
-    $this->developerRepository = $this->createMock(DoctrineDeveloperRepository::class);
+    $this->gameFetcher = $this->createMock(GameFetcher::class);
+    $this->publisherRepository = $this->createMock(
+        DoctrinePublisherRepository::class,
+    );
+    $this->developerRepository = $this->createMock(
+        DoctrineDeveloperRepository::class,
+    );
     $this->messageBus = $this->createMock(MessageBusInterface::class);
     $this->messageBusHelper = $this->createMock(MessageBusHelper::class);
     $this->logger = $this->createMock(LoggerInterface::class);
@@ -35,7 +41,11 @@ beforeEach(function () {
     $this->publisherWebsite = $this->faker->url();
     $this->publisherApiId = $this->faker->randomNumber(5);
 
-    $this->createdPublisher = GamePublisherFactory::create($this->publisherName, $this->publisherApiId, $this->publisherWebsite);
+    $this->createdPublisher = GamePublisherFactory::create(
+        $this->publisherName,
+        $this->publisherApiId,
+        $this->publisherWebsite,
+    );
 
     $this->publisherDto = new GameCompanyDataDto(
         $this->publisherName,
@@ -46,19 +56,26 @@ beforeEach(function () {
 
 it('successfully creates and saves game', function () {
     // Given
+    $this->gameRepository
+        ->expects($this->once())
+        ->method('getOneBySlugEnabledGame')
+        ->with('zelda-breath-of-the-wild')
+        ->willReturn(null);
+
     $this->publisherRepository
         ->expects($this->once())
-        ->method('findByName')
+        ->method('findOneByName')
         ->with($this->publisherName)
         ->willReturn($this->createdPublisher);
 
     $handler = new CreateGameCommandHandler(
         $this->gameRepository,
+        $this->gameFetcher,
         $this->publisherRepository,
         $this->developerRepository,
         $this->messageBus,
         $this->messageBusHelper,
-        $this->logger
+        $this->logger,
     );
 
     $command = new CreateGameCommand(
@@ -73,14 +90,63 @@ it('successfully creates and saves game', function () {
     $this->gameRepository
         ->expects($this->once())
         ->method('save')
-        ->with($this->callback(function ($game) use ($command) {
-            return $game instanceof Game
-                && $game->getName() === $command->getName()
-                && $game->getSlug() === $command->getSlug()
-                && $game->getDescription() === $command->getDescription()
-                && $game->getReleaseDate() === $command->getReleaseDate()
-                && $game->getImageCover() === $command->getImageCover();
-        }));
+        ->with(
+            $this->callback(function ($game) use ($command) {
+                return $game instanceof Game &&
+                    $game->getName() === $command->getName() &&
+                    $game->getSlug() === $command->getSlug() &&
+                    $game->getDescription() === $command->getDescription() &&
+                    $game->getReleaseDate() === $command->getReleaseDate() &&
+                    $game->getImageCover() === $command->getImageCover();
+            }),
+        );
+
+    $this->gameFetcher
+        ->expects($this->once())
+        ->method('deleteCacheForSlug')
+        ->with('zelda-breath-of-the-wild');
+
+    // When
+    $handler->__invoke($command);
+
+    // Then
+    expect(true)->toBeTrue();
+});
+
+it('returns early when game already exists', function () {
+    // Given
+    $existingGame = $this->createMock(Game::class);
+
+    $this->gameRepository
+        ->expects($this->once())
+        ->method('getOneBySlugEnabledGame')
+        ->with('zelda-breath-of-the-wild')
+        ->willReturn($existingGame);
+
+    $this->publisherRepository
+        ->expects($this->never())
+        ->method('findOneByName');
+    $this->gameRepository->expects($this->never())->method('save');
+    $this->gameFetcher->expects($this->never())->method('deleteCacheForSlug');
+
+    $handler = new CreateGameCommandHandler(
+        $this->gameRepository,
+        $this->gameFetcher,
+        $this->publisherRepository,
+        $this->developerRepository,
+        $this->messageBus,
+        $this->messageBusHelper,
+        $this->logger,
+    );
+
+    $command = new CreateGameCommand(
+        name: 'The Legend of Zelda: Breath of the Wild',
+        slug: 'zelda-breath-of-the-wild',
+        releaseDate: '2017-03-03',
+        imageCover: 'https://example.com/zelda.jpg',
+        publisher: $this->publisherDto,
+        description: 'An open-world adventure game',
+    );
 
     // When
     $handler->__invoke($command);
@@ -91,19 +157,26 @@ it('successfully creates and saves game', function () {
 
 it('handles exception during save operation', function () {
     // Given
+    $this->gameRepository
+        ->expects($this->once())
+        ->method('getOneBySlugEnabledGame')
+        ->with('mario-odyssey')
+        ->willReturn(null);
+
     $this->publisherRepository
         ->expects($this->once())
-        ->method('findByName')
+        ->method('findOneByName')
         ->with($this->publisherName)
         ->willReturn($this->createdPublisher);
 
     $handler = new CreateGameCommandHandler(
         $this->gameRepository,
+        $this->gameFetcher,
         $this->publisherRepository,
         $this->developerRepository,
         $this->messageBus,
         $this->messageBusHelper,
-        $this->logger
+        $this->logger,
     );
 
     $command = new CreateGameCommand(
@@ -112,7 +185,7 @@ it('handles exception during save operation', function () {
         releaseDate: '2017-10-27',
         imageCover: 'https://example.com/mario.jpg',
         publisher: $this->publisherDto,
-        description: 'A 3D platform game'
+        description: 'A 3D platform game',
     );
 
     $exception = new \Exception('Database connection failed');
@@ -121,6 +194,8 @@ it('handles exception during save operation', function () {
         ->expects($this->once())
         ->method('save')
         ->willThrowException($exception);
+
+    $this->gameFetcher->expects($this->never())->method('deleteCacheForSlug');
 
     $this->logger
         ->expects($this->once())
@@ -136,14 +211,21 @@ it('handles exception during save operation', function () {
 
 it('properly handles command with null description', function () {
     // Given
+    $this->gameRepository
+        ->expects($this->once())
+        ->method('getOneBySlugEnabledGame')
+        ->with('metroid-dread')
+        ->willReturn(null);
+
     $this->publisherRepository
         ->expects($this->once())
-        ->method('findByName')
+        ->method('findOneByName')
         ->with($this->publisherName)
         ->willReturn($this->createdPublisher);
 
     $handler = new CreateGameCommandHandler(
         $this->gameRepository,
+        $this->gameFetcher,
         $this->publisherRepository,
         $this->developerRepository,
         $this->messageBus,
@@ -163,14 +245,22 @@ it('properly handles command with null description', function () {
     $this->gameRepository
         ->expects($this->once())
         ->method('save')
-        ->with($this->callback(function ($game) {
-            return $game instanceof Game
-                && $game->getName() === 'Metroid Dread'
-                && $game->getSlug() === 'metroid-dread'
-                && $game->getDescription() === ''
-                && $game->getReleaseDate() === '2021-10-08'
-                && $game->getImageCover() === 'https://example.com/metroid.jpg';
-        }));
+        ->with(
+            $this->callback(function ($game) {
+                return $game instanceof Game &&
+                    $game->getName() === 'Metroid Dread' &&
+                    $game->getSlug() === 'metroid-dread' &&
+                    $game->getDescription() === '' &&
+                    $game->getReleaseDate() === '2021-10-08' &&
+                    $game->getImageCover() ===
+                        'https://example.com/metroid.jpg';
+            }),
+        );
+
+    $this->gameFetcher
+        ->expects($this->once())
+        ->method('deleteCacheForSlug')
+        ->with('metroid-dread');
 
     // When
     $handler->__invoke($command);
@@ -181,14 +271,21 @@ it('properly handles command with null description', function () {
 
 it('properly handles command with non-null description', function () {
     // Given
+    $this->gameRepository
+        ->expects($this->once())
+        ->method('getOneBySlugEnabledGame')
+        ->with('hollow-knight')
+        ->willReturn(null);
+
     $this->publisherRepository
         ->expects($this->once())
-        ->method('findByName')
+        ->method('findOneByName')
         ->with($this->publisherName)
         ->willReturn($this->createdPublisher);
 
     $handler = new CreateGameCommandHandler(
         $this->gameRepository,
+        $this->gameFetcher,
         $this->publisherRepository,
         $this->developerRepository,
         $this->messageBus,
@@ -202,24 +299,31 @@ it('properly handles command with non-null description', function () {
         releaseDate: '2017-02-24',
         imageCover: 'https://example.com/hollow-knight.jpg',
         publisher: $this->publisherDto,
-        description: 'A challenging 2D Metroidvania'
+        description: 'A challenging 2D Metroidvania',
     );
 
     $this->gameRepository
         ->expects($this->once())
         ->method('save')
-        ->with($this->callback(function ($game) {
-            return $game instanceof Game
-                && $game->getName() === 'Hollow Knight'
-                && $game->getSlug() === 'hollow-knight'
-                && $game->getDescription() === 'A challenging 2D Metroidvania'
-                && $game->getReleaseDate() === '2017-02-24'
-                && $game->getImageCover() === 'https://example.com/hollow-knight.jpg';
-        }));
+        ->with(
+            $this->callback(function ($game) {
+                return $game instanceof Game &&
+                    $game->getName() === 'Hollow Knight' &&
+                    $game->getSlug() === 'hollow-knight' &&
+                    $game->getDescription() ===
+                        'A challenging 2D Metroidvania' &&
+                    $game->getReleaseDate() === '2017-02-24' &&
+                    $game->getImageCover() ===
+                        'https://example.com/hollow-knight.jpg';
+            }),
+        );
 
-    $this->logger
-        ->expects($this->never())
-        ->method('error');
+    $this->gameFetcher
+        ->expects($this->once())
+        ->method('deleteCacheForSlug')
+        ->with('hollow-knight');
+
+    $this->logger->expects($this->never())->method('error');
 
     // When
     $handler->__invoke($command);
@@ -231,13 +335,28 @@ it('properly handles command with non-null description', function () {
 it('handles different types of exceptions during save', function () {
     // Given
     $gameRepository = $this->createMock(DoctrineGameRepository::class);
-    $publisherRepository = $this->createMock(DoctrinePublisherRepository::class);
+    $gameFetcher = $this->createMock(GameFetcher::class);
+    $publisherRepository = $this->createMock(
+        DoctrinePublisherRepository::class,
+    );
     $messageBus = $this->createMock(MessageBusInterface::class);
     $messageBusHelper = $this->createMock(MessageBusHelper::class);
     $logger = $this->createMock(LoggerInterface::class);
 
+    $gameRepository
+        ->expects($this->once())
+        ->method('getOneBySlugEnabledGame')
+        ->with('celeste')
+        ->willReturn(null);
+
+    $publisherRepository
+        ->expects($this->once())
+        ->method('findOneByName')
+        ->willReturn(null);
+
     $handler = new CreateGameCommandHandler(
         $gameRepository,
+        $gameFetcher,
         $publisherRepository,
         $this->developerRepository,
         $messageBus,
@@ -245,15 +364,29 @@ it('handles different types of exceptions during save', function () {
         $logger,
     );
 
-    $publisherEnvelope = new Envelope($this->createdPublisher, [new HandledStamp($this->createdPublisher, 'handler.service_id')]);
+    $publisherEnvelope = new Envelope($this->createdPublisher, [
+        new HandledStamp($this->createdPublisher, 'handler.service_id'),
+    ]);
 
     $messageBus
         ->expects($this->exactly(2))
         ->method('dispatch')
         ->willReturnOnConsecutiveCalls(
-            new Envelope(new CreatePublisherCommand($this->publisherName, $this->publisherWebsite, $this->publisherApiId)),
+            new Envelope(
+                new CreatePublisherCommand(
+                    $this->publisherName,
+                    $this->publisherWebsite,
+                    $this->publisherApiId,
+                ),
+            ),
             $publisherEnvelope,
         );
+
+    $messageBusHelper
+        ->expects($this->once())
+        ->method('getContentFromEnvelope')
+        ->with($publisherEnvelope, 'Publisher not found', Publisher::class)
+        ->willReturn($this->createdPublisher);
 
     $command = new CreateGameCommand(
         name: 'Celeste',
@@ -261,7 +394,7 @@ it('handles different types of exceptions during save', function () {
         releaseDate: '2018-01-25',
         imageCover: 'https://example.com/celeste.jpg',
         publisher: $this->publisherDto,
-        description: 'A challenging platformer'
+        description: 'A challenging platformer',
     );
 
     $exception = new \RuntimeException('Runtime error occurred');
@@ -270,6 +403,8 @@ it('handles different types of exceptions during save', function () {
         ->expects($this->once())
         ->method('save')
         ->willThrowException($exception);
+
+    $gameFetcher->expects($this->never())->method('deleteCacheForSlug');
 
     $logger
         ->expects($this->once())
@@ -285,14 +420,21 @@ it('handles different types of exceptions during save', function () {
 
 it('creates game using GameFactory with correct parameters', function () {
     // Given
+    $this->gameRepository
+        ->expects($this->once())
+        ->method('getOneBySlugEnabledGame')
+        ->with('hades')
+        ->willReturn(null);
+
     $this->publisherRepository
         ->expects($this->once())
-        ->method('findByName')
+        ->method('findOneByName')
         ->with($this->publisherName)
         ->willReturn($this->createdPublisher);
 
     $handler = new CreateGameCommandHandler(
         $this->gameRepository,
+        $this->gameFetcher,
         $this->publisherRepository,
         $this->developerRepository,
         $this->messageBus,
@@ -306,142 +448,32 @@ it('creates game using GameFactory with correct parameters', function () {
         releaseDate: '2020-09-17',
         imageCover: 'https://example.com/hades.jpg',
         publisher: $this->publisherDto,
-        description: 'A rogue-like dungeon crawler'
+        description: 'A rogue-like dungeon crawler',
     );
 
     $this->gameRepository
         ->expects($this->once())
         ->method('save')
-        ->with($this->callback(function ($game) {
-            return $game instanceof Game
-                && $game->getName() === 'Hades'
-                && $game->getSlug() === 'hades'
-                && $game->getDescription() === 'A rogue-like dungeon crawler'
-                && $game->getReleaseDate() === '2020-09-17'
-                && $game->getImageCover() === 'https://example.com/hades.jpg'
-                && $game->isActive() === true
-                && $game->getPublisher() === $this->createdPublisher
-                && $game->getReports()->isEmpty();
-        }));
-
-    // When
-    $handler->__invoke($command);
-
-    // Then
-    expect(true)->toBeTrue();
-});
-
-it('handles command properties validation through CreateGameCommand', function () {
-    // Given
-    $this->publisherRepository
-        ->expects($this->once())
-        ->method('findByName')
-        ->with($this->publisherName)
-        ->willReturn($this->createdPublisher);
-
-    $handler = new CreateGameCommandHandler(
-        $this->gameRepository,
-        $this->publisherRepository,
-        $this->developerRepository,
-        $this->messageBus,
-        $this->messageBusHelper,
-        $this->logger,
-    );
-
-    $command = new CreateGameCommand(
-        name: 'Ori and the Will of the Wisps',
-        slug: 'ori-will-of-wisps',
-        releaseDate: '2020-03-11',
-        imageCover: 'https://example.com/ori.jpg',
-        publisher: $this->publisherDto,
-    );
-
-    expect($command->getName())->toBe('Ori and the Will of the Wisps')
-        ->and($command->getSlug())->toBe('ori-will-of-wisps')
-        ->and($command->getReleaseDate())->toBe('2020-03-11')
-        ->and($command->getImageCover())->toBe('https://example.com/ori.jpg')
-        ->and($command->getDescription())->toBeNull()
-        ->and($command->isActive())->toBeTrue();
-
-    $this->gameRepository
-        ->expects($this->once())
-        ->method('save')
-        ->with($this->callback(function ($game) {
-            return $game instanceof Game
-                && $game->getName() === 'Ori and the Will of the Wisps'
-                && $game->getSlug() === 'ori-will-of-wisps'
-                && $game->getDescription() === '' // null becomes empty string
-                && $game->getReleaseDate() === '2020-03-11'
-                && $game->getImageCover() === 'https://example.com/ori.jpg';
-        }));
-
-    // When
-    $handler->__invoke($command);
-
-    // Then
-    expect(true)->toBeTrue();
-});
-
-it('creates game and publisher using message bus when publisher does not exist', function () {
-    // Given
-    $gameRepository = $this->createMock(DoctrineGameRepository::class);
-    $publisherRepository = $this->createMock(DoctrinePublisherRepository::class);
-    $messageBus = $this->createMock(MessageBusInterface::class);
-    $messageBusHelper = $this->createMock(MessageBusHelper::class);
-
-    $publisherRepository
-        ->expects($this->once())
-        ->method('findByName')
-        ->with($this->publisherName)
-        ->willReturn(null);
-
-
-    $handler = new CreateGameCommandHandler(
-        $gameRepository,
-        $publisherRepository,
-        $this->developerRepository,
-        $messageBus,
-        $messageBusHelper,
-        $this->logger,
-    );
-
-    $command = new CreateGameCommand(
-        name: 'The Witcher 3: Wild Hunt',
-        slug: 'witcher-3-wild-hunt',
-        releaseDate: '2015-05-19',
-        imageCover: 'https://example.com/witcher3.jpg',
-        publisher: $this->publisherDto,
-        description: 'An open world RPG',
-    );
-
-    $publisherEnvelope = new Envelope($this->createdPublisher, [new HandledStamp($this->createdPublisher, 'handler.service_id')]);
-
-    $messageBus
-        ->expects($this->exactly(2))
-        ->method('dispatch')
-        ->willReturnOnConsecutiveCalls(
-            new Envelope(new CreatePublisherCommand($this->publisherName, $this->publisherWebsite, $this->publisherApiId)),
-            $publisherEnvelope,
+        ->with(
+            $this->callback(function ($game) {
+                return $game instanceof Game &&
+                    $game->getName() === 'Hades' &&
+                    $game->getSlug() === 'hades' &&
+                    $game->getDescription() ===
+                        'A rogue-like dungeon crawler' &&
+                    $game->getReleaseDate() === '2020-09-17' &&
+                    $game->getImageCover() ===
+                        'https://example.com/hades.jpg' &&
+                    $game->isActive() === true &&
+                    $game->getPublisher() === $this->createdPublisher &&
+                    $game->getReports()->isEmpty();
+            }),
         );
 
-    $messageBusHelper
+    $this->gameFetcher
         ->expects($this->once())
-        ->method('getContentFromEnvelope')
-        ->with($publisherEnvelope, 'Publisher not found', Publisher::class)
-        ->willReturn($this->createdPublisher);
-
-    $gameRepository
-        ->expects($this->once())
-        ->method('save')
-        ->with($this->callback(function ($game) use ($command) {
-            return $game instanceof Game
-                && $game->getName() === $command->getName()
-                && $game->getSlug() === $command->getSlug()
-                && $game->getDescription() === $command->getDescription()
-                && $game->getReleaseDate() === $command->getReleaseDate()
-                && $game->getImageCover() === $command->getImageCover()
-                && $game->getPublisher() === $this->createdPublisher;
-        }));
+        ->method('deleteCacheForSlug')
+        ->with('hades');
 
     // When
     $handler->__invoke($command);
@@ -449,3 +481,175 @@ it('creates game and publisher using message bus when publisher does not exist',
     // Then
     expect(true)->toBeTrue();
 });
+
+it(
+    'handles command properties validation through CreateGameCommand',
+    function () {
+        // Given
+        $this->gameRepository
+            ->expects($this->once())
+            ->method('getOneBySlugEnabledGame')
+            ->with('ori-will-of-wisps')
+            ->willReturn(null);
+
+        $this->publisherRepository
+            ->expects($this->once())
+            ->method('findOneByName')
+            ->with($this->publisherName)
+            ->willReturn($this->createdPublisher);
+
+        $handler = new CreateGameCommandHandler(
+            $this->gameRepository,
+            $this->gameFetcher,
+            $this->publisherRepository,
+            $this->developerRepository,
+            $this->messageBus,
+            $this->messageBusHelper,
+            $this->logger,
+        );
+
+        $command = new CreateGameCommand(
+            name: 'Ori and the Will of the Wisps',
+            slug: 'ori-will-of-wisps',
+            releaseDate: '2020-03-11',
+            imageCover: 'https://example.com/ori.jpg',
+            publisher: $this->publisherDto,
+        );
+
+        expect($command->getName())
+            ->toBe('Ori and the Will of the Wisps')
+            ->and($command->getSlug())
+            ->toBe('ori-will-of-wisps')
+            ->and($command->getReleaseDate())
+            ->toBe('2020-03-11')
+            ->and($command->getImageCover())
+            ->toBe('https://example.com/ori.jpg')
+            ->and($command->getDescription())
+            ->toBeNull()
+            ->and($command->isActive())
+            ->toBeTrue();
+
+        $this->gameRepository
+            ->expects($this->once())
+            ->method('save')
+            ->with(
+                $this->callback(function ($game) {
+                    return $game instanceof Game &&
+                        $game->getName() === 'Ori and the Will of the Wisps' &&
+                        $game->getSlug() === 'ori-will-of-wisps' &&
+                        $game->getDescription() === '' && // null becomes empty string
+                        $game->getReleaseDate() === '2020-03-11' &&
+                        $game->getImageCover() ===
+                            'https://example.com/ori.jpg';
+                }),
+            );
+
+        $this->gameFetcher
+            ->expects($this->once())
+            ->method('deleteCacheForSlug')
+            ->with('ori-will-of-wisps');
+
+        // When
+        $handler->__invoke($command);
+
+        // Then
+        expect(true)->toBeTrue();
+    },
+);
+
+it(
+    'creates game and publisher using message bus when publisher does not exist',
+    function () {
+        // Given
+        $gameRepository = $this->createMock(DoctrineGameRepository::class);
+        $gameFetcher = $this->createMock(GameFetcher::class);
+        $publisherRepository = $this->createMock(
+            DoctrinePublisherRepository::class,
+        );
+        $messageBus = $this->createMock(MessageBusInterface::class);
+        $messageBusHelper = $this->createMock(MessageBusHelper::class);
+
+        $gameRepository
+            ->expects($this->once())
+            ->method('getOneBySlugEnabledGame')
+            ->with('witcher-3-wild-hunt')
+            ->willReturn(null);
+
+        $publisherRepository
+            ->expects($this->once())
+            ->method('findOneByName')
+            ->with($this->publisherName)
+            ->willReturn(null);
+
+        $handler = new CreateGameCommandHandler(
+            $gameRepository,
+            $gameFetcher,
+            $publisherRepository,
+            $this->developerRepository,
+            $messageBus,
+            $messageBusHelper,
+            $this->logger,
+        );
+
+        $command = new CreateGameCommand(
+            name: 'The Witcher 3: Wild Hunt',
+            slug: 'witcher-3-wild-hunt',
+            releaseDate: '2015-05-19',
+            imageCover: 'https://example.com/witcher3.jpg',
+            publisher: $this->publisherDto,
+            description: 'An open world RPG',
+        );
+
+        $publisherEnvelope = new Envelope($this->createdPublisher, [
+            new HandledStamp($this->createdPublisher, 'handler.service_id'),
+        ]);
+
+        $messageBus
+            ->expects($this->exactly(2))
+            ->method('dispatch')
+            ->willReturnOnConsecutiveCalls(
+                new Envelope(
+                    new CreatePublisherCommand(
+                        $this->publisherName,
+                        $this->publisherWebsite,
+                        $this->publisherApiId,
+                    ),
+                ),
+                $publisherEnvelope,
+            );
+
+        $messageBusHelper
+            ->expects($this->once())
+            ->method('getContentFromEnvelope')
+            ->with($publisherEnvelope, 'Publisher not found', Publisher::class)
+            ->willReturn($this->createdPublisher);
+
+        $gameRepository
+            ->expects($this->once())
+            ->method('save')
+            ->with(
+                $this->callback(function ($game) use ($command) {
+                    return $game instanceof Game &&
+                        $game->getName() === $command->getName() &&
+                        $game->getSlug() === $command->getSlug() &&
+                        $game->getDescription() ===
+                            $command->getDescription() &&
+                        $game->getReleaseDate() ===
+                            $command->getReleaseDate() &&
+                        $game->getImageCover() === $command->getImageCover() &&
+                        $game->getPublisher() === $this->createdPublisher;
+                }),
+            );
+
+        $gameFetcher
+            ->expects($this->once())
+            ->method('deleteCacheForSlug')
+            ->with('witcher-3-wild-hunt');
+
+        // When
+        $handler->__invoke($command);
+
+        // Then
+        expect(true)->toBeTrue();
+    },
+);

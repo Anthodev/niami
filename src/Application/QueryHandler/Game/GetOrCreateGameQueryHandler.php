@@ -6,9 +6,9 @@ namespace App\Application\QueryHandler\Game;
 
 use App\Application\Command\Game\CreateGameCommand;
 use App\Application\Exception\Game\CannotCreateGameException;
+use App\Application\Fetcher\Game\GameFetcher;
 use App\Application\Query\Game\GetOrCreateGameQuery;
 use App\Domain\Model\Game\Game;
-use App\Domain\Repository\Game\GameRepositoryInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\Exception\ExceptionInterface;
@@ -19,7 +19,7 @@ class GetOrCreateGameQueryHandler
 {
     public function __construct(
         private readonly MessageBusInterface $messageBus,
-        private readonly GameRepositoryInterface $gameRepository,
+        private readonly GameFetcher $gameFetcher,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -29,19 +29,21 @@ class GetOrCreateGameQueryHandler
      */
     public function __invoke(GetOrCreateGameQuery $query): Game
     {
-        $game = $this->gameRepository->getOneBySlugEnabledGame($query->gameSlug);
+        $game = $this->gameFetcher->getOneBySlugEnabledGame($query->gameSlug);
 
         if (null === $game) {
             try {
-                $this->messageBus->dispatch(new CreateGameCommand(
-                    name: $query->apiGame->getName(),
-                    slug: $query->apiGame->getSlug(),
-                    releaseDate: $query->apiGame->getReleaseDate(),
-                    imageCover: $query->apiGame->getImageCover(),
-                    publisher: $query->apiGame->getPublisher(),
-                    developer: $query->apiGame->getDeveloper(),
-                    description: $query->apiGame->getDescription(),
-                ));
+                $this->messageBus->dispatch(
+                    new CreateGameCommand(
+                        name: $query->apiGame->getName(),
+                        slug: $query->apiGame->getSlug(),
+                        releaseDate: $query->apiGame->getReleaseDate(),
+                        imageCover: $query->apiGame->getImageCover(),
+                        publisher: $query->apiGame->getPublisher(),
+                        developer: $query->apiGame->getDeveloper(),
+                        description: $query->apiGame->getDescription(),
+                    ),
+                );
             } catch (\Exception|ExceptionInterface $e) {
                 $this->logger->error($e->getMessage());
 
@@ -49,7 +51,9 @@ class GetOrCreateGameQueryHandler
             }
 
             /** @var Game $game */
-            $game = $this->gameRepository->getOneBySlugEnabledGame($query->gameSlug);
+            $game = $this->gameFetcher->getOneBySlugEnabledGame(
+                $query->gameSlug,
+            );
         }
 
         return $game;

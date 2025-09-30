@@ -48,11 +48,13 @@ class UpdateGameFromApiCommandHandler
         if (null !== $command->apiGame->getPublisher()) {
             if (null === $publisher) {
                 try {
-                    $this->messageBus->dispatch(new CreatePublisherCommand(
-                        name: $command->apiGame->getPublisher()->name,
-                        website: $command->apiGame->getPublisher()->website,
-                        apiId: $command->apiGame->getPublisher()->apiId,
-                    ));
+                    $this->messageBus->dispatch(
+                        new CreatePublisherCommand(
+                            name: $command->apiGame->getPublisher()->name,
+                            website: $command->apiGame->getPublisher()->website,
+                            apiId: $command->apiGame->getPublisher()->apiId,
+                        ),
+                    );
                 } catch (ExceptionInterface) {
                     throw new CannotCreatePublisherException();
                 }
@@ -61,27 +63,33 @@ class UpdateGameFromApiCommandHandler
                 $publisherApiId = $publisher->getApiId();
 
                 try {
-                    $this->messageBus->dispatch(new UpdatePublisherCommand(
-                        publisherApiId: $publisherApiId,
-                        name: $command->apiGame->getPublisher()->name,
-                        website: $command->apiGame->getPublisher()->website,
-                    ));
+                    $this->messageBus->dispatch(
+                        new UpdatePublisherCommand(
+                            publisherApiId: $publisherApiId,
+                            name: $command->apiGame->getPublisher()->name,
+                            website: $command->apiGame->getPublisher()->website,
+                        ),
+                    );
                 } catch (ExceptionInterface) {
                     throw new CannotUpdatePublisherException();
                 }
             }
 
-            $publisher = $this->publisherRepository->findByApiId($command->apiGame->getPublisher()->apiId);
+            $publisher = $this->publisherRepository->findOneByApiId(
+                $command->apiGame->getPublisher()->apiId,
+            );
         }
 
         if (null !== $command->apiGame->getDeveloper()) {
             if (null === $developer) {
                 try {
-                    $this->messageBus->dispatch(new CreateDeveloperCommand(
-                        name: $command->apiGame->getDeveloper()->name,
-                        website: $command->apiGame->getDeveloper()->website,
-                        apiId: $command->apiGame->getDeveloper()->apiId,
-                    ));
+                    $this->messageBus->dispatch(
+                        new CreateDeveloperCommand(
+                            name: $command->apiGame->getDeveloper()->name,
+                            website: $command->apiGame->getDeveloper()->website,
+                            apiId: $command->apiGame->getDeveloper()->apiId,
+                        ),
+                    );
                 } catch (ExceptionInterface) {
                     throw new CannotCreateDeveloperException();
                 }
@@ -90,17 +98,21 @@ class UpdateGameFromApiCommandHandler
                 $developerApiId = $developer->getApiId();
 
                 try {
-                    $this->messageBus->dispatch(new UpdateDeveloperCommand(
-                        developerApiId: $developerApiId,
-                        name: $command->apiGame->getDeveloper()->name,
-                        website: $command->apiGame->getDeveloper()->website,
-                    ));
+                    $this->messageBus->dispatch(
+                        new UpdateDeveloperCommand(
+                            developerApiId: $developerApiId,
+                            name: $command->apiGame->getDeveloper()->name,
+                            website: $command->apiGame->getDeveloper()->website,
+                        ),
+                    );
                 } catch (ExceptionInterface) {
                     throw new CannotUpdateDeveloperException();
                 }
             }
 
-            $developer = $this->developerRepository->findByApiId($command->apiGame->getDeveloper()->apiId);
+            $developer = $this->developerRepository->findOneByApiId(
+                $command->apiGame->getDeveloper()->apiId,
+            );
         }
 
         $command->game->setName($command->apiGame->getName());

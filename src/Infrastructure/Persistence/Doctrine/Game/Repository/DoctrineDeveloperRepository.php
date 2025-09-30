@@ -16,13 +16,13 @@ class DoctrineDeveloperRepository extends DoctrineBaseEntityRepository implement
         parent::__construct($registry, Developer::class);
     }
 
-    public function findByName(string $name): ?Developer
+    public function findOneByName(string $name): ?Developer
     {
         /** @var ?Developer */
         return $this->findOneBy(['name' => $name]);
     }
 
-    public function findByApiId(int $apiId): ?Developer
+    public function findOneByApiId(int $apiId): ?Developer
     {
         /** @var ?Developer */
         return $this->findOneBy(['apiId' => $apiId]);

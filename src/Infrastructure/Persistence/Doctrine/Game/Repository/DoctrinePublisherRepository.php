@@ -16,13 +16,13 @@ class DoctrinePublisherRepository extends DoctrineBaseEntityRepository implement
         parent::__construct($registry, Publisher::class);
     }
 
-    public function findByName(string $name): ?Publisher
+    public function findOneByName(string $name): ?Publisher
     {
         /** @var ?Publisher */
         return $this->findOneBy(['name' => $name]);
     }
 
-    public function findByApiId(int $apiId): ?Publisher
+    public function findOneByApiId(int $apiId): ?Publisher
     {
         /** @var ?Publisher */
         return $this->findOneBy(['apiId' => $apiId]);

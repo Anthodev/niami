@@ -7,6 +7,7 @@ namespace App\Application\CommandHandler\Game;
 use App\Application\Command\Game\CreateDeveloperCommand;
 use App\Application\Command\Game\CreateGameCommand;
 use App\Application\Command\Game\CreatePublisherCommand;
+use App\Application\Fetcher\Game\GameFetcher;
 use App\Application\Helper\MessageBusHelper;
 use App\Application\Query\Game\GetDeveloperByNameQuery;
 use App\Application\Query\Game\GetPublisherByNameQuery;
@@ -25,6 +26,7 @@ class CreateGameCommandHandler
 {
     public function __construct(
         private readonly GameRepositoryInterface $gameRepository,
+        private readonly GameFetcher $gameFetcher,
         private readonly PublisherRepositoryInterface $publisherRepository,
         private readonly DeveloperRepositoryInterface $developerRepository,
         private readonly MessageBusInterface $messageBus,
@@ -35,27 +37,30 @@ class CreateGameCommandHandler
 
     public function __invoke(CreateGameCommand $command): void
     {
+        $game = $this->gameRepository->getOneBySlugEnabledGame($command->slug);
+
+        if (null !== $game) {
+            return;
+        }
+
         $publisher = null;
         $developer = null;
 
         if (null !== $command->publisher) {
             /** @var ?Publisher $publisher */
-            $publisher = $this->publisherRepository->findByName(
+            $publisher = $this->publisherRepository->findOneByName(
                 $command->publisher->name,
             );
         }
 
         if (null !== $command->developer) {
             /** @var ?Developer $developer */
-            $developer = $this->developerRepository->findByName(
+            $developer = $this->developerRepository->findOneByName(
                 $command->developer->name,
             );
         }
 
-        if (
-            null !== $command->publisher
-            && null === $publisher
-        ) {
+        if (null !== $command->publisher && null === $publisher) {
             $this->messageBus->dispatch(
                 new CreatePublisherCommand(
                     name: $command->publisher->name,
@@ -76,10 +81,7 @@ class CreateGameCommandHandler
             );
         }
 
-        if (
-            null !== $command->developer
-            && null === $developer
-        ) {
+        if (null !== $command->developer && null === $developer) {
             $this->messageBus->dispatch(
                 new CreateDeveloperCommand(
                     name: $command->developer->name,
@@ -112,6 +114,7 @@ class CreateGameCommandHandler
 
         try {
             $this->gameRepository->save($game);
+            $this->gameFetcher->deleteCacheForSlug($command->slug);
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
         }

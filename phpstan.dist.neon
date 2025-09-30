@@ -8,3 +8,11 @@ parameters:
         - config/
         - public/
         - src/
+
+    ignoreErrors:
+        -
+            message: '#^Undefined variable: \$this$#'
+            paths:
+                - tests/*
+
+    reportUnmatchedIgnoredErrors: false

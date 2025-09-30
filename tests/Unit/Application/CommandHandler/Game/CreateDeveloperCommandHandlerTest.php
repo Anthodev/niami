@@ -6,6 +6,7 @@ namespace App\Tests\Unit\Application\CommandHandler;
 
 use App\Application\Command\Game\CreateDeveloperCommand;
 use App\Application\CommandHandler\Game\CreateDeveloperCommandHandler;
+use App\Application\Fetcher\Game\DeveloperFetcher;
 use App\Domain\Factory\Game\DeveloperFactory;
 use App\Domain\Model\Game\Developer;
 use App\Infrastructure\Persistence\Doctrine\Game\Repository\DoctrineDeveloperRepository;
@@ -15,7 +16,10 @@ use Psr\Log\LoggerInterface;
 beforeEach(function () {
     $this->faker = Factory::create();
 
-    $this->developerRepository = $this->createMock(DoctrineDeveloperRepository::class);
+    $this->developerRepository = $this->createMock(
+        DoctrineDeveloperRepository::class,
+    );
+    $this->developerFetcher = $this->createMock(DeveloperFetcher::class);
     $this->logger = $this->createMock(LoggerInterface::class);
 
     $this->developerName = $this->faker->company();
@@ -25,69 +29,77 @@ beforeEach(function () {
     $this->existingDeveloper = DeveloperFactory::create(
         name: $this->developerName,
         apiId: $this->developerApiId,
-        website: $this->developerWebsite
-    );
-});
-
-it('successfully creates and saves developer when developer does not exist', function () {
-    // Given
-    $this->developerRepository
-        ->expects($this->once())
-        ->method('findByName')
-        ->with($this->developerName)
-        ->willReturn(null);
-
-    $this->developerRepository
-        ->expects($this->once())
-        ->method('save')
-        ->with($this->callback(function ($developer) {
-            return $developer instanceof Developer
-                && $developer->getName() === $this->developerName
-                && $developer->getWebsite() === $this->developerWebsite
-                && $developer->getApiId() === $this->developerApiId;
-        }));
-
-    $this->logger
-        ->expects($this->never())
-        ->method('error');
-
-    $handler = new CreateDeveloperCommandHandler(
-        $this->developerRepository,
-        $this->logger
-    );
-
-    $command = new CreateDeveloperCommand(
-        name: $this->developerName,
         website: $this->developerWebsite,
-        apiId: $this->developerApiId,
     );
-
-    // When
-    $handler->__invoke($command);
-
-    // Then
-    expect(true)->toBeTrue();
 });
+
+it(
+    'successfully creates and saves developer when developer does not exist',
+    function () {
+        // Given
+        $this->developerFetcher
+            ->expects($this->once())
+            ->method('findOneByName')
+            ->with($this->developerName)
+            ->willReturn(null);
+
+        $this->developerRepository
+            ->expects($this->once())
+            ->method('save')
+            ->with(
+                $this->callback(function ($developer) {
+                    return $developer instanceof Developer &&
+                        $developer->getName() === $this->developerName &&
+                        $developer->getWebsite() === $this->developerWebsite &&
+                        $developer->getApiId() === $this->developerApiId;
+                }),
+            );
+
+        $this->developerFetcher
+            ->expects($this->once())
+            ->method('deleteCacheName')
+            ->with($this->developerName);
+
+        $this->logger->expects($this->never())->method('error');
+
+        $handler = new CreateDeveloperCommandHandler(
+            $this->developerRepository,
+            $this->developerFetcher,
+            $this->logger,
+        );
+
+        $command = new CreateDeveloperCommand(
+            name: $this->developerName,
+            website: $this->developerWebsite,
+            apiId: $this->developerApiId,
+        );
+
+        // When
+        $handler->__invoke($command);
+
+        // Then
+        expect(true)->toBeTrue();
+    },
+);
 
 it('returns early when developer already exists', function () {
     // Given
-    $this->developerRepository
+    $this->developerFetcher
         ->expects($this->once())
-        ->method('findByName')
+        ->method('findOneByName')
         ->with($this->developerName)
         ->willReturn($this->existingDeveloper);
 
-    $this->developerRepository
-        ->expects($this->never())
-        ->method('save');
+    $this->developerRepository->expects($this->never())->method('save');
 
-    $this->logger
-        ->expects($this->never())
-        ->method('error');
+    $this->developerFetcher->expects($this->never())->method('deleteCacheName');
+
+    $this->logger->expects($this->never())->method('error');
 
     $handler = new CreateDeveloperCommandHandler(
         $this->developerRepository,
-        $this->logger
+        $this->developerFetcher,
+        $this->logger,
     );
 
     $command = new CreateDeveloperCommand(
@@ -105,9 +117,9 @@ it('returns early when developer already exists', function () {
 
 it('handles exception during save operation', function () {
     // Given
-    $this->developerRepository
+    $this->developerFetcher
         ->expects($this->once())
-        ->method('findByName')
+        ->method('findOneByName')
         ->with($this->developerName)
         ->willReturn(null);
 
@@ -118,6 +130,8 @@ it('handles exception during save operation', function () {
         ->method('save')
         ->willThrowException($exception);
 
+    $this->developerFetcher->expects($this->never())->method('deleteCacheName');
+
     $this->logger
         ->expects($this->once())
         ->method('error')
@@ -125,7 +139,8 @@ it('handles exception during save operation', function () {
 
     $handler = new CreateDeveloperCommandHandler(
         $this->developerRepository,
-        $this->logger
+        $this->developerFetcher,
+        $this->logger,
     );
 
     $command = new CreateDeveloperCommand(
@@ -143,9 +158,9 @@ it('handles exception during save operation', function () {
 
 it('handles different types of exceptions during save', function () {
     // Given
-    $this->developerRepository
+    $this->developerFetcher
         ->expects($this->once())
-        ->method('findByName')
+        ->method('findOneByName')
         ->with($this->developerName)
         ->willReturn(null);
 
@@ -156,6 +171,8 @@ it('handles different types of exceptions during save', function () {
         ->method('save')
         ->willThrowException($exception);
 
+    $this->developerFetcher->expects($this->never())->method('deleteCacheName');
+
     $this->logger
         ->expects($this->once())
         ->method('error')
@@ -163,7 +180,8 @@ it('handles different types of exceptions during save', function () {
 
     $handler = new CreateDeveloperCommandHandler(
         $this->developerRepository,
-        $this->logger
+        $this->developerFetcher,
+        $this->logger,
     );
 
     $command = new CreateDeveloperCommand(
@@ -179,70 +197,96 @@ it('handles different types of exceptions during save', function () {
     expect(true)->toBeTrue();
 });
 
-it('creates developer using DeveloperFactory with correct parameters', function () {
-    // Given
-    $developerName = 'Valve Corporation';
-    $developerWebsite = 'https://www.valvesoftware.com';
-    $developerApiId = 123456;
+it(
+    'creates developer using DeveloperFactory with correct parameters',
+    function () {
+        // Given
+        $developerName = 'Valve Corporation';
+        $developerWebsite = 'https://www.valvesoftware.com';
+        $developerApiId = 123456;
 
-    $this->developerRepository
-        ->expects($this->once())
-        ->method('findByName')
-        ->with($developerName)
-        ->willReturn(null);
+        $this->developerFetcher
+            ->expects($this->once())
+            ->method('findOneByName')
+            ->with($developerName)
+            ->willReturn(null);
 
-    $this->developerRepository
-        ->expects($this->once())
-        ->method('save')
-        ->with($this->callback(function ($developer) use ($developerName, $developerWebsite, $developerApiId) {
-            return $developer instanceof Developer
-                && $developer->getName() === $developerName
-                && $developer->getWebsite() === $developerWebsite
-                && $developer->getApiId() === $developerApiId;
-        }));
+        $this->developerRepository
+            ->expects($this->once())
+            ->method('save')
+            ->with(
+                $this->callback(function ($developer) use (
+                    $developerName,
+                    $developerWebsite,
+                    $developerApiId,
+                ) {
+                    return $developer instanceof Developer &&
+                        $developer->getName() === $developerName &&
+                        $developer->getWebsite() === $developerWebsite &&
+                        $developer->getApiId() === $developerApiId;
+                }),
+            );
 
-    $handler = new CreateDeveloperCommandHandler(
-        $this->developerRepository,
-        $this->logger
-    );
+        $this->developerFetcher
+            ->expects($this->once())
+            ->method('deleteCacheName')
+            ->with($developerName);
 
-    $command = new CreateDeveloperCommand(
-        name: $developerName,
-        website: $developerWebsite,
-        apiId: $developerApiId,
-    );
+        $handler = new CreateDeveloperCommandHandler(
+            $this->developerRepository,
+            $this->developerFetcher,
+            $this->logger,
+        );
 
-    // When
-    $handler->__invoke($command);
+        $command = new CreateDeveloperCommand(
+            name: $developerName,
+            website: $developerWebsite,
+            apiId: $developerApiId,
+        );
 
-    // Then
-    expect(true)->toBeTrue();
-});
+        // When
+        $handler->__invoke($command);
+
+        // Then
+        expect(true)->toBeTrue();
+    },
+);
 
 it('handles command with null website', function () {
     // Given
     $developerName = 'Indie Developer';
     $developerApiId = 789012;
 
-    $this->developerRepository
+    $this->developerFetcher
         ->expects($this->once())
-        ->method('findByName')
+        ->method('findOneByName')
         ->with($developerName)
         ->willReturn(null);
 
     $this->developerRepository
         ->expects($this->once())
         ->method('save')
-        ->with($this->callback(function ($developer) use ($developerName, $developerApiId) {
-            return $developer instanceof Developer
-                && $developer->getName() === $developerName
-                && $developer->getWebsite() === null
-                && $developer->getApiId() === $developerApiId;
-        }));
+        ->with(
+            $this->callback(function ($developer) use (
+                $developerName,
+                $developerApiId,
+            ) {
+                return $developer instanceof Developer &&
+                    $developer->getName() === $developerName &&
+                    $developer->getWebsite() === null &&
+                    $developer->getApiId() === $developerApiId;
+            }),
+        );
+
+    $this->developerFetcher
+        ->expects($this->once())
+        ->method('deleteCacheName')
+        ->with($developerName);
 
     $handler = new CreateDeveloperCommandHandler(
         $this->developerRepository,
-        $this->logger
+        $this->developerFetcher,
+        $this->logger,
     );
 
     $command = new CreateDeveloperCommand(

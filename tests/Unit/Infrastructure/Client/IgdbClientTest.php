@@ -30,7 +30,7 @@ beforeEach(function () {
         clientSecret: 'test-client-secret',
         cache: $this->cache,
         serializer: $this->serializer,
-        baseUrl: 'https://api.igdb.com/v4/'
+        baseUrl: 'https://api.igdb.com/v4/',
     );
 
     $reflection = new \ReflectionClass($this->igdbClient);
@@ -67,23 +67,25 @@ it('searches games with default limit', function () {
     $this->cache
         ->expects($this->exactly(2))
         ->method('get')
-        ->with($this->callback(function ($cacheKey) use (
-            $cacheSearchKey,
-            $cacheGameKey,
-        ) {
-            return in_array($cacheKey, [$cacheSearchKey, $cacheGameKey]);
-        }))
+        ->with(
+            $this->callback(function ($cacheKey) use (
+                $cacheSearchKey,
+                $cacheGameKey,
+            ) {
+                return in_array($cacheKey, [$cacheSearchKey, $cacheGameKey]);
+            }),
+        )
         ->willReturnCallback(function ($cacheKey, $callback) use (
             $expectedGames,
             $cacheSearchKey,
             $cacheGameKey,
         ) {
-            return match($cacheKey) {
+            return match ($cacheKey) {
                 $cacheSearchKey => $expectedGames,
                 $cacheGameKey => $expectedGames[0],
-                default => throw new \RuntimeException('Unexpected envelope')
+                default => throw new \RuntimeException('Unexpected envelope'),
             };
-    });
+        });
 
     // When
     $result = $this->igdbClient->searchGames($query, $limit);
@@ -91,8 +93,10 @@ it('searches games with default limit', function () {
     // Then
     expect($result)
         ->toHaveCount(1)
-        ->and($result[0])->toBeInstanceOf(ApiGame::class)
-        ->and($result[0])->toBe($expectedGames[0]);
+        ->and($result[0])
+        ->toBeInstanceOf(ApiGame::class)
+        ->and($result[0])
+        ->toBe($expectedGames[0]);
 });
 
 it('searches games with custom limit', function () {
@@ -106,7 +110,10 @@ it('searches games with custom limit', function () {
         'platform' => IgdbGamePlatformEnum::NINTENDO_SWITCH->value,
     ];
 
-    $expectedGames = [createApiGame($this->faker, $this->publisherDto), createApiGame($this->faker, $this->publisherDto)];
+    $expectedGames = [
+        createApiGame($this->faker, $this->publisherDto),
+        createApiGame($this->faker, $this->publisherDto),
+    ];
     $cacheSearchKey = 'igdb_api_search_' . md5(json_encode($cacheKeyData));
     $cacheFirstGameKey = 'api_game_' . $expectedGames[0]->getSlug();
     $cacheSecondGameKey = 'api_game_' . $expectedGames[1]->getSlug();
@@ -114,24 +121,30 @@ it('searches games with custom limit', function () {
     $this->cache
         ->expects($this->exactly(3))
         ->method('get')
-        ->with($this->callback(function ($cacheKey) use (
-            $cacheSearchKey,
-            $cacheFirstGameKey,
-            $cacheSecondGameKey,
-        ) {
-            return in_array($cacheKey, [$cacheSearchKey, $cacheFirstGameKey, $cacheSecondGameKey]);;
-        }))
+        ->with(
+            $this->callback(function ($cacheKey) use (
+                $cacheSearchKey,
+                $cacheFirstGameKey,
+                $cacheSecondGameKey,
+            ) {
+                return in_array($cacheKey, [
+                    $cacheSearchKey,
+                    $cacheFirstGameKey,
+                    $cacheSecondGameKey,
+                ]);
+            }),
+        )
         ->willReturnCallback(function ($cacheKey, $callback) use (
             $expectedGames,
             $cacheSearchKey,
             $cacheFirstGameKey,
             $cacheSecondGameKey,
         ) {
-            return match($cacheKey) {
+            return match ($cacheKey) {
                 $cacheSearchKey => $expectedGames,
                 $cacheFirstGameKey => $expectedGames[0],
                 $cacheSecondGameKey => $expectedGames[1],
-                default => throw new \RuntimeException('Unexpected envelope')
+                default => throw new \RuntimeException('Unexpected envelope'),
             };
         });
 
@@ -139,10 +152,7 @@ it('searches games with custom limit', function () {
     $result = $this->igdbClient->searchGames($query, $limit);
 
     // Then
-    expect($result)
-        ->toHaveCount(2)
-        ->toBe($expectedGames)
-    ;
+    expect($result)->toHaveCount(2)->toBe($expectedGames);
 });
 
 it('returns cached results when available', function () {
@@ -163,21 +173,23 @@ it('returns cached results when available', function () {
     $this->cache
         ->expects($this->exactly(2))
         ->method('get')
-        ->with($this->callback(function ($cacheKey) use (
-            $cacheSearchKey,
-            $cacheGameKey,
-        ) {
-            return in_array($cacheKey, [$cacheSearchKey, $cacheGameKey]);
-        }))
+        ->with(
+            $this->callback(function ($cacheKey) use (
+                $cacheSearchKey,
+                $cacheGameKey,
+            ) {
+                return in_array($cacheKey, [$cacheSearchKey, $cacheGameKey]);
+            }),
+        )
         ->willReturnCallback(function ($cacheKey, $callback) use (
             $expectedGames,
             $cacheSearchKey,
             $cacheGameKey,
         ) {
-            return match($cacheKey) {
+            return match ($cacheKey) {
                 $cacheSearchKey => $expectedGames,
                 $cacheGameKey => $expectedGames[0],
-                default => throw new \RuntimeException('Unexpected envelope')
+                default => throw new \RuntimeException('Unexpected envelope'),
             };
         });
 
@@ -196,8 +208,10 @@ it('gets game by slug successfully', function () {
     $this->cache
         ->expects($this->once())
         ->method('get')
-        ->willReturnCallback(function ($cacheKey, $callback) use ($expectedGame) {
-            return [$expectedGame];
+        ->willReturnCallback(function ($cacheKey, $callback) use (
+            $expectedGame,
+        ) {
+            return $expectedGame;
         });
 
     // When
@@ -215,7 +229,7 @@ it('returns null when game not found by slug', function () {
         ->expects($this->once())
         ->method('get')
         ->willReturnCallback(function ($cacheKey, $callback) {
-            return [];
+            return null;
         });
 
     // When
@@ -233,16 +247,23 @@ it('generates correct search cache key', function () {
     $this->cache
         ->expects($this->once())
         ->method('get')
-        ->willReturnCallback(function ($cacheKey, $callback) use ($query, $limit) {
+        ->willReturnCallback(function ($cacheKey, $callback) use (
+            $query,
+            $limit,
+        ) {
             // Verify cache key format
             expect($cacheKey)
                 ->toStartWith('igdb_api_search_')
-                ->and($cacheKey)->toContain(
-                    md5(json_encode([
-                        'query' => trim(strtolower($query)),
-                        'limit' => $limit,
-                        'platform' => IgdbGamePlatformEnum::NINTENDO_SWITCH->value,
-                    ]))
+                ->and($cacheKey)
+                ->toContain(
+                    md5(
+                        json_encode([
+                            'query' => trim(strtolower($query)),
+                            'limit' => $limit,
+                            'platform' =>
+                                IgdbGamePlatformEnum::NINTENDO_SWITCH->value,
+                        ]),
+                    ),
                 );
             return [];
         });
@@ -259,17 +280,24 @@ it('generates correct slug cache key', function () {
     $this->cache
         ->expects($this->once())
         ->method('get')
-        ->willReturnCallback(function ($cacheKey, $callback) use ($slug, $limit) {
+        ->willReturnCallback(function ($cacheKey, $callback) use (
+            $slug,
+            $limit,
+        ) {
             expect($cacheKey)
                 ->toStartWith('igdb_api_slug_')
-                ->and($cacheKey)->toContain(
-                    md5(json_encode([
-                        'query' => trim(strtolower($slug)),
-                        'limit' => $limit,
-                        'platform' => IgdbGamePlatformEnum::NINTENDO_SWITCH->value,
-                    ]))
+                ->and($cacheKey)
+                ->toContain(
+                    md5(
+                        json_encode([
+                            'query' => trim(strtolower($slug)),
+                            'limit' => $limit,
+                            'platform' =>
+                                IgdbGamePlatformEnum::NINTENDO_SWITCH->value,
+                        ]),
+                    ),
                 );
-            return [];
+            return null;
         });
 
     // When
@@ -305,24 +333,33 @@ it('retries request on 401 unauthorized error', function () {
 
     $initialTokenResponse = $this->createMock(ResponseInterface::class);
     $initialTokenResponse->method('getStatusCode')->willReturn(200);
-    $initialTokenResponse->method('toArray')->willReturn(['access_token' => $initialToken]);
+    $initialTokenResponse
+        ->method('toArray')
+        ->willReturn(['access_token' => $initialToken]);
 
-    $unauthorizedException = new class($unauthorizedResponse) extends \Exception implements ClientExceptionInterface {
+    $unauthorizedException = new class ($unauthorizedResponse)
+        extends \Exception
+        implements ClientExceptionInterface
+    {
         private ResponseInterface $response;
 
-        public function __construct(ResponseInterface $response) {
+        public function __construct(ResponseInterface $response)
+        {
             parent::__construct('Unauthorized');
             $this->response = $response;
         }
 
-        public function getResponse(): ResponseInterface {
+        public function getResponse(): ResponseInterface
+        {
             return $this->response;
         }
     };
 
     $newTokenResponse = $this->createMock(ResponseInterface::class);
     $newTokenResponse->method('getStatusCode')->willReturn(200);
-    $newTokenResponse->method('toArray')->willReturn(['access_token' => $newToken]);
+    $newTokenResponse
+        ->method('toArray')
+        ->willReturn(['access_token' => $newToken]);
 
     $successResponse = $this->createMock(ResponseInterface::class);
     $successResponse->method('getStatusCode')->willReturn(200);
@@ -371,7 +408,9 @@ it('throws exception when token retrieval fails', function () {
             return $callback();
         });
 
-    $transportException = new class('Network error') extends \Exception implements TransportExceptionInterface {};
+    $transportException = new class ('Network error')
+        extends \Exception
+        implements TransportExceptionInterface {};
 
     $this->httpClient
         ->expects($this->once())
@@ -379,8 +418,9 @@ it('throws exception when token retrieval fails', function () {
         ->willThrowException($transportException);
 
     // When & Then
-    expect(fn() => $this->igdbClient->searchGames('test'))
-        ->toThrow(IgdbAccessTokenRetrievalException::class);
+    expect(fn() => $this->igdbClient->searchGames('test'))->toThrow(
+        IgdbAccessTokenRetrievalException::class,
+    );
 });
 
 function createApiGame(
@@ -391,7 +431,9 @@ function createApiGame(
         name: $faker->words(3, true),
         slug: $faker->slug(),
         description: $faker->paragraph(),
-        imageCover: 'https://images.igdb.com/igdb/image/upload/t_thumb/' . $faker->sha1() . '.jpg',
+        imageCover: 'https://images.igdb.com/igdb/image/upload/t_thumb/' .
+            $faker->sha1() .
+            '.jpg',
         releaseDate: $faker->dateTime()->format(DATE_ATOM),
         updatedAt: new \DateTimeImmutable('now'),
         publisher: $publisherDto,
@@ -407,16 +449,17 @@ function createIgdbSearchResponseDto(Generator $faker): IgdbSearchResponseDto
         involved_companies: [
             [
                 'company' => ['name' => $faker->company()],
-                'publisher' => true
-            ]
+                'publisher' => true,
+            ],
         ],
         cover: [
-            'url' => '//images.igdb.com/igdb/image/upload/t_thumb/' . $faker->sha1() . '.jpg'
+            'url' =>
+                '//images.igdb.com/igdb/image/upload/t_thumb/' .
+                $faker->sha1() .
+                '.jpg',
         ],
         first_release_date: $faker->unixTime(),
         summary: $faker->paragraph(),
-        websites: [
-            ['url' => $faker->url()]
-        ]
+        websites: [['url' => $faker->url()]],
     );
 }

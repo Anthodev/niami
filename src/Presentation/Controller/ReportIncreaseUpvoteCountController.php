@@ -2,6 +2,8 @@
 
 namespace App\Presentation\Controller;
 
+use App\Application\Fetcher\Report\ReportFetcher;
+use App\Application\Helper\CacheKeyBuilderHelper;
 use App\Domain\Model\Report\Report;
 use App\Domain\Repository\Report\ReportRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -25,16 +27,29 @@ class ReportIncreaseUpvoteCountController extends AbstractController
         Report $report,
         Request $request,
         ReportRepositoryInterface $reportRepository,
+        ReportFetcher $reportFetcher,
     ): Response {
         $report->increaseUpvoteCount();
         $reportRepository->save($report);
+
+        /** @var string $gameSlug */
+        $gameSlug = $report->getGame()->getSlug();
+
+        $reportFetcher->deleteCache(
+            CacheKeyBuilderHelper::build(
+                ReportFetcher::REPORTS_CACHE_KEY,
+                $gameSlug,
+            ),
+        );
 
         if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
             $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
             /** @var string $currentReportGameId */
             $currentReportGameId = $report->getGame()->getId();
-            $mostUpvotedReport = $reportRepository->findMostUpvotedReportForGame($currentReportGameId);
+            $mostUpvotedReport = $reportRepository->findMostUpvotedReportForGame(
+                $currentReportGameId,
+            );
 
             /** @var string $mostUpvotedReportId */
             $mostUpvotedReportId = $mostUpvotedReport?->getId();

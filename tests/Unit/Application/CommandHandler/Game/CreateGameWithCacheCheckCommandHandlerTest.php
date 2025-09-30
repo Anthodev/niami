@@ -167,6 +167,7 @@ it('fetches from API when ApiGame is not found in cache', function () {
                     $envelope->getMessage() instanceof GetGameBySlugOnApiQuery;
             }),
             'Failed to fetch game from API',
+            ApiGame::class,
         )
         ->willReturn($this->apiGame);
 
@@ -217,6 +218,7 @@ it(
                             GetGameBySlugOnApiQuery;
                 }),
                 'Failed to fetch game from API',
+                ApiGame::class,
             )
             ->willReturn(null);
 
