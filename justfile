@@ -161,7 +161,7 @@ tailwind-watch:
 
 #---------- Test & Analysis commands ----------
 tests:
-    {{d}} vendor/bin/pest --display-warnings
+    {{d}} vendor/bin/pest --display-warnings --display-errors
 
 stan:
     {{d}} vendor/bin/phpstan analyse --memory-limit=256M
