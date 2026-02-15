@@ -1,6 +1,6 @@
 #syntax=docker/dockerfile:1
 # Versions
-FROM dunglas/frankenphp:1.9.1-php8.4 AS frankenphp_upstream
+FROM dunglas/frankenphp:1.11.2-php8.4 AS frankenphp_upstream
 
 # The different stages of this Dockerfile are meant to be built into separate images
 # https://docs.docker.com/develop/develop-images/multistage-build/#stop-at-a-specific-build-stage
@@ -24,16 +24,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     supervisor \
     nodejs \
     npm \
+    libzip-dev \
     && rm -rf /var/lib/apt/lists/* \
-;
+    ;
+
+RUN curl -L --output /usr/bin/pie https://github.com/php/pie/releases/download/1.3.8/pie.phar \
+    && chmod +x /usr/bin/pie \
+    ;
 
 RUN set -eux; \
     install-php-extensions \
     @composer \
-    apcu \
     intl \
     opcache \
-    zip \
     sqlite3 \
     pdo_sqlite \
     pdo_pgsql \
@@ -42,6 +45,8 @@ RUN set -eux; \
     ctype \
     tokenizer \
     ;
+
+RUN pie install pecl/zip && pie install apcu/apcu
 
 # https://getcomposer.org/doc/03-cli.md#composer-allow-superuser
 ENV COMPOSER_ALLOW_SUPERUSER=1

@@ -27,10 +27,10 @@ return [
         'version' => '3.2.2',
     ],
     'daisyui' => [
-        'version' => '5.1.6',
+        'version' => '5.5.18',
     ],
     'daisyui/daisyui.min.css' => [
-        'version' => '5.1.6',
+        'version' => '5.5.18',
         'type' => 'css',
     ],
     '@orchidjs/sifter' => [
@@ -40,13 +40,13 @@ return [
         'version' => '1.1.2',
     ],
     'tom-select' => [
-        'version' => '2.4.3',
+        'version' => '2.5.1',
     ],
     'tom-select/dist/css/tom-select.default.min.css' => [
-        'version' => '2.4.3',
+        'version' => '2.5.1',
         'type' => 'css',
     ],
     '@hotwired/turbo' => [
-        'version' => '8.0.13',
+        'version' => '8.0.23',
     ],
 ];
