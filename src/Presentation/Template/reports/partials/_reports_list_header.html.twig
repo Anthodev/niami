@@ -2,9 +2,9 @@
 {% import '@macro/_ordinal_macro.html.twig' as ordinal %}
 
 {% if reports|length > 0 %}
-    <div class="overflow-x-auto min-h-32 max-h-151">
-        <table class="table table-zebra table-pin-rows table-pin-cols table-fixed w-full">
-            <thead>
+    <div class="overflow-x-auto">
+        <table class="table table-zebra table-sm w-full">
+            <thead class="bg-base-200">
                 <tr>
                     <th class="text-center">{{ 'list.table.header.status'|trans }}</th>
                     <th class="text-center">{{ ordinal.ordinal('list.table.header.60fps'|trans) }}</th>

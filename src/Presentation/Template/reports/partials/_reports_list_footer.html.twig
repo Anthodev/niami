@@ -3,19 +3,19 @@
 
 {% if reports|length > 0 %}
         </tbody>
-        <tfoot>
+        <tfoot class="bg-base-200">
             <tr>
                 <th></th>
-                <th colspan="4" class="text-center bg-primary/50">TV</th>
-                <th colspan="4" class="text-center bg-secondary/50">Portable</th>
-                <th colspan="4" class="text-center bg-accent/50">Misc</th>
+                <th colspan="4" class="text-center text-primary">TV</th>
+                <th colspan="4" class="text-center text-secondary">Portable</th>
+                <th colspan="4" class="text-center text-accent">Misc</th>
                 <th></th>
             </tr>
         </tfoot>
     </table>
 </div>
 
-    <div class="mt-4 text-base-content/50">
+    <div class="mt-4 text-base-content/50 text-sm space-y-1">
         <p>{{ reverse_ordinal.reverse_ordinal('list.table.notice.60fps'|trans) }}</p>
         <p>{{ reverse_ordinal.reverse_ordinal('list.table.notice.stable_FPS'|trans) }}</p>
         <p>{{ reverse_ordinal.reverse_ordinal('list.table.notice.better_resolution'|trans) }}</p>

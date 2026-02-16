@@ -1,9 +1,9 @@
 {% trans_default_domain 'report' %}
 
-<div tabindex="0" class="collapse collapse-arrow bg-base-100 border-base-300 border">
-    <div class="flex collapse-title font-semibold bg-secondary/50">
-        <div class="w-6 h-6">{{ ux_icon('ph:plus-square') }}</div>
-        <div class="ml-2">{{ 'add_report.label'|trans }}</div>
+<div tabindex="0" class="collapse collapse-arrow bg-base-100 border border-base-300/50">
+    <div class="collapse-title font-medium flex items-center gap-2">
+        <span class="w-5 h-5 text-primary">{{ ux_icon('ph:plus-square') }}</span>
+        <span>{{ 'add_report.label'|trans }}</span>
     </div>
     <input type="checkbox" />
 
@@ -12,145 +12,144 @@
             'action': path('create_report'),
         }) }}
 
-        <div class="text-xl my-4 border-b-2">{{ 'add_report.form.portable.label'|trans }}</div>
-        <div class="flex justify-around mb-4">
-            <label for="is60FpsPortable" class="label">
+        <div class="text-base font-medium text-base-content/70 mb-3 pb-2 border-b border-base-300">{{ 'add_report.form.portable.label'|trans }}</div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+            <label class="flex items-center gap-2 cursor-pointer">
                 {{ form_widget(createReportForm.is60FpsPortable, {
                     'attr': {
                         'type': 'checkbox',
-                        'class': 'checkbox border-primary/50 bg-primary/50 checked:border-success checked:bg-success checked:text-base-content',
+                        'class': 'checkbox checkbox-primary checkbox-sm',
                     }
                 }) }}
-                {{ form_label(createReportForm.is60FpsPortable) }}
+                <span class="text-sm">{{ form_label(createReportForm.is60FpsPortable) }}</span>
             </label>
 
-            <label for="hasStableFrameratePortable" class="label">
+            <label class="flex items-center gap-2 cursor-pointer">
                 {{ form_widget(createReportForm.hasStableFrameratePortable, {
                     'attr': {
                         'type': 'checkbox',
-                        'class': 'checkbox border-primary/50 bg-primary/50 checked:border-success checked:bg-success checked:text-base-content',
+                        'class': 'checkbox checkbox-primary checkbox-sm',
                     }
                 }) }}
-                {{ form_label(createReportForm.hasStableFrameratePortable) }}
+                <span class="text-sm">{{ form_label(createReportForm.hasStableFrameratePortable) }}</span>
             </label>
 
-            <label for="hasResolutionImprovedPortable" class="label">
+            <label class="flex items-center gap-2 cursor-pointer">
                 {{ form_widget(createReportForm.hasResolutionImprovedPortable, {
                     'attr': {
                         'id': 'hasResolutionImprovedPortable',
                         'type': 'checkbox',
-                        'class': 'checkbox border-primary/50 bg-primary/50 checked:border-success checked:bg-success checked:text-base-content',
+                        'class': 'checkbox checkbox-primary checkbox-sm',
                     }
                 }) }}
-                {{ form_label(createReportForm.hasResolutionImprovedPortable) }}
+                <span class="text-sm">{{ form_label(createReportForm.hasResolutionImprovedPortable) }}</span>
             </label>
 
-            <label for="isNativeResolutionPortable" class="label">
+            <label class="flex items-center gap-2 cursor-pointer">
                 {{ form_widget(createReportForm.isNativeResolutionPortable, {
                     'attr': {
                         'id': 'isNativeResolutionPortable',
                         'type': 'checkbox',
-                        'class': 'checkbox border-primary/50 bg-primary/50 checked:border-success checked:bg-success checked:text-base-content',
+                        'class': 'checkbox checkbox-primary checkbox-sm',
                     }
                 }) }}
-                {{ form_label(createReportForm.isNativeResolutionPortable) }}
+                <span class="text-sm">{{ form_label(createReportForm.isNativeResolutionPortable) }}</span>
             </label>
         </div>
 
-        <div class="text-xl mb-4 border-b-2">{{ 'add_report.form.tv.label'|trans }}</div>
-        <div class="flex justify-around">
-            <label for="is60FpsDocked" class="label">
+        <div class="text-base font-medium text-base-content/70 mb-3 pb-2 border-b border-base-300">{{ 'add_report.form.tv.label'|trans }}</div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+            <label class="flex items-center gap-2 cursor-pointer">
                 {{ form_widget(createReportForm.is60FpsDocked, {
                     'attr': {
                         'type': 'checkbox',
-                        'class': 'checkbox border-primary/50 bg-primary/50 checked:border-success checked:bg-success checked:text-base-content',
+                        'class': 'checkbox checkbox-primary checkbox-sm',
                     }
                 }) }}
-                {{ form_label(createReportForm.is60FpsDocked) }}
+                <span class="text-sm">{{ form_label(createReportForm.is60FpsDocked) }}</span>
             </label>
 
-            <label for="hasStableFramerateDocked" class="label">
+            <label class="flex items-center gap-2 cursor-pointer">
                 {{ form_widget(createReportForm.hasStableFramerateDocked, {
                     'attr': {
                         'type': 'checkbox',
-                        'class': 'checkbox border-primary/50 bg-primary/50 checked:border-success checked:bg-success checked:text-base-content',
+                        'class': 'checkbox checkbox-primary checkbox-sm',
                     }
                 }) }}
-                {{ form_label(createReportForm.hasStableFramerateDocked) }}
+                <span class="text-sm">{{ form_label(createReportForm.hasStableFramerateDocked) }}</span>
             </label>
 
-            <label for="hasResolutionImprovedDocked" class="label">
+            <label class="flex items-center gap-2 cursor-pointer">
                 {{ form_widget(createReportForm.hasResolutionImprovedDocked, {
                     'attr': {
                         'id': 'hasResolutionImprovedDocked',
                         'type': 'checkbox',
-                        'class': 'checkbox border-primary/50 bg-primary/50 checked:border-success checked:bg-success checked:text-base-content',
+                        'class': 'checkbox checkbox-primary checkbox-sm',
                     }
                 }) }}
-                {{ form_label(createReportForm.hasResolutionImprovedDocked) }}
+                <span class="text-sm">{{ form_label(createReportForm.hasResolutionImprovedDocked) }}</span>
             </label>
 
-            <label for="isNativeResolutionDocked" class="label">
+            <label class="flex items-center gap-2 cursor-pointer">
                 {{ form_widget(createReportForm.isNativeResolutionDocked, {
                     'attr': {
                         'id': 'isNativeResolutionDocked',
                         'type': 'checkbox',
-                        'class': 'checkbox border-primary/50 bg-primary/50 checked:border-success checked:bg-success checked:text-base-content',
+                        'class': 'checkbox checkbox-primary checkbox-sm',
                     }
                 }) }}
-                {{ form_label(createReportForm.isNativeResolutionDocked) }}
+                <span class="text-sm">{{ form_label(createReportForm.isNativeResolutionDocked) }}</span>
             </label>
         </div>
 
-        <div class="text-xl mt-4 mb-4 border-b-2">Misc.</div>
-        <div class="flex justify-around mb-4">
-            <label for="hasImprovedLoadingTimes" class="label">
+        <div class="text-base font-medium text-base-content/70 mb-3 pb-2 border-b border-base-300">Misc.</div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+            <label class="flex items-center gap-2 cursor-pointer">
                 {{ form_widget(createReportForm.hasImprovedLoadingTimes, {
                     'attr': {
                         'type': 'checkbox',
-                        'class': 'checkbox border-primary/50 bg-primary/50 checked:border-success checked:bg-success checked:text-base-content',
+                        'class': 'checkbox checkbox-primary checkbox-sm',
                     }
                 }) }}
-                {{ form_label(createReportForm.hasImprovedLoadingTimes) }}
+                <span class="text-sm">{{ form_label(createReportForm.hasImprovedLoadingTimes) }}</span>
             </label>
 
-            <label for="gameStatus" class="label">
-                {{ form_label(createReportForm.gameStatus) }}
+            <label class="flex items-center gap-2 cursor-pointer">
+                <span class="text-sm">{{ form_label(createReportForm.gameStatus) }}</span>
                 {{ form_widget(createReportForm.gameStatus, {
                     'attr': {
                         'type': 'select',
-                        'class': 'select',
+                        'class': 'select select-sm select-bordered',
                     }
                 }) }}
             </label>
 
-            <label for="isPatched" class="label">
+            <label class="flex items-center gap-2 cursor-pointer">
                 {{ form_widget(createReportForm.isPatched, {
                     'attr': {
                         'type': 'checkbox',
-                        'class': 'checkbox border-primary/50 bg-primary/50 checked:border-success checked:bg-success checked:text-base-content',
+                        'class': 'checkbox checkbox-primary checkbox-sm',
                     }
                 }) }}
-                {{ form_label(createReportForm.isPatched) }}
+                <span class="text-sm">{{ form_label(createReportForm.isPatched) }}</span>
             </label>
 
-            <label for="isSwitch2Edition" class="label">
+            <label class="flex items-center gap-2 cursor-pointer">
                 {{ form_widget(createReportForm.isSwitch2Edition, {
                     'attr': {
                         'type': 'checkbox',
-                        'class': 'checkbox border-primary/50 bg-primary/50 checked:border-success checked:bg-success checked:text-base-content',
+                        'class': 'checkbox checkbox-primary checkbox-sm',
                     }
                 }) }}
-                {{ form_label(createReportForm.isSwitch2Edition) }}
+                <span class="text-sm">{{ form_label(createReportForm.isSwitch2Edition) }}</span>
             </label>
         </div>
 
-        <p class="text-base-content/50">
+        <p class="text-xs text-base-content/50 mb-4">
             {{ 'add_report.notice.stable_framerate'|trans }}<br>
             {{ 'add_report.notice.resolution_improved'|trans }}<br>
             {{ 'add_report.notice.native_resolution'|trans }}
         </p>
-        <br>
 
         {{ form_widget(createReportForm.gameId, {
             'attr': {
@@ -164,8 +163,8 @@
             }
         }) }}
 
-        <div class="flex flex-row-reverse">
-            <button class="btn btn-success mt-2 mb-2">Add</button>
+        <div class="flex justify-end">
+            <button class="btn btn-primary btn-sm">Add</button>
         </div>
         {{ form_rest(createReportForm) }}
 

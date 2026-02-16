@@ -9,124 +9,119 @@
 
     {% if status == enum('App\\Infrastructure\\Enum\\ReportGameStatusEnum').OK %}
         {% set statusIcon = 'ph:smiley' %}
-        {% set statusBg = 'bg-info/50' %}
+        {% set statusBg = 'text-success' %}
     {% elseif status == enum('App\\Infrastructure\\Enum\\ReportGameStatusEnum').BUGGED %}
         {% set statusIcon = 'ph:smiley-x-eyes' %}
-        {% set statusBg = 'bg-primary/50' %}
+        {% set statusBg = 'text-primary' %}
     {% elseif status == enum('App\\Infrastructure\\Enum\\ReportGameStatusEnum').BAD %}
         {% set statusIcon = 'ph:smiley-nervous' %}
-        {% set statusBg = 'bg-warning/50' %}
+        {% set statusBg = 'text-warning' %}
     {% else %}
         {% set statusIcon = 'ph:sparkle' %}
-
-        {% set statusBg = 'bg-success/50' %}
+        {% set statusBg = 'text-info' %}
     {% endif %}
 
-    {% set mostUpvotedBg = 'bg-gradient-to-b from-amber-100 via-amber-200 to-amber-100 dark:from-amber-900/20 dark:via-amber-800/30 dark:to-amber-900/20' %}
+    {% set mostUpvotedBg = 'bg-primary/5' %}
 
-    <tr class="border-l-4 {{ statusIcon }}">
-        <td class="text-center hover:bg-base-300 {{ statusBg }}">
-            <div class="w-6 h-6 mx-auto">
+    <tr class="border-b border-base-300/50 hover:bg-base-200/50 transition-colors {{ loop.first ? mostUpvotedBg : '' }}">
+        <td class="py-3 text-center">
+            <div class="w-5 h-5 mx-auto {{ statusBg }}">
                 {{ ux_icon(statusIcon) }}
             </div>
         </td>
 
-        <td class="text-center hover:bg-base-300 {{ loop.first ? mostUpvotedBg : '' }}">
-            <div class="w-6 h-6 mx-auto {{ report.is60FpsPortable ? 'text-green-400' : 'text-red-400' }}">
-                {{ report.is60FpsPortable ? ux_icon('ph:check-square') : ux_icon('ph:x-square') }}
+        <td class="py-3 text-center">
+            <div class="w-4 h-4 mx-auto {{ report.is60FpsPortable ? 'text-success' : 'text-base-content/30' }}">
+                {{ report.is60FpsPortable ? ux_icon('ph:check') : ux_icon('ph:x') }}
             </div>
         </td>
 
-        <td class="text-center hover:bg-base-300 {{ loop.first ? mostUpvotedBg : '' }}">
-            <div class="w-6 h-6 mx-auto {{ report.hasStableFrameratePortable ? 'text-green-400' : 'text-red-400' }}">
-                {{ report.hasStableFrameratePortable ? ux_icon('ph:check-square') : ux_icon('ph:x-square') }}
+        <td class="py-3 text-center">
+            <div class="w-4 h-4 mx-auto {{ report.hasStableFrameratePortable ? 'text-success' : 'text-base-content/30' }}">
+                {{ report.hasStableFrameratePortable ? ux_icon('ph:check') : ux_icon('ph:x') }}
             </div>
         </td>
 
-        <td class="text-center hover:bg-base-300 {{ loop.first ? mostUpvotedBg : '' }}">
-            <div class="w-6 h-6 mx-auto {{ report.hasResolutionImprovedPortable ? 'text-green-400' : 'text-red-400' }}">
-                {{ report.hasResolutionImprovedPortable ? ux_icon('ph:check-square') : ux_icon('ph:x-square') }}
+        <td class="py-3 text-center">
+            <div class="w-4 h-4 mx-auto {{ report.hasResolutionImprovedPortable ? 'text-success' : 'text-base-content/30' }}">
+                {{ report.hasResolutionImprovedPortable ? ux_icon('ph:check') : ux_icon('ph:x') }}
             </div>
         </td>
 
-        <td class="text-center hover:bg-base-300 {{ loop.first ? mostUpvotedBg : '' }}">
-            <div class="w-6 h-6 mx-auto {{ report.isNativeResolutionPortable ? 'text-green-400' : 'text-red-400' }}">
-                {{ report.isNativeResolutionPortable ? ux_icon('ph:check-square') : ux_icon('ph:x-square') }}
+        <td class="py-3 text-center">
+            <div class="w-4 h-4 mx-auto {{ report.isNativeResolutionPortable ? 'text-success' : 'text-base-content/30' }}">
+                {{ report.isNativeResolutionPortable ? ux_icon('ph:check') : ux_icon('ph:x') }}
             </div>
         </td>
 
-        <td class="text-center hover:bg-base-300 {{ loop.first ? mostUpvotedBg : '' }}">
-            <div class="w-6 h-6 mx-auto {{ report.is60FpsDocked ? 'text-green-400' : 'text-red-400' }}">
-                {{ report.is60FpsDocked ? ux_icon('ph:check-square') : ux_icon('ph:x-square') }}
+        <td class="py-3 text-center">
+            <div class="w-4 h-4 mx-auto {{ report.is60FpsDocked ? 'text-success' : 'text-base-content/30' }}">
+                {{ report.is60FpsDocked ? ux_icon('ph:check') : ux_icon('ph:x') }}
             </div>
         </td>
 
-        <td class="text-center hover:bg-base-30 {{ loop.first ? mostUpvotedBg : '' }}">
-            <div class="w-6 h-6 mx-auto {{ report.hasStableFramerateDocked ? 'text-green-400' : 'text-red-400' }}">
-                {{ report.hasStableFramerateDocked ? ux_icon('ph:check-square') : ux_icon('ph:x-square') }}
+        <td class="py-3 text-center">
+            <div class="w-4 h-4 mx-auto {{ report.hasStableFramerateDocked ? 'text-success' : 'text-base-content/30' }}">
+                {{ report.hasStableFramerateDocked ? ux_icon('ph:check') : ux_icon('ph:x') }}
             </div>
         </td>
 
-        <td class="text-center hover:bg-base-300 {{ loop.first ? mostUpvotedBg : '' }}">
-            <div class="w-6 h-6 mx-auto {{ report.hasResolutionImprovedDocked ? 'text-green-400' : 'text-red-400' }}">
-                {{ report.hasResolutionImprovedDocked ? ux_icon('ph:check-square') : ux_icon('ph:x-square') }}
+        <td class="py-3 text-center">
+            <div class="w-4 h-4 mx-auto {{ report.hasResolutionImprovedDocked ? 'text-success' : 'text-base-content/30' }}">
+                {{ report.hasResolutionImprovedDocked ? ux_icon('ph:check') : ux_icon('ph:x') }}
             </div>
         </td>
 
-        <td class="text-center hover:bg-base-300 {{ loop.first ? mostUpvotedBg : '' }}">
-            <div class="w-6 h-6 mx-auto {{ report.isNativeResolutionDocked ? 'text-green-400' : 'text-red-400' }}">
-                {{ report.isNativeResolutionDocked ? ux_icon('ph:check-square') : ux_icon('ph:x-square') }}
+        <td class="py-3 text-center">
+            <div class="w-4 h-4 mx-auto {{ report.isNativeResolutionDocked ? 'text-success' : 'text-base-content/30' }}">
+                {{ report.isNativeResolutionDocked ? ux_icon('ph:check') : ux_icon('ph:x') }}
             </div>
         </td>
 
-        <td class="text-center hover:bg-base-300 {{ loop.first ? mostUpvotedBg : '' }}">
-            <div class="w-6 h-6 mx-auto {{ report.hasImprovedLoadingTimes ? 'text-green-400' : 'text-red-400' }}">
-                {{ report.hasImprovedLoadingTimes ? ux_icon('ph:check-square') : ux_icon('ph:x-square') }}
+        <td class="py-3 text-center">
+            <div class="w-4 h-4 mx-auto {{ report.hasImprovedLoadingTimes ? 'text-success' : 'text-base-content/30' }}">
+                {{ report.hasImprovedLoadingTimes ? ux_icon('ph:check') : ux_icon('ph:x') }}
             </div>
         </td>
 
-        <td class="text-center hover:bg-base-300 {{ loop.first ? mostUpvotedBg : '' }}">
-            <div class="w-6 h-6 mx-auto {{ report.isPatched ? 'text-green-400' : 'text-red-400' }}">
-                {{ report.isPatched ? ux_icon('ph:check-square') : ux_icon('ph:x-square') }}
+        <td class="py-3 text-center">
+            <div class="w-4 h-4 mx-auto {{ report.isPatched ? 'text-success' : 'text-base-content/30' }}">
+                {{ report.isPatched ? ux_icon('ph:check') : ux_icon('ph:x') }}
             </div>
         </td>
 
-        <td class="text-center hover:bg-base-300 {{ loop.first ? mostUpvotedBg : '' }}">
-            <div class="w-6 h-6 mx-auto {{ report.switch2Edition ? 'text-green-400' : 'text-red-400' }}">
-                {{ report.switch2Edition ? ux_icon('ph:check-square') : ux_icon('ph:x-square') }}
+        <td class="py-3 text-center">
+            <div class="w-4 h-4 mx-auto {{ report.switch2Edition ? 'text-success' : 'text-base-content/30' }}">
+                {{ report.switch2Edition ? ux_icon('ph:check') : ux_icon('ph:x') }}
             </div>
         </td>
 
-        <td class="flex justify-center hover:bg-base-300 text-center {{ loop.first ? mostUpvotedBg : '' }}">
-            <turbo-frame class="flex" id="report-{{ report.id }}">
+        <td class="py-3 text-center">
+            <turbo-frame class="flex justify-center items-center gap-1" id="report-{{ report.id }}">
                 <div data-report-upvote data-report-id="{{ report.id }}">
                     <a href="{{ path('report_increase_upvote', {id: report.id}) }}"
                         data-turbo-method="patch"
                         data-turbo-frame="report-{{ report.id }}"
-                        class="flex cursor-pointer group text-decoration-none"
+                        class="flex items-center gap-1 text-sm text-base-content/60 hover:text-primary transition-colors"
                     >
-                        <div id="upvote-count-{{ report.id }}" class="bg-inherit">{{ report.upvoteCount }}</div>
-                        <div class="w-6 h-6 bg-inherit text-green-200 group-hover:text-green-700 ml-1">
-                            {{ ux_icon('ph:arrow-fat-up-duotone') }}
-                        </div>
+                        <span id="upvote-count-{{ report.id }}">{{ report.upvoteCount }}</span>
+                        <span class="w-4 h-4">{{ ux_icon('ph:arrow-up') }}</span>
                     </a>
                 </div>
                 {% if loop.first %}
-                    <div class="w-6 h-6 bg-inherit text-yellow-300 ml-1">{{ ux_icon('ph:star-fill') }}</div>
+                    <span class="w-4 h-4 text-warning">{{ ux_icon('ph:star-fill') }}</span>
                 {% endif %}
             </turbo-frame>
         </td>
 
-        <td class="text-center hover:bg-base-300">
-            <div class="w-6 h-6 mx-auto">
-                <button class="btn text-warning btn-square -m-2"
-                        data-report-id="{{ report.id }}"
-                        data-game-slug="{{ report.game.slug }}"
-                        data-report-path="{{ path('create_report_comment', { reportId: report.id }) }}"
-                        onclick="openReportCommentModal(this)">
-                    {{ ux_icon('ph:warning') }}
-                </button>
-            </div>
+        <td class="py-3 text-center">
+            <button class="w-6 h-6 text-base-content/40 hover:text-warning transition-colors"
+                    data-report-id="{{ report.id }}"
+                    data-game-slug="{{ report.game.slug }}"
+                    data-report-path="{{ path('create_report_comment', { reportId: report.id }) }}"
+                    onclick="openReportCommentModal(this)">
+                {{ ux_icon('ph:warning') }}
+            </button>
         </td>
     </tr>
 {% endfor %}
@@ -165,5 +160,4 @@
             modal.showModal();
         }
     </script>
-
 {% endblock %}

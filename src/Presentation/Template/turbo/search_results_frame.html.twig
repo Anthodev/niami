@@ -12,17 +12,17 @@
     }) }}
     <div class="form-control w-full">
         <label class="label">
-            <span class="label-text text-lg font-semibold">{{ form_label(searchGamesForm.game) }}</span>
+            <span class="label-text text-lg font-medium">{{ form_label(searchGamesForm.game) }}</span>
         </label>
         {{ form_widget(searchGamesForm.game, {
             'attr': {
                 'data-search-debounce-target': 'input',
                 'data-action': 'input->search-debounce#search',
-                'class': 'input input-bordered input-primary w-full text-lg'
+                'class': 'input input-bordered w-full bg-base-200/50 focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-base-content/40'
             }
         }) }}
-        <button type="submit" class="btn btn-primary gap-2 ml-1">
-            <span class="w-6 h-6">{{ ux_icon('ph:magnifying-glass') }}</span>
+        <button type="submit" class="btn btn-primary mt-4">
+            <span class="w-5 h-5">{{ ux_icon('ph:magnifying-glass') }}</span>
             {{ 'form.submit'|trans }}
         </button>
     </div>
@@ -30,7 +30,7 @@
     {{ form_rest(searchGamesForm) }}
 
     <label class="label">
-        <span class="label-text-alt">{{ 'form.helper'|trans }}</span>
+        <span class="label-text-alt text-base-content/50">{{ 'form.helper'|trans }}</span>
     </label>
 
     {{ form_end(searchGamesForm) }}
@@ -38,10 +38,10 @@
     <div class="mt-8">
         {% if hasError %}
             <div class="alert alert-error">
-                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span>{{ errorMessage }}</span>
+                <span class="text-sm">{{ errorMessage }}</span>
             </div>
         {% else %}
             {% include '@app/partials/_game_search_results.html.twig' with {

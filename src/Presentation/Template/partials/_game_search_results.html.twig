@@ -1,78 +1,68 @@
 {% trans_default_domain 'search' %}
 
 {% if games is not empty %}
-    <div class="game-results animate-fade-in">
+    <div class="game-results">
 
-        <div class="stats bg-base-100 shadow-2xl border border-base-300/50 mb-8 hover:shadow-3xl transition-shadow duration-200 hover:border-base-300/70">
-            <div class="stat">
-                <div class="stat-figure text-success">
-                    <div class="w-12 h-12 bg-success/20 rounded-full flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-6 h-6 stroke-current">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                        </svg>
-                    </div>
-                </div>
-                <div class="stat-value text-success text-4xl font-black">{{ games|length }}</div>
-                {% set gamePlural = games|length > 1 ? 's' : '' %}
-                <div class="stat-title text-lg font-semibold">{{ 'form.results.label'|trans({'%gamePlural%': gamePlural}) }}</div>
-                {% if searchQuery %}
-                    <div class="stat-desc text-base-content/70">{{ 'form.results.label_for'|trans({'%searchQuery%': searchQuery}) }}"</div>
-                {% endif %}
-            </div>
+        <div class="flex items-center gap-3 mb-6 pb-4 border-b border-base-300/30">
+            <span class="text-2xl font-light text-primary">{{ games|length }}</span>
+            {% set gamePlural = games|length > 1 ? 's' : '' %}
+            <span class="text-base-content/60">{{ 'form.results.label'|trans({'%gamePlural%': gamePlural}) }}</span>
+            {% if searchQuery %}
+                <span class="text-base-content/40 text-sm">{{ 'form.results.label_for'|trans({'%searchQuery%': searchQuery}) }}"</span>
+            {% endif %}
         </div>
 
-        <div class="grid gap-6 sm:gap-8">
+        <div class="grid gap-4">
             {% for game in games %}
-                <div class="card glass bg-base-100 border-2 border-base-300/50 shadow-2xl hover:shadow-3xl hover:scale-[1.01] hover:border-base-300/80 transition-all duration-200 ease-out group overflow-hidden">
+                <div class="card bg-base-100 border border-base-300/50 hover:border-primary/30 transition-colors group">
                     <div class="card-body p-0">
                         <div class="flex flex-col sm:flex-row">
                             {% if game.imageCover is defined and game.name is defined %}
-                                <div class="relative overflow-hidden sm:w-40 sm:h-40 w-full h-48 flex-shrink-0">
+                                <div class="relative overflow-hidden sm:w-32 sm:h-32 w-full h-40 flex-shrink-0">
                                     <img src="{{ game.imageCover }}" alt="{{ game.name }}"
-                                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200 ease-out">
+                                        class="w-full h-full object-cover">
                                 </div>
                             {% endif %}
 
-                            <div class="flex-1 px-6 pb-6 space-y-4">
+                            <div class="flex-1 p-5 space-y-3">
                                 {% if game.name %}
-                                    <h2 class="card-title text-2xl font-black text-primary group-hover:text-primary-focus transition-colors">
+                                    <h2 class="card-title text-xl font-semibold text-base-content group-hover:text-primary transition-colors">
                                         {{ game.name }}
                                     </h2>
                                 {% endif %}
 
-                                <div class="flex flex-wrap items-center gap-3">
-                                    <div class="badge badge-outline badge-lg gap-2 border-primary/30 hover:bg-primary/10 transition-colors">
-                                        <span class="w-4 h-4 text-primary">{{ ux_icon('ph:calendar-dots') }}</span>
-                                        <span class="font-medium">{{ game.releaseDate|date('d/m/Y') }}</span>
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <div class="badge badge-sm bg-primary/10 text-primary border-primary/20">
+                                        <span class="w-3 h-3">{{ ux_icon('ph:calendar-dots') }}</span>
+                                        <span>{{ game.releaseDate|date('d/m/Y') }}</span>
                                     </div>
 
                                     {% if game.developer is defined and game.developer != '' %}
-                                        <div class="flex badge badge-outline badge-secondary badge-lg font-medium">
-                                            <div class="w-6 h-6">{{ ux_icon('ph:game-controller') }}</div>
-                                            <div>{{ game.developer.name }}</div>
+                                        <div class="badge badge-sm bg-base-200 text-base-content/70 border-base-300">
+                                            <span class="w-3 h-3">{{ ux_icon('ph:game-controller') }}</span>
+                                            <span>{{ game.developer.name }}</span>
                                         </div>
                                     {% endif %}
 
                                     {% if game.publisher is defined and game.publisher != '' %}
-                                        <div class="flex badge badge-outline badge-accent badge-lg font-medium">
-                                            <div class="w-6 h-6">{{ ux_icon('ph:building-apartment') }}</div>
-                                            <div>{{ game.publisher.name }}</div>
+                                        <div class="badge badge-sm bg-base-200 text-base-content/70 border-base-300">
+                                            <span class="w-3 h-3">{{ ux_icon('ph:building-apartment') }}</span>
+                                            <span>{{ game.publisher.name }}</span>
                                         </div>
                                     {% endif %}
                                 </div>
 
                                 {% if game.description is defined %}
-                                    <p class="text-left text-base-content/80 leading-relaxed line-clamp-5">
+                                    <p class="text-left text-base-content/70 text-sm leading-relaxed line-clamp-3">
                                         {{ game.description|raw }}
                                     </p>
                                 {% endif %}
 
-                                <div class="card-actions justify-end pt-4">
+                                <div class="card-actions justify-end pt-2">
                                     <a href="{{ path('reports_for_game', {gameSlug: game.slug}) }}" data-turbo-frame="_top">
-                                        <button class="btn btn-primary btn-lg gap-3 shadow-lg hover:shadow-xl transform hover:scale-102 transition-all duration-150 ease-out bg-gradient-to-r from-primary to-primary-focus hover:from-primary-focus hover:to-primary">
-                                            <span class="w-5 h-5">{{ ux_icon('ph:files') }}</span>
-                                            <span class="font-semibold">{{ 'card.view_reports_button'|trans }}</span>
-                                            <span class="w-4 h-4">{{ ux_icon('ph:arrow-right') }}</span>
+                                        <button class="btn btn-sm btn-primary">
+                                            <span class="w-4 h-4">{{ ux_icon('ph:files') }}</span>
+                                            <span>{{ 'card.view_reports_button'|trans }}</span>
                                         </button>
                                     </a>
                                 </div>
@@ -86,13 +76,13 @@
 {% else %}
     <div class="no-results">
         {% if searchQuery %}
-            <div class="alert alert-info">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-info shrink-0 w-6 h-6">
+            <div class="alert bg-base-200 border border-base-300/50">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-primary shrink-0 w-5 h-5">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
                 <div>
-                    <h3 class="font-bold">{{ 'form.results.no_results.label'|trans }}</h3>
-                    <div class="text-xs">{{ 'form.results.no_results.message'|trans({'%searchQuery%': searchQuery})|raw }}</div>
+                    <h3 class="font-medium text-base-content">{{ 'form.results.no_results.label'|trans }}</h3>
+                    <div class="text-sm text-base-content/60">{{ 'form.results.no_results.message'|trans({'%searchQuery%': searchQuery})|raw }}</div>
                 </div>
             </div>
         {% endif %}

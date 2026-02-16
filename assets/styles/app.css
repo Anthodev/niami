@@ -5,8 +5,8 @@
 
 @plugin "../vendor/daisyui/daisyui.index.js" {
     themes:
-        plumber-light --default,
-        plumber-dark --prefersdark;
+        plumber-dark --default,
+        plumber-light;
 }
 
 @source "../../templates/";

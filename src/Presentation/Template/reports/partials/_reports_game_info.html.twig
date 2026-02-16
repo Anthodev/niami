@@ -1,66 +1,61 @@
 {% trans_default_domain 'report' %}
 
-<div class="card mb-4 bg-base-100 border-2 border-base-300/50 shadow-2xl overflow-hidden">
-    <div class="card-body p-0">
-        <div class="flex flex-col sm:flex-row">
-            {% if game.imageCover is defined and game.name is defined %}
-                <div class="relative overflow-hidden sm:w-40 sm:h-40 w-full h-48 flex-shrink-0">
-                    <img src="{{ game.imageCover }}" alt="{{ game.name }}"
-                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200 ease-out">
-                </div>
+<div class="card bg-base-100 border border-base-300/50 overflow-hidden">
+    <div class="flex flex-col sm:flex-row">
+        {% if game.imageCover is defined and game.name is defined %}
+            <div class="relative overflow-hidden sm:w-40 sm:h-40 w-full h-48 flex-shrink-0">
+                <img src="{{ game.imageCover }}" alt="{{ game.name }}"
+                    class="w-full h-full object-cover">
+            </div>
+        {% endif %}
+
+        <div class="flex-1 p-6 space-y-4">
+            {% if game.name %}
+                <h1 class="text-2xl font-semibold text-primary">
+                    {{ game.name }}
+                </h1>
+
+                <div class="divider my-0"></div>
             {% endif %}
 
-            <div class="flex-1 px-6 pb-6 space-y-4">
-                {% if game.name %}
-                    <h1 class="text-3xl font-mono font-black italic text-primary group-hover:text-primary-focus transition-colors">
-                        {{ game.name }}
-                    </h1>
-
-                    <div class="divider divider-primary"></div>
-                {% endif %}
-
-                <div class="grid grid-cols-3">
-                    <div class="flex content-center">
-                        <div class="text-base-content/80 font-mono mr-2">{{ 'game.release_date'|trans }}: </div>
-                        <div class="badge badge-outline gap-2 border-primary/30 hover:bg-primary/10 transition-colors">
-                            <span class="w-4 h-4 text-primary">{{ ux_icon('ph:calendar-dots') }}</span>
-                            <span class="font-medium">{{ game.releaseDate|date('d/m/Y') }}</span>
-                        </div>
-                    </div>
-
-                    <div class="flex content-center justify-center">
-                        {% if game.developer is defined and game.developer != '' %}
-                                <div class="text-base-content/80 font-mono mr-2">{{ 'game.developer'|trans }}: </div>
-                                <div class="flex badge badge-outline badge-secondary font-medium">
-                                    <div class="w-6 h-6">{{ ux_icon('ph:game-controller') }}</div>
-                                    <div>{{ game.developer.name }}</div>
-                                </div>
-                        {% endif %}
-                    </div>
-
-                    <div class="flex content-center justify-end">
-                        {% if game.publisher is defined and game.publisher != '' %}
-                                <div class="text-base-content/80 font-mono mr-2">{{ 'game.publisher'|trans }}: </div>
-                                <div class="flex badge badge-outline badge-accent font-medium">
-                                    <div class="w-6 h-6">{{ ux_icon('ph:building-apartment') }}</div>
-                                    <div>{{ game.publisher.name }}</div>
-                                </div>
-                        {% endif %}
-                    </div>
+            <div class="grid grid-cols-3 gap-4">
+                <div class="flex items-center gap-2">
+                    <span class="text-base-content/50 text-sm">{{ 'game.release_date'|trans }}</span>
+                    <span class="badge badge-sm badge-primary badge-outline">
+                        {{ game.releaseDate|date('d/m/Y') }}
+                    </span>
                 </div>
 
-                <div class="divider divider-secondary"></div>
+                <div class="flex items-center justify-center gap-2">
+                    {% if game.developer is defined and game.developer != '' %}
+                        <span class="text-base-content/50 text-sm">{{ 'game.developer'|trans }}</span>
+                        <span class="badge badge-sm badge-secondary badge-outline">
+                            {{ game.developer.name }}
+                        </span>
+                    {% endif %}
+                </div>
 
-                {% include '@reports/partials/_reports_top_report.html.twig' %}
-
-                {% if game.description is defined %}
-                    <div class="divider divider-start text-lg font-bold">{{ 'game.description'|trans }}</div>
-
-                    <p class="text-left text-base-content/80 leading-relaxed">
-                        {{ game.description|raw }}
-                    </p>
-                {% endif %}
+                <div class="flex items-center justify-end gap-2">
+                    {% if game.publisher is defined and game.publisher != '' %}
+                        <span class="text-base-content/50 text-sm">{{ 'game.publisher'|trans }}</span>
+                        <span class="badge badge-sm badge-accent badge-outline">
+                            {{ game.publisher.name }}
+                        </span>
+                    {% endif %}
+                </div>
             </div>
+
+            <div class="divider my-0"></div>
+
+            {% include '@reports/partials/_reports_top_report.html.twig' %}
+
+            {% if game.description is defined %}
+                <div class="divider divider-start text-sm font-medium">{{ 'game.description'|trans }}</div>
+
+                <p class="text-sm text-base-content/70 leading-relaxed">
+                    {{ game.description|raw }}
+                </p>
+            {% endif %}
         </div>
     </div>
 </div>

@@ -1,10 +1,10 @@
 {% trans_default_domain 'reportComment' %}
 
 <dialog id="comment_{{ modal_index }}" class="modal">
-  <div class="modal-box w-full flex-col">
-    <div class="divider divider-start text-lg font-bold">{{ 'reports.modal.title'|trans }}</div>
+  <div class="modal-box bg-base-100">
+    <h3 class="font-bold text-lg">{{ 'reports.modal.title'|trans }}</h3>
 
-    <div class="modal-action flex flex-col">
+    <div class="modal-action flex flex-col gap-4">
         {{ form_start(createReportCommentForm, {
             'action': path('create_report_comment', { reportId: 'REPORT_ID_PLACEHOLDER' }),
             'method': 'POST',
@@ -13,7 +13,7 @@
 
         {{ form_widget(createReportCommentForm.comment, {
             'attr': {
-                'class': 'textarea textarea-warning'
+                'class': 'textarea textarea-bordered w-full'
             }
         }) }}
 
@@ -31,11 +31,12 @@
 
         {{ form_rest(createReportCommentForm) }}
 
-        <button class="btn btn-primary">{{ 'reports.modal.submit'|trans }}</button>
+        <div class="flex gap-2 justify-end">
+            <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('comment_{{ modal_index }}').close()">{{ 'reports.modal.close'|trans }}</button>
+            <button class="btn btn-primary btn-sm">{{ 'reports.modal.submit'|trans }}</button>
+        </div>
 
         {{ form_end(createReportCommentForm) }}
-
-        <button type="button" class="btn" formnovalidate onclick="document.getElementById('comment_{{ modal_index }}').close()">{{ 'reports.modal.close'|trans }}</button>
     </div>
   </div>
 </dialog>

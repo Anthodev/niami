@@ -16,16 +16,14 @@
         {% block importmap %}{{ importmap('app') }}{% endblock %}
     {% endblock %}
 </head>
-<body class="bg-gradient-to-br from-base-200 via-base-200 to-base-300 min-h-screen antialiased" data-controller="turbo-loading" data-turbo-loading-min-length-value="3">
-    <div class="min-h-screen flex flex-col">
-        {% include '@app/partials/_header.html.twig' %}
+<body class="bg-base-100 min-h-screen antialiased transition-colors duration-300" data-controller="turbo-loading" data-turbo-loading-min-length-value="3">
+    {% include '@app/partials/_header.html.twig' %}
 
-        <main class="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            {% block content %}
-            {% endblock %}
-        </main>
+    <main class="flex-1">
+        {% block content %}
+        {% endblock %}
+    </main>
 
-        {% include '@app/partials/_footer.html.twig' %}
-    </div>
+    {% include '@app/partials/_footer.html.twig' %}
 </body>
 </html>
