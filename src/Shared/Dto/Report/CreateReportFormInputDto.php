@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Presentation\Dto;
+namespace App\Shared\Dto\Report;
 
-use App\Infrastructure\Enum\ReportGameStatusEnum;
+use App\Domain\Enum\ReportGameStatusEnum;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class CreateReportFormInputDto

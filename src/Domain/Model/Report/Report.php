@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Domain\Model\Report;
 
+use App\Domain\Enum\ReportGameStatusEnum;
 use App\Domain\Model\Common\ModelInterface;
 use App\Domain\Model\Game\Game;
 use App\Domain\Trait\IdTrait;
 use App\Domain\Trait\TimestampableTrait;
-use App\Infrastructure\Enum\ReportGameStatusEnum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 

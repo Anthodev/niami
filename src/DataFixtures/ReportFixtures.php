@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\DataFixtures;
 
+use App\Domain\Enum\ReportGameStatusEnum;
 use App\Domain\Factory\Report\ReportFactory;
 use App\Domain\Model\Game\Game;
-use App\Infrastructure\Enum\ReportGameStatusEnum;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;

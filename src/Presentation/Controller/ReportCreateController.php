@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Presentation\Controller;
 
 use App\Application\Command\Report\CreateReportFromDtoCommand;
-use App\Presentation\Dto\CreateReportFormInputDto;
 use App\Presentation\Form\CreateReportForm;
+use App\Shared\Dto\Report\CreateReportFormInputDto;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,7 +24,9 @@ class ReportCreateController extends AbstractController
         $createReportForm = $this->createForm(CreateReportForm::class);
         $createReportForm->handleRequest($request);
 
-        $dataGameSlug = $request->request->all()['create_report_form']['gameSlug'];
+        /** @var CreateReportFormInputDto $createReportInputDto */
+        $createReportInputDto = $createReportForm->getData();
+        $dataGameSlug = $createReportInputDto->gameSlug;
 
         if (
             $createReportForm->isSubmitted()

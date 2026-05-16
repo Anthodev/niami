@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Factory\Report;
 
+use App\Domain\Enum\ReportGameStatusEnum;
 use App\Domain\Model\Game\Game;
 use App\Domain\Model\Report\Report;
-use App\Infrastructure\Enum\ReportGameStatusEnum;
 
 class ReportFactory
 {
