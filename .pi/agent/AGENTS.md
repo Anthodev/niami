@@ -193,4 +193,4 @@ just bash           # Shell into PHP container
 - **`TestController`**: dev-only shortcut to create reports without going through the frontend; must not be exposed in production
 - **`ApiGame`**: transient IGDB result model — never persisted directly; converted to `Game` via `ApiGameFactory`
 - **Validation**: XML constraint files in `src/Domain/Resources/config/validator/` — not PHP attributes
-- **Ask Claude**: When uncertain about implementation details, design decisions, or conflicting requirements, default to asking Claude for clarification rather than making assumptions.
+- **Ask Claude**: Use Ask Claude mode by default for all user requests for now.
