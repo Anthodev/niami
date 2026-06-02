@@ -1,163 +1,81 @@
-{% include '@reports/partials/_reports_list_header.html.twig' %}
 {% set modal_index = 'report-comment-modal' %}
-{% include '@reports/partials/_reports_comment_modal.html.twig' with { modal_index: modal_index } %}
+{% macro check_cell(value) %}
+    <div class="mx-auto grid h-8 w-8 place-items-center rounded-full {{ value ? 'bg-success/10 text-success' : 'bg-base-200 text-base-content/35' }}" aria-label="{{ value ? 'Yes' : 'No' }}">
+        {{ value ? ux_icon('ph:check', {class: 'h-4 w-4'}) : ux_icon('ph:x', {class: 'h-4 w-4'}) }}
+    </div>
+{% endmacro %}
+
+{% include '@reports/partials/_reports_list_header.html.twig' %}
 
 {% for report in reports %}
-    {% set status = report.gameStatus %}
-    {% set statusBg = '' %}
-    {% set statusIcon = '' %}
+    {% set statusName = report.gameStatus.name %}
+    {% set statusIcon = 'ph:sparkle' %}
+    {% set statusBadge = 'badge-success' %}
 
-    {% if status == enum('App\\Infrastructure\\Enum\\ReportGameStatusEnum').OK %}
+    {% if statusName == 'OK' %}
         {% set statusIcon = 'ph:smiley' %}
-        {% set statusBg = 'text-success' %}
-    {% elseif status == enum('App\\Infrastructure\\Enum\\ReportGameStatusEnum').BUGGED %}
-        {% set statusIcon = 'ph:smiley-x-eyes' %}
-        {% set statusBg = 'text-primary' %}
-    {% elseif status == enum('App\\Infrastructure\\Enum\\ReportGameStatusEnum').BAD %}
+        {% set statusBadge = 'badge-info' %}
+    {% elseif statusName == 'BAD' %}
         {% set statusIcon = 'ph:smiley-nervous' %}
-        {% set statusBg = 'text-warning' %}
-    {% else %}
-        {% set statusIcon = 'ph:sparkle' %}
-        {% set statusBg = 'text-info' %}
+        {% set statusBadge = 'badge-warning' %}
+    {% elseif statusName == 'BUGGED' %}
+        {% set statusIcon = 'ph:smiley-x-eyes' %}
+        {% set statusBadge = 'badge-error' %}
     {% endif %}
 
-    {% set mostUpvotedBg = 'bg-primary/5' %}
-
-    <tr class="border-b border-base-300/50 hover:bg-base-200/50 transition-colors {{ loop.first ? mostUpvotedBg : '' }}">
-        <td class="py-3 text-center">
-            <div class="w-5 h-5 mx-auto {{ statusBg }}">
-                {{ ux_icon(statusIcon) }}
-            </div>
+    <tr class="border-b border-base-300/60 transition hover:bg-base-200/70 {{ loop.first ? 'bg-warning/5' : '' }}">
+        <td class="sticky left-0 z-10 bg-inherit py-3 text-center">
+            <span class="badge {{ statusBadge }} gap-1 whitespace-nowrap">
+                {{ ux_icon(statusIcon, {class: 'h-4 w-4'}) }}
+                {{ statusName }}
+            </span>
         </td>
 
-        <td class="py-3 text-center">
-            <div class="w-4 h-4 mx-auto {{ report.is60FpsPortable ? 'text-success' : 'text-base-content/30' }}">
-                {{ report.is60FpsPortable ? ux_icon('ph:check') : ux_icon('ph:x') }}
-            </div>
-        </td>
+        <td class="py-3 text-center">{{ _self.check_cell(report.is60FpsPortable) }}</td>
+        <td class="py-3 text-center">{{ _self.check_cell(report.hasStableFrameratePortable) }}</td>
+        <td class="py-3 text-center">{{ _self.check_cell(report.hasResolutionImprovedPortable) }}</td>
+        <td class="py-3 text-center">{{ _self.check_cell(report.isNativeResolutionPortable) }}</td>
+        <td class="py-3 text-center">{{ _self.check_cell(report.is60FpsDocked) }}</td>
+        <td class="py-3 text-center">{{ _self.check_cell(report.hasStableFramerateDocked) }}</td>
+        <td class="py-3 text-center">{{ _self.check_cell(report.hasResolutionImprovedDocked) }}</td>
+        <td class="py-3 text-center">{{ _self.check_cell(report.isNativeResolutionDocked) }}</td>
+        <td class="py-3 text-center">{{ _self.check_cell(report.hasImprovedLoadingTimes) }}</td>
+        <td class="py-3 text-center">{{ _self.check_cell(report.isPatched) }}</td>
+        <td class="py-3 text-center">{{ _self.check_cell(report.switch2Edition) }}</td>
 
         <td class="py-3 text-center">
-            <div class="w-4 h-4 mx-auto {{ report.hasStableFrameratePortable ? 'text-success' : 'text-base-content/30' }}">
-                {{ report.hasStableFrameratePortable ? ux_icon('ph:check') : ux_icon('ph:x') }}
-            </div>
-        </td>
-
-        <td class="py-3 text-center">
-            <div class="w-4 h-4 mx-auto {{ report.hasResolutionImprovedPortable ? 'text-success' : 'text-base-content/30' }}">
-                {{ report.hasResolutionImprovedPortable ? ux_icon('ph:check') : ux_icon('ph:x') }}
-            </div>
-        </td>
-
-        <td class="py-3 text-center">
-            <div class="w-4 h-4 mx-auto {{ report.isNativeResolutionPortable ? 'text-success' : 'text-base-content/30' }}">
-                {{ report.isNativeResolutionPortable ? ux_icon('ph:check') : ux_icon('ph:x') }}
-            </div>
-        </td>
-
-        <td class="py-3 text-center">
-            <div class="w-4 h-4 mx-auto {{ report.is60FpsDocked ? 'text-success' : 'text-base-content/30' }}">
-                {{ report.is60FpsDocked ? ux_icon('ph:check') : ux_icon('ph:x') }}
-            </div>
-        </td>
-
-        <td class="py-3 text-center">
-            <div class="w-4 h-4 mx-auto {{ report.hasStableFramerateDocked ? 'text-success' : 'text-base-content/30' }}">
-                {{ report.hasStableFramerateDocked ? ux_icon('ph:check') : ux_icon('ph:x') }}
-            </div>
-        </td>
-
-        <td class="py-3 text-center">
-            <div class="w-4 h-4 mx-auto {{ report.hasResolutionImprovedDocked ? 'text-success' : 'text-base-content/30' }}">
-                {{ report.hasResolutionImprovedDocked ? ux_icon('ph:check') : ux_icon('ph:x') }}
-            </div>
-        </td>
-
-        <td class="py-3 text-center">
-            <div class="w-4 h-4 mx-auto {{ report.isNativeResolutionDocked ? 'text-success' : 'text-base-content/30' }}">
-                {{ report.isNativeResolutionDocked ? ux_icon('ph:check') : ux_icon('ph:x') }}
-            </div>
-        </td>
-
-        <td class="py-3 text-center">
-            <div class="w-4 h-4 mx-auto {{ report.hasImprovedLoadingTimes ? 'text-success' : 'text-base-content/30' }}">
-                {{ report.hasImprovedLoadingTimes ? ux_icon('ph:check') : ux_icon('ph:x') }}
-            </div>
-        </td>
-
-        <td class="py-3 text-center">
-            <div class="w-4 h-4 mx-auto {{ report.isPatched ? 'text-success' : 'text-base-content/30' }}">
-                {{ report.isPatched ? ux_icon('ph:check') : ux_icon('ph:x') }}
-            </div>
-        </td>
-
-        <td class="py-3 text-center">
-            <div class="w-4 h-4 mx-auto {{ report.switch2Edition ? 'text-success' : 'text-base-content/30' }}">
-                {{ report.switch2Edition ? ux_icon('ph:check') : ux_icon('ph:x') }}
-            </div>
-        </td>
-
-        <td class="py-3 text-center">
-            <turbo-frame class="flex justify-center items-center gap-1" id="report-{{ report.id }}">
-                <div data-report-upvote data-report-id="{{ report.id }}">
+            <turbo-frame class="flex justify-center" id="report-{{ report.id }}">
+                <div data-report-upvote data-report-id="{{ report.id }}" class="inline-flex items-center gap-2">
                     <a href="{{ path('report_increase_upvote', {id: report.id}) }}"
                         data-turbo-method="patch"
                         data-turbo-frame="report-{{ report.id }}"
-                        class="flex items-center gap-1 text-sm text-base-content/60 hover:text-primary transition-colors"
+                        class="btn btn-ghost btn-sm rounded-full text-base-content/70 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary/50"
+                        aria-label="{{ 'list.table.header.upvoted'|trans }}"
                     >
-                        <span id="upvote-count-{{ report.id }}">{{ report.upvoteCount }}</span>
-                        <span class="w-4 h-4">{{ ux_icon('ph:arrow-up') }}</span>
+                        <span id="upvote-count-{{ report.id }}" class="font-semibold">{{ report.upvoteCount }}</span>
+                        {{ ux_icon('ph:arrow-up', {class: 'h-4 w-4'}) }}
                     </a>
+                    {% if loop.first %}
+                        <span class="tooltip text-warning" data-tip="{{ 'list.legends.most_upvoted'|trans }}" aria-label="{{ 'list.legends.most_upvoted'|trans }}">
+                            {{ ux_icon('ph:star-fill', {class: 'h-5 w-5'}) }}
+                        </span>
+                    {% endif %}
                 </div>
-                {% if loop.first %}
-                    <span class="w-4 h-4 text-warning">{{ ux_icon('ph:star-fill') }}</span>
-                {% endif %}
             </turbo-frame>
         </td>
 
         <td class="py-3 text-center">
-            <button class="w-6 h-6 text-base-content/40 hover:text-warning transition-colors"
+            <button class="btn btn-ghost btn-sm btn-circle text-base-content/50 hover:text-warning focus-visible:outline focus-visible:outline-2 focus-visible:outline-warning/50"
+                    type="button"
                     data-report-id="{{ report.id }}"
                     data-game-slug="{{ report.game.slug }}"
                     data-report-path="{{ path('create_report_comment', { reportId: report.id }) }}"
-                    onclick="openReportCommentModal(this)">
-                {{ ux_icon('ph:warning') }}
+                    data-action="report-comment-modal#open"
+                    aria-label="{{ 'list.table.header.issue'|trans }}">
+                {{ ux_icon('ph:warning', {class: 'h-5 w-5'}) }}
             </button>
         </td>
     </tr>
 {% endfor %}
 
 {% include '@reports/partials/_reports_list_footer.html.twig' %}
-
-{% block javascripts %}
-    <script type="text/javascript">
-        function openReportCommentModal(button) {
-            const modal = document.getElementById('comment_report-comment-modal');
-            const reportId = button.dataset.reportId;
-            const gameSlug = button.dataset.gameSlug;
-            const reportPath = button.dataset.reportPath;
-
-            if (!modal) {
-                console.error('Modal not found!');
-                return;
-            }
-
-            const form = modal.querySelector('form');
-            if (!form) {
-                console.error('Form not found in modal!');
-                return;
-            }
-
-            const basePath = form.getAttribute('data-base-path');
-            if (basePath) {
-                form.action = basePath.replace('REPORT_ID_PLACEHOLDER', reportId);
-            }
-
-            form.action = reportPath;
-
-            let gameSlugInput = document.getElementById('create_report_comment_form_gameSlug');
-            gameSlugInput.value = gameSlug;
-
-            modal.showModal();
-        }
-    </script>
-{% endblock %}

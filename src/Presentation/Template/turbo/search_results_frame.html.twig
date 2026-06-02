@@ -1,53 +1,19 @@
 {% trans_default_domain 'search' %}
 
-<turbo-frame id="search-frame">
-    {{ form_start(searchGamesForm, {
-        'action': path('search_games'),
-        'attr': {
-            'data-controller': 'search-debounce',
-            'data-search-debounce-delay-value': '1500',
-            'data-search-debounce-min-length-value': '3',
-            'class': 'space-y-6'
-        }
-    }) }}
-    <div class="form-control w-full">
-        <label class="label">
-            <span class="label-text text-lg font-medium">{{ form_label(searchGamesForm.game) }}</span>
-        </label>
-        {{ form_widget(searchGamesForm.game, {
-            'attr': {
-                'data-search-debounce-target': 'input',
-                'data-action': 'input->search-debounce#search',
-                'class': 'input input-bordered w-full bg-base-200/50 focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-base-content/40'
-            }
-        }) }}
-        <button type="submit" class="btn btn-primary mt-4">
-            <span class="w-5 h-5">{{ ux_icon('ph:magnifying-glass') }}</span>
-            {{ 'form.submit'|trans }}
-        </button>
-    </div>
-
-    {{ form_rest(searchGamesForm) }}
-
-    <label class="label">
-        <span class="label-text-alt text-base-content/50">{{ 'form.helper'|trans }}</span>
-    </label>
-
-    {{ form_end(searchGamesForm) }}
-
-    <div class="mt-8">
-        {% if hasError %}
-            <div class="alert alert-error">
-                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span class="text-sm">{{ errorMessage }}</span>
-            </div>
-        {% else %}
-            {% include '@app/partials/_game_search_results.html.twig' with {
-                'games': games,
-                'searchQuery': searchQuery
-            } %}
-        {% endif %}
+<turbo-frame id="search-results-frame">
+    <div class="app-card overflow-hidden border-base-300/70 bg-base-100/95">
+        <div id="search-results" class="p-4 sm:p-5 lg:p-6">
+            {% if hasError %}
+                <div class="alert alert-error items-start border border-error/30 shadow-none" aria-live="polite">
+                    <span class="mt-0.5 h-5 w-5 shrink-0">{{ ux_icon('ph:x-circle') }}</span>
+                    <span class="text-sm leading-6">{{ errorMessage }}</span>
+                </div>
+            {% else %}
+                {% include '@app/partials/_game_search_results.html.twig' with {
+                    'games': games,
+                    'searchQuery': searchQuery
+                } %}
+            {% endif %}
+        </div>
     </div>
 </turbo-frame>

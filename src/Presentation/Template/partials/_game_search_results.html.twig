@@ -1,90 +1,87 @@
 {% trans_default_domain 'search' %}
 
 {% if games is not empty %}
-    <div class="game-results">
-
-        <div class="flex items-center gap-3 mb-6 pb-4 border-b border-base-300/30">
-            <span class="text-2xl font-light text-primary">{{ games|length }}</span>
-            {% set gamePlural = games|length > 1 ? 's' : '' %}
-            <span class="text-base-content/60">{{ 'form.results.label'|trans({'%gamePlural%': gamePlural}) }}</span>
-            {% if searchQuery %}
-                <span class="text-base-content/40 text-sm">{{ 'form.results.label_for'|trans({'%searchQuery%': searchQuery}) }}"</span>
-            {% endif %}
+    <section class="space-y-4" aria-live="polite">
+        <div class="rounded-box border border-base-300/70 bg-base-200/45 p-3">
+            <div class="flex flex-wrap items-center gap-2">
+                <span class="badge badge-primary font-black">{{ games|length }}</span>
+                {% set gamePlural = games|length > 1 ? 's' : '' %}
+                <span class="text-sm font-semibold text-base-content">{{ 'form.results.label'|trans({'%gamePlural%': gamePlural}) }}</span>
+                {% if searchQuery %}
+                    <span class="badge badge-outline h-auto max-w-full justify-start border-base-300 py-1 text-left text-xs leading-4 text-base-content/70">
+                        {{ 'form.results.label_for'|trans({'%searchQuery%': searchQuery}) }}
+                    </span>
+                {% endif %}
+            </div>
         </div>
 
-        <div class="grid gap-4">
+        <div class="grid gap-3 sm:gap-4">
             {% for game in games %}
-                <div class="card bg-base-100 border border-base-300/50 hover:border-primary/30 transition-colors group">
-                    <div class="card-body p-0">
-                        <div class="flex flex-col sm:flex-row">
-                            {% if game.imageCover is defined and game.name is defined %}
-                                <div class="relative overflow-hidden sm:w-32 sm:h-32 w-full h-40 flex-shrink-0">
-                                    <img src="{{ game.imageCover }}" alt="{{ game.name }}"
-                                        class="w-full h-full object-cover">
+                {% set description = game.description|default(game.summary|default('')) %}
+                <article class="app-card overflow-hidden transition duration-200 hover:border-primary/40 hover:shadow-lg">
+                    <div class="grid gap-0 md:grid-cols-[11rem_minmax(0,1fr)] lg:grid-cols-[13rem_minmax(0,1fr)]">
+                        {% if game.imageCover is defined and game.imageCover %}
+                            {% set coverUrl = game.imageCover|replace({'/t_thumb/': '/t_cover_big_2x/', '/t_cover_small/': '/t_cover_big_2x/'}) %}
+                            <figure class="h-44 w-full shrink-0 bg-base-200 md:h-full">
+                                <img src="{{ coverUrl }}" alt="{{ game.name }}" class="h-full w-full object-cover" loading="lazy">
+                            </figure>
+                        {% else %}
+                            <div class="grid h-36 w-full shrink-0 place-items-center bg-base-200 text-base-content/30 md:h-full md:min-h-44">
+                                <span class="h-10 w-10">{{ ux_icon('ph:game-controller') }}</span>
+                            </div>
+                        {% endif %}
+
+                        <div class="card-body min-w-0 gap-3 p-4 text-left sm:p-5 lg:p-6">
+                            <div class="space-y-2">
+                                <h3 class="text-lg font-bold leading-snug text-base-content sm:text-xl">
+                                    {{ game.name }}
+                                </h3>
+                                <div class="flex flex-wrap items-start gap-2">
+                                    {% if game.releaseDate is defined and game.releaseDate %}
+                                        <span class="badge badge-soft badge-primary h-auto gap-1.5 py-1 text-xs leading-4">
+                                            <span class="h-3.5 w-3.5 shrink-0">{{ ux_icon('ph:calendar-dots') }}</span>
+                                            {{ game.releaseDate|date('d/m/Y') }}
+                                        </span>
+                                    {% endif %}
+                                    {% if game.developer is defined and game.developer %}
+                                        <span class="badge badge-outline h-auto min-w-0 max-w-full justify-start gap-1.5 border-base-300 py-1 text-xs leading-4 text-base-content/70">
+                                            <span class="h-3.5 w-3.5 shrink-0">{{ ux_icon('ph:game-controller') }}</span>
+                                            <span class="truncate">{{ game.developer.name|default(game.developer) }}</span>
+                                        </span>
+                                    {% endif %}
+                                    {% if game.publisher is defined and game.publisher %}
+                                        <span class="badge badge-outline h-auto min-w-0 max-w-full justify-start gap-1.5 border-base-300 py-1 text-xs leading-4 text-base-content/70">
+                                            <span class="h-3.5 w-3.5 shrink-0">{{ ux_icon('ph:building-apartment') }}</span>
+                                            <span class="truncate">{{ game.publisher.name|default(game.publisher) }}</span>
+                                        </span>
+                                    {% endif %}
                                 </div>
+                            </div>
+
+                            {% if description %}
+                                <p class="line-clamp-3 text-sm leading-6 text-base-content/65 lg:max-w-4xl">
+                                    {{ description|striptags }}
+                                </p>
                             {% endif %}
 
-                            <div class="flex-1 p-5 space-y-3">
-                                {% if game.name %}
-                                    <h2 class="card-title text-xl font-semibold text-base-content group-hover:text-primary transition-colors">
-                                        {{ game.name }}
-                                    </h2>
-                                {% endif %}
-
-                                <div class="flex flex-wrap items-center gap-2">
-                                    <div class="badge badge-sm bg-primary/10 text-primary border-primary/20">
-                                        <span class="w-3 h-3">{{ ux_icon('ph:calendar-dots') }}</span>
-                                        <span>{{ game.releaseDate|date('d/m/Y') }}</span>
-                                    </div>
-
-                                    {% if game.developer is defined and game.developer != '' %}
-                                        <div class="badge badge-sm bg-base-200 text-base-content/70 border-base-300">
-                                            <span class="w-3 h-3">{{ ux_icon('ph:game-controller') }}</span>
-                                            <span>{{ game.developer.name }}</span>
-                                        </div>
-                                    {% endif %}
-
-                                    {% if game.publisher is defined and game.publisher != '' %}
-                                        <div class="badge badge-sm bg-base-200 text-base-content/70 border-base-300">
-                                            <span class="w-3 h-3">{{ ux_icon('ph:building-apartment') }}</span>
-                                            <span>{{ game.publisher.name }}</span>
-                                        </div>
-                                    {% endif %}
-                                </div>
-
-                                {% if game.description is defined %}
-                                    <p class="text-left text-base-content/70 text-sm leading-relaxed line-clamp-3">
-                                        {{ game.description|raw }}
-                                    </p>
-                                {% endif %}
-
-                                <div class="card-actions justify-end pt-2">
-                                    <a href="{{ path('reports_for_game', {gameSlug: game.slug}) }}" data-turbo-frame="_top">
-                                        <button class="btn btn-sm btn-primary">
-                                            <span class="w-4 h-4">{{ ux_icon('ph:files') }}</span>
-                                            <span>{{ 'card.view_reports_button'|trans }}</span>
-                                        </button>
-                                    </a>
-                                </div>
+                            <div class="card-actions pt-1 sm:justify-end">
+                                <a href="{{ path('reports_for_game', {gameSlug: game.slug}) }}" class="btn btn-primary btn-sm w-full rounded-box sm:w-auto" data-turbo-frame="_top">
+                                    <span class="h-4 w-4">{{ ux_icon('ph:files') }}</span>
+                                    <span>{{ 'card.view_reports_button'|trans }}</span>
+                                </a>
                             </div>
                         </div>
                     </div>
-                </div>
+                </article>
             {% endfor %}
         </div>
-    </div>
-{% else %}
-    <div class="no-results">
-        {% if searchQuery %}
-            <div class="alert bg-base-200 border border-base-300/50">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-primary shrink-0 w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <div>
-                    <h3 class="font-medium text-base-content">{{ 'form.results.no_results.label'|trans }}</h3>
-                    <div class="text-sm text-base-content/60">{{ 'form.results.no_results.message'|trans({'%searchQuery%': searchQuery})|raw }}</div>
-                </div>
-            </div>
-        {% endif %}
+    </section>
+{% elseif searchQuery %}
+    <div class="alert app-surface text-base-content" aria-live="polite">
+        <span class="h-5 w-5 shrink-0 text-primary">{{ ux_icon('ph:info') }}</span>
+        <div>
+            <h3 class="font-bold">{{ 'form.results.no_results.label'|trans }}</h3>
+            <div class="text-sm leading-6 text-base-content/65">{{ 'form.results.no_results.prefix'|trans }} <strong>{{ searchQuery }}</strong>. {{ 'form.results.no_results.suffix'|trans }}</div>
+        </div>
     </div>
 {% endif %}

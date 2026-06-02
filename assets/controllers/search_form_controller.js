@@ -9,7 +9,6 @@ export default class extends Controller {
   };
 
   connect() {
-    console.log('Search form controller connected');
     this.debounceTimer = null;
   }
 
@@ -101,7 +100,12 @@ export default class extends Controller {
   }
 
   updateSearchInfo(query, count) {
-    console.log(`Search for "${query}" returned ${count} results`);
+    if (!this.hasResultsTarget) {
+      return;
+    }
+
+    this.resultsTarget.dataset.searchQuery = query;
+    this.resultsTarget.dataset.searchCount = String(count);
   }
 
   showTypingFeedback() {

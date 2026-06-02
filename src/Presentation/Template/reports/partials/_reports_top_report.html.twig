@@ -1,81 +1,45 @@
 {% trans_default_domain 'report' %}
 
 {% if topReport is defined and topReport is not null %}
+    {% set statusName = topReport.gameStatus.name %}
+    {% set statusIcon = 'ph:sparkle' %}
+    {% set statusBadge = 'badge-success' %}
 
-    {% set status = topReport.gameStatus %}
-    {% set statusBg = '' %}
-    {% set statusIcon = '' %}
-
-    {% if status == enum('App\\Infrastructure\\Enum\\ReportGameStatusEnum').OK %}
+    {% if statusName == 'OK' %}
         {% set statusIcon = 'ph:smiley' %}
-        {% set statusBg = 'badge-success' %}
-    {% elseif status == enum('App\\Infrastructure\\Enum\\ReportGameStatusEnum').BUGGED %}
-        {% set statusIcon = 'ph:smiley-x-eyes' %}
-        {% set statusBg = 'badge-primary' %}
-    {% elseif status == enum('App\\Infrastructure\\Enum\\ReportGameStatusEnum').BAD %}
+        {% set statusBadge = 'badge-info' %}
+    {% elseif statusName == 'BAD' %}
         {% set statusIcon = 'ph:smiley-nervous' %}
-        {% set statusBg = 'badge-warning' %}
-    {% else %}
-        {% set statusIcon = 'ph:sparkle' %}
-        {% set statusBg = 'badge-info' %}
+        {% set statusBadge = 'badge-warning' %}
+    {% elseif statusName == 'BUGGED' %}
+        {% set statusIcon = 'ph:smiley-x-eyes' %}
+        {% set statusBadge = 'badge-error' %}
     {% endif %}
 
-    <div class="flex items-center gap-2 mb-3">
-        <span class="w-4 h-4 text-primary">{{ ux_icon('ph:medal') }}</span>
-        <span class="text-sm font-medium text-base-content/70">{{ 'most_upvoted.title'|trans }}</span>
-    </div>
+    <section class="app-surface rounded-box p-4">
+        <div class="mb-3 flex items-center gap-2">
+            <span class="grid h-8 w-8 place-items-center rounded-full bg-warning/15 text-warning">
+                {{ ux_icon('ph:medal', {class: 'h-5 w-5'}) }}
+            </span>
+            <div>
+                <h2 class="text-sm font-semibold text-base-content">{{ 'most_upvoted.title'|trans }}</h2>
+                <p class="text-xs text-base-content/60">{{ topReport.upvoteCount }} {{ 'list.table.header.upvoted'|trans }}</p>
+            </div>
+        </div>
 
-    <div class="flex flex-wrap gap-1.5">
-        <span class="badge badge-sm {{ statusBg }} gap-1">
-            <span class="w-3 h-3">{{ ux_icon(statusIcon) }}</span>
-            {{ topReport.gameStatus.name }}
-        </span>
-
-        <span class="badge badge-sm {{ topReport.isPatched ? 'badge-primary' : 'badge-ghost' }}">
-            {{ 'most_upvoted.badge.is_patched'|trans }}
-        </span>
-
-        <span class="badge badge-sm {{ topReport.isSwitch2Edition ? 'badge-primary' : 'badge-ghost' }}">
-            {{ 'most_upvoted.badge.switch_2_edition'|trans }}
-        </span>
-
-        <span class="badge badge-sm {{ topReport.hasImprovedLoadingTimes ? 'badge-primary' : 'badge-ghost' }}">
-            {{ 'most_upvoted.badge.better_loading_times'|trans }}
-        </span>
-
-        <span class="badge badge-sm {{ topReport.is60FpsPortable ? 'badge-secondary' : 'badge-ghost' }}">
-            {{ 'most_upvoted.badge.60fps_portable'|trans }}
-        </span>
-
-        <span class="badge badge-sm {{ topReport.hasStableFrameratePortable ? 'badge-secondary' : 'badge-ghost' }}">
-            {{ 'most_upvoted.badge.stable_fps_portable'|trans }}
-        </span>
-
-        <span class="badge badge-sm {{ topReport.hasResolutionImprovedPortable ? 'badge-secondary' : 'badge-ghost' }}">
-            {{ 'most_upvoted.badge.resolution_improved_portable'|trans }}
-        </span>
-
-        <span class="badge badge-sm {{ topReport.isNativeResolutionPortable ? 'badge-secondary' : 'badge-ghost' }}">
-            {{ 'most_upvoted.badge.native_resolution_portable'|trans }}
-        </span>
-
-        <span class="badge badge-sm {{ topReport.is60FpsDocked ? 'badge-primary' : 'badge-ghost' }}">
-            {{ 'most_upvoted.badge.60fps_tv'|trans }}
-        </span>
-
-        <span class="badge badge-sm {{ topReport.hasStableFramerateDocked ? 'badge-primary' : 'badge-ghost' }}">
-            {{ 'most_upvoted.badge.stable_fps_tv'|trans }}
-        </span>
-
-        <span class="badge badge-sm {{ topReport.hasResolutionImprovedDocked ? 'badge-primary' : 'badge-ghost' }}">
-            {{ 'most_upvoted.badge.resolution_improved_tv'|trans }}
-        </span>
-
-        <span class="badge badge-sm {{ topReport.isNativeResolutionDocked ? 'badge-primary' : 'badge-ghost' }}">
-            {{ 'most_upvoted.badge.native_resolution_tv'|trans }}
-        </span>
-    </div>
-
-    <div class="divider my-0 mt-4"></div>
-
+        <div class="flex flex-wrap gap-2">
+            <span class="badge {{ statusBadge }} gap-1">{{ ux_icon(statusIcon, {class: 'h-4 w-4'}) }} {{ statusName }}</span>
+            <span class="badge {{ topReport.isPatched ? 'badge-primary' : 'badge-ghost' }}">{{ 'most_upvoted.badge.is_patched'|trans }}</span>
+            <span class="badge {{ topReport.isSwitch2Edition ? 'badge-primary' : 'badge-ghost' }}">{{ 'most_upvoted.badge.switch_2_edition'|trans }}</span>
+            <span class="badge {{ topReport.hasImprovedLoadingTimes ? 'badge-primary' : 'badge-ghost' }}">{{ 'most_upvoted.badge.better_loading_times'|trans }}</span>
+            <span class="badge {{ topReport.is60FpsPortable ? 'badge-secondary' : 'badge-ghost' }}">{{ 'most_upvoted.badge.60fps_portable'|trans }}</span>
+            <span class="badge {{ topReport.hasStableFrameratePortable ? 'badge-secondary' : 'badge-ghost' }}">{{ 'most_upvoted.badge.stable_fps_portable'|trans }}</span>
+            <span class="badge {{ topReport.hasResolutionImprovedPortable ? 'badge-secondary' : 'badge-ghost' }}">{{ 'most_upvoted.badge.resolution_improved_portable'|trans }}</span>
+            <span class="badge {{ topReport.isNativeResolutionPortable ? 'badge-secondary' : 'badge-ghost' }}">{{ 'most_upvoted.badge.native_resolution_portable'|trans }}</span>
+            <span class="badge {{ topReport.is60FpsDocked ? 'badge-primary' : 'badge-ghost' }}">{{ 'most_upvoted.badge.60fps_tv'|trans }}</span>
+            <span class="badge {{ topReport.hasStableFramerateDocked ? 'badge-primary' : 'badge-ghost' }}">{{ 'most_upvoted.badge.stable_fps_tv'|trans }}</span>
+            <span class="badge {{ topReport.hasResolutionImprovedDocked ? 'badge-primary' : 'badge-ghost' }}">{{ 'most_upvoted.badge.resolution_improved_tv'|trans }}</span>
+            <span class="badge {{ topReport.isNativeResolutionDocked ? 'badge-primary' : 'badge-ghost' }}">{{ 'most_upvoted.badge.native_resolution_tv'|trans }}</span>
+        </div>
+    </section>
 {% endif %}

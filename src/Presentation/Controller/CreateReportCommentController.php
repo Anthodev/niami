@@ -46,7 +46,7 @@ class CreateReportCommentController extends AbstractController
             $messageBus->dispatch(
                 new CreateReportCommentCommand(
                     $createReportCommentFormInputDto->comment,
-                    $createReportCommentFormInputDto->ip,
+                    $request->getClientIp() ?? '',
                     $reportId,
                 ),
             );

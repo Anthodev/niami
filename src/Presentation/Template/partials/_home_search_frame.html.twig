@@ -1,53 +1,63 @@
 {% trans_default_domain 'search' %}
 
-<div class="card bg-base-100 border border-primary/20 p-6 sm:p-8">
-    <turbo-frame id="search-frame">
-        {{ form_start(searchGamesForm, {
-            'action': path('search_games'),
-            'attr': {
-                'data-controller': 'search-debounce',
-                'data-search-debounce-delay-value': '1500',
-                'data-search-debounce-min-length-value': '3',
-                'data-turbo-frame': 'search-frame',
-                'class': 'space-y-6'
-            }
-        }) }}
-        <div class="form-control w-full">
-            <label class="label">
-                <span class="label-text text-lg font-medium text-base-content/80">{{ form_label(searchGamesForm.game) }}</span>
-            </label>
-            <div class="relative">
-                {{ form_widget(searchGamesForm.game, {
-                    'attr': {
-                        'data-search-debounce-target': 'input',
-                        'data-action': 'input->search-debounce#search',
-                        'class': 'input input-bordered w-full bg-base-200/50 border-base-300 focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-base-content/40',
-                        'placeholder': 'form.placeholder'|trans
-                    }
-                }) }}
-                <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-base-content/30">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
+<section id="home-search-anchor" class="flex h-full w-full">
+    <div class="app-card flex w-full flex-col justify-center bg-base-100/95 p-6 sm:p-7 lg:p-8">
+        <div class="space-y-6 sm:space-y-7">
+            <div class="flex items-start gap-4">
+                <span class="grid h-11 w-11 shrink-0 place-items-center rounded-box bg-primary/10 text-primary ring-1 ring-primary/20 sm:h-12 sm:w-12">
+                    {{ ux_icon('ph:magnifying-glass', {class: 'h-5 w-5 sm:h-6 sm:w-6'}) }}
+                </span>
+                <div class="space-y-2">
+                    <h2 class="text-xl font-semibold tracking-tight text-base-content sm:text-2xl">
+                        {{ 'form.label'|trans|trim }}
+                    </h2>
+                    <p class="max-w-sm text-sm leading-6 text-base-content/65 sm:text-base">
+                        {{ 'form.helper'|trans }}
+                    </p>
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary w-full mt-4">
-                <span class="w-5 h-5">{{ ux_icon('ph:magnifying-glass') }}</span>
-                <span>{{ 'form.submit'|trans }}</span>
-            </button>
+
+            {{ form_start(searchGamesForm, {
+                'action': path('search_games'),
+                'attr': {
+                    'data-controller': 'search-debounce',
+                    'data-search-debounce-delay-value': '1500',
+                    'data-search-debounce-min-length-value': '3',
+                    'data-search-debounce-loading-label-value': 'form.loading'|trans,
+                    'data-turbo-frame': 'search-results-frame',
+                    'class': 'space-y-5'
+                }
+            }) }}
+                <div class="form-control w-full">
+                    {{ form_label(searchGamesForm.game, null, {
+                        'label_attr': {
+                            'class': 'sr-only'
+                        }
+                    }) }}
+                    <div class="space-y-4">
+                        <div class="relative w-full">
+                            {{ form_widget(searchGamesForm.game, {
+                                'attr': {
+                                    'data-search-debounce-target': 'input',
+                                    'data-action': 'input->search-debounce#search',
+                                    'class': 'input input-bordered input-lg min-h-14 w-full rounded-box border-base-300 bg-base-200/70 pl-12 pr-4 text-base text-base-content placeholder:text-base-content/45 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20',
+                                    'placeholder': 'form.placeholder'|trans
+                                }
+                            }) }}
+                            <span class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-base-content/40">
+                                {{ ux_icon('ph:game-controller') }}
+                            </span>
+                        </div>
+                        <button type="submit" class="app-button-primary min-h-12 w-full justify-center gap-2 px-6 text-base font-semibold disabled:cursor-wait disabled:opacity-80" data-search-debounce-target="button">
+                            <span class="h-5 w-5" data-search-debounce-target="icon">{{ ux_icon('ph:magnifying-glass') }}</span>
+                            <span class="loading loading-spinner loading-sm hidden" data-search-debounce-target="spinner" aria-hidden="true"></span>
+                            <span data-search-debounce-target="label">{{ 'form.submit'|trans }}</span>
+                        </button>
+                    </div>
+                </div>
+
+                {{ form_rest(searchGamesForm) }}
+            {{ form_end(searchGamesForm) }}
         </div>
-
-        {{ form_rest(searchGamesForm) }}
-
-        <div class="label">
-            <span class="label-text-alt text-base-content/50 text-center w-full block text-sm">
-                {{ 'form.helper'|trans }}
-            </span>
-        </div>
-
-        {{ form_end(searchGamesForm) }}
-
-        <div id="search-results" class="mt-8">
-        </div>
-    </turbo-frame>
-</div>
+    </div>
+</section>

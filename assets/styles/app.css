@@ -10,14 +10,74 @@
 }
 
 @source "../../templates/";
+@source "../../src/Presentation/Template/";
 
-body {
-    scroll-behavior: smooth;
+@layer base {
+    :root {
+        color-scheme: dark;
+        --app-focus-ring: oklch(72% 0.18 55);
+        --app-surface-glass: color-mix(in oklch, var(--color-base-100) 88%, transparent);
+        --app-surface-muted: color-mix(in oklch, var(--color-base-200) 70%, transparent);
+        --app-border-muted: color-mix(in oklch, var(--color-base-content) 12%, transparent);
+        --app-shadow-soft: 0 8px 24px color-mix(in oklch, var(--color-base-300) 32%, transparent);
+    }
+
+    [data-theme="plumber-light"] {
+        color-scheme: light;
+        --app-focus-ring: oklch(55% 0.22 25);
+        --app-shadow-soft: 0 8px 24px color-mix(in oklch, var(--color-base-300) 42%, transparent);
+    }
+
+    html {
+        background: var(--color-base-100);
+    }
+
+    body {
+        min-height: 100vh;
+        scroll-behavior: smooth;
+        text-rendering: optimizeLegibility;
+    }
+
+    a,
+    button,
+    input,
+    select,
+    textarea,
+    [tabindex]:not([tabindex="-1"]) {
+        @apply focus-visible:outline-2 focus-visible:outline-offset-2;
+        outline-color: var(--app-focus-ring);
+    }
+
+    textarea {
+        width: 100%;
+    }
 }
 
-textarea {
-    width: 100%;
+@layer components {
+    .app-shell {
+        @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+    }
+
+    .app-card {
+        @apply rounded-box border border-base-300/60 bg-base-100;
+        box-shadow: var(--app-shadow-soft);
+    }
+
+    .app-surface {
+        @apply border border-base-300/60;
+        background: var(--app-surface-muted);
+    }
+
+    .app-glass {
+        background: var(--app-surface-glass);
+        border-color: var(--app-border-muted);
+    }
+
+    .app-button-primary {
+        @apply btn btn-primary rounded-box shadow-none;
+    }
 }
+
 
 [data-report-upvote].upvoted .text-green-200 {
     @apply text-gray-400;

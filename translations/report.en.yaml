@@ -39,6 +39,9 @@ list:
         is_bugged: 'Is bugged*'
         most_upvoted: 'Most upvoted'
         notice: '*Compared on Nintendo Switch 1 system'
+    empty:
+        title: 'No reports yet.'
+        description: 'Be first to share how this game runs on Nintendo Switch 2.'
     table:
         header:
             status: 'Status'

@@ -2,25 +2,32 @@
 {% import '@macro/_reverse_ordinal_macro.html.twig' as reverse_ordinal %}
 
 {% if reports|length > 0 %}
-        </tbody>
-        <tfoot class="bg-base-200">
-            <tr>
-                <th></th>
-                <th colspan="4" class="text-center text-primary">TV</th>
-                <th colspan="4" class="text-center text-secondary">Portable</th>
-                <th colspan="4" class="text-center text-accent">Misc</th>
-                <th></th>
-            </tr>
-        </tfoot>
-    </table>
-</div>
+                </tbody>
+            </table>
+        </div>
 
-    <div class="mt-4 text-base-content/50 text-sm space-y-1">
-        <p>{{ reverse_ordinal.reverse_ordinal('list.table.notice.60fps'|trans) }}</p>
-        <p>{{ reverse_ordinal.reverse_ordinal('list.table.notice.stable_FPS'|trans) }}</p>
-        <p>{{ reverse_ordinal.reverse_ordinal('list.table.notice.better_resolution'|trans) }}</p>
-        <p>{{ reverse_ordinal.reverse_ordinal('list.table.notice.native_resolution'|trans) }}</p>
-        <p>{{ reverse_ordinal.reverse_ordinal('list.table.notice.switch_2_edition'|trans) }}</p>
-        <p>{{ reverse_ordinal.reverse_ordinal('list.table.notice.is_patched'|trans) }}</p>
-    </div>
+        <div class="grid gap-2 border-t border-base-300/70 p-4 text-xs text-base-content/60 sm:grid-cols-2 lg:grid-cols-3">
+            <p>{{ reverse_ordinal.reverse_ordinal('list.table.notice.60fps'|trans) }}</p>
+            <p>{{ reverse_ordinal.reverse_ordinal('list.table.notice.stable_FPS'|trans) }}</p>
+            <p>{{ reverse_ordinal.reverse_ordinal('list.table.notice.better_resolution'|trans) }}</p>
+            <p>{{ reverse_ordinal.reverse_ordinal('list.table.notice.native_resolution'|trans) }}</p>
+            <p>{{ reverse_ordinal.reverse_ordinal('list.table.notice.switch_2_edition'|trans) }}</p>
+            <p>{{ reverse_ordinal.reverse_ordinal('list.table.notice.is_patched'|trans) }}</p>
+        </div>
+{% else %}
+        <div class="p-8 text-center sm:p-10">
+            <div class="mx-auto grid h-14 w-14 place-items-center rounded-full bg-primary/10 text-primary">
+                {{ ux_icon('ph:clipboard-text', {class: 'h-7 w-7'}) }}
+            </div>
+            <p class="mt-3 text-lg font-semibold text-base-content">{{ 'list.empty.title'|trans }}</p>
+            <p class="mx-auto mt-1 max-w-md text-sm text-base-content/60">{{ 'list.empty.description'|trans }}</p>
+            <label for="report-create-toggle" class="app-button-primary mt-5 inline-flex cursor-pointer">
+                {{ ux_icon('ph:plus', {class: 'h-4 w-4'}) }}
+                {{ 'add_report.label'|trans }}
+            </label>
+        </div>
 {% endif %}
+
+{% include '@reports/partials/_reports_comment_modal.html.twig' with { modal_index: modal_index|default('report-comment-modal') } %}
+    </div>
+</section>
