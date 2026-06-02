@@ -1,14 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Presentation\Controller;
 
-use App\Application\Fetcher\Report\ReportFetcher;
-use App\Application\Helper\CacheKeyBuilderHelper;
+use App\Application\Command\Report\IncreaseUpvoteCountCommand;
 use App\Domain\Model\Report\Report;
 use App\Domain\Repository\Report\ReportRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\UX\Turbo\TurboBundle;
@@ -26,38 +28,27 @@ class ReportIncreaseUpvoteCountController extends AbstractController
     public function __invoke(
         Report $report,
         Request $request,
+        MessageBusInterface $messageBus,
         ReportRepositoryInterface $reportRepository,
-        ReportFetcher $reportFetcher,
     ): Response {
-        $report->increaseUpvoteCount();
-        $reportRepository->save($report);
-
+        /** @var string $reportId */
+        $reportId = $report->getId();
         /** @var string $gameSlug */
         $gameSlug = $report->getGame()->getSlug();
 
-        $reportFetcher->deleteCache(
-            CacheKeyBuilderHelper::build(
-                ReportFetcher::REPORTS_CACHE_KEY,
-                $gameSlug,
-            ),
-        );
+        $messageBus->dispatch(new IncreaseUpvoteCountCommand($reportId, $gameSlug));
 
         if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
             $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
-            /** @var string $currentReportGameId */
-            $currentReportGameId = $report->getGame()->getId();
-            $mostUpvotedReport = $reportRepository->findMostUpvotedReportForGame(
-                $currentReportGameId,
-            );
-
-            /** @var string $mostUpvotedReportId */
-            $mostUpvotedReportId = $mostUpvotedReport?->getId();
+            /** @var string $gameId */
+            $gameId = $report->getGame()->getId();
+            $mostUpvotedReport = $reportRepository->findMostUpvotedReportForGame($gameId);
 
             return $this->render('@turbo/reports/increase_upvote.html.twig', [
-                'reportId' => $report->getId(),
-                'reportUpvoteCount' => $report->getUpvoteCount(),
-                'mostUpvotedReportId' => $mostUpvotedReportId,
+                'reportId' => $reportId,
+                'reportUpvoteCount' => $report->getUpvoteCount() + 1,
+                'mostUpvotedReportId' => $mostUpvotedReport?->getId(),
             ]);
         }
 

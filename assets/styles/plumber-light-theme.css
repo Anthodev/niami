@@ -1,50 +1,41 @@
 [data-theme="plumber-light"] {
-    /* Base colors - Light backgrounds for light mode */
-    --color-base-100: oklch(98% 0.02 240);      /* Main background - Very light */
-    --color-base-200: oklch(95% 0.02 240);      /* Secondary background */
-    --color-base-300: oklch(92% 0.02 240);      /* Tertiary background */
-    --color-base-content: oklch(20% 0.01 240);  /* Text on base colors - Dark text */
+    --color-base-100: oklch(98% 0.005 270);
+    --color-base-200: oklch(95% 0.005 270);
+    --color-base-300: oklch(92% 0.005 270);
+    --color-base-content: oklch(18% 0.01 270);
 
-    /* Primary colors - Nintendo Red */
-    --color-primary: oklch(0.577 0.236 28.125);        /* Nintendo Red */
-    --color-primary-content: oklch(98% 0.01 12); /* White text on primary */
+    --color-primary: oklch(55% 0.22 25);
+    --color-primary-content: oklch(98% 0.005 25);
 
-    /* Secondary colors - Nintendo Switch Neon Blue */
-    --color-secondary: oklch(60% 0.25 220);     /* Nintendo Blue - Slightly darker for contrast */
-    --color-secondary-content: oklch(98% 0.01 220); /* White text on secondary */
+    --color-secondary: oklch(60% 0.18 145);
+    --color-secondary-content: oklch(98% 0.005 145);
 
-    /* Accent colors - Nintendo Switch Yellow */
-    --color-accent: oklch(70% 0.20 85);         /* Nintendo Yellow - Slightly darker */
-    --color-accent-content: oklch(15% 0.05 85); /* Dark text on accent for contrast */
+    --color-accent: oklch(75% 0.15 85);
+    --color-accent-content: oklch(15% 0.02 85);
 
-    /* Neutral colors - Medium grays */
-    --color-neutral: oklch(60% 0.02 240);       /* Neutral elements */
-    --color-neutral-content: oklch(98% 0.01 240); /* White text on neutral */
+    --color-neutral: oklch(55% 0.01 270);
+    --color-neutral-content: oklch(98% 0.005 270);
 
-    /* Status colors */
-    --color-info: oklch(60% 0.25 220);          /* Info (Nintendo Blue) - Darker for contrast */
-    --color-info-content: oklch(98% 0.01 220);  /* White text on info */
+    --color-info: oklch(55% 0.18 250);
+    --color-info-content: oklch(98% 0.005 250);
 
-    --color-success: oklch(55% 0.20 140);       /* Success green - Darker for contrast */
-    --color-success-content: oklch(98% 0.01 140); /* White text on success */
+    --color-success: oklch(60% 0.16 145);
+    --color-success-content: oklch(98% 0.005 145);
 
-    --color-warning: oklch(65% 0.20 85);        /* Warning (Nintendo Yellow) - Darker */
-    --color-warning-content: oklch(15% 0.05 85); /* Dark text on warning */
+    --color-warning: oklch(75% 0.15 85);
+    --color-warning-content: oklch(15% 0.02 85);
 
-    --color-error: oklch(0.577 0.236 28.125);          /* Error (Nintendo Red) */
-    --color-error-content: oklch(98% 0.01 12);  /* White text on error */
+    --color-error: oklch(55% 0.22 25);
+    --color-error-content: oklch(98% 0.005 25);
 
-    /* Border radius - Nintendo-inspired rounded corners */
-    --radius-selector: 0.5rem;  /* Checkboxes, toggles, badges */
-    --radius-field: 0.25rem;    /* Buttons, inputs, selects */
-    --radius-box: 0.5rem;       /* Cards, modals, alerts */
+    --radius-selector: 0.5rem;
+    --radius-field: 0.375rem;
+    --radius-box: 0.75rem;
 
-    /* Sizes */
-    --size-selector: 0.25rem;   /* Base size for selectors */
-    --size-field: 0.25rem;      /* Base size for fields */
+    --size-selector: 0.25rem;
+    --size-field: 0.25rem;
 
-    /* Border and effects */
-    --border: 1px;              /* Border width */
-    --depth: 1;                 /* Add subtle 3D depth effect */
-    --noise: 0;                 /* No noise effect */
+    --border: 1px;
+    --depth: 0;
+    --noise: 0;
 }

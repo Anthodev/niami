@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controller;
 
+use App\Domain\Enum\ReportGameStatusEnum;
 use App\Domain\Factory\Report\ReportFactory;
 use App\Domain\Model\Game\Game;
 use App\Domain\Repository\Game\GameRepositoryInterface;
 use App\Domain\Repository\Report\ReportRepositoryInterface;
-use App\Infrastructure\Enum\ReportGameStatusEnum;
 use Faker\Factory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

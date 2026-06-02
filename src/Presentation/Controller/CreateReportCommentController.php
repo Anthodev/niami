@@ -32,10 +32,9 @@ class CreateReportCommentController extends AbstractController
         );
         $createReportCommentForm->handleRequest($request);
 
-        /** @var string $formDataGameSlug */
-        $formDataGameSlug = $request->request->all()[
-            'create_report_comment_form'
-        ]['gameSlug'];
+        /** @var CreateReportCommentFormInputDto $createReportCommentFormInputDto */
+        $createReportCommentFormInputDto = $createReportCommentForm->getData();
+        $formDataGameSlug = $createReportCommentFormInputDto->gameSlug;
 
         if (
             $createReportCommentForm->isSubmitted()

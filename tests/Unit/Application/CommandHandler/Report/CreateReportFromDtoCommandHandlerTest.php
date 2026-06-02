@@ -9,10 +9,10 @@ use App\Application\CommandHandler\Report\CreateReportFromDtoCommandHandler;
 use App\Application\Fetcher\Report\ReportFetcher;
 use App\Domain\Model\Game\Game;
 use App\Domain\Model\Report\Report;
-use App\Infrastructure\Enum\ReportGameStatusEnum;
+use App\Domain\Enum\ReportGameStatusEnum;
 use App\Infrastructure\Persistence\Doctrine\Game\Repository\DoctrineGameRepository;
 use App\Infrastructure\Persistence\Doctrine\Report\Repository\DoctrineReportRepository;
-use App\Presentation\Dto\CreateReportFormInputDto;
+use App\Shared\Dto\Report\CreateReportFormInputDto;
 use Faker\Factory;
 
 beforeEach(function () {

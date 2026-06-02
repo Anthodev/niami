@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Presentation\Form;
 
-use App\Infrastructure\Enum\ReportGameStatusEnum;
-use App\Presentation\Dto\CreateReportFormInputDto;
+use App\Domain\Enum\ReportGameStatusEnum;
+use App\Shared\Dto\Report\CreateReportFormInputDto;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
