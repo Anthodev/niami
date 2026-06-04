@@ -1,11 +1,11 @@
 {% trans_default_domain 'report' %}
 {% set hasCover = game.imageCover is defined and game.imageCover and game.name is defined %}
 
-<section class="app-card overflow-hidden">
+<section class="app-card app-card-muted overflow-hidden">
     <div class="grid gap-0 {{ hasCover ? 'lg:grid-cols-[minmax(16rem,18rem)_1fr] lg:items-stretch' : '' }}">
         {% if hasCover %}
             {% set coverUrl = game.imageCover|replace({'/t_thumb/': '/t_cover_big_2x/', '/t_cover_small/': '/t_cover_big_2x/'}) %}
-            <div class="flex items-start justify-center border-b border-base-300/60 bg-base-200/35 p-5 sm:p-6 lg:border-b-0 lg:border-r lg:p-6">
+            <div class="flex items-start justify-center border-b border-base-300/60 bg-base-200/62 p-5 sm:p-6 lg:border-b-0 lg:border-r lg:p-6">
                 <figure class="mx-auto h-72 w-full max-w-[16rem] overflow-hidden rounded-box shadow-xl ring-1 ring-base-300/60 lg:h-80 lg:max-w-[14rem]">
                     <img
                         src="{{ coverUrl }}"
@@ -16,7 +16,7 @@
                 </figure>
             </div>
         {% endif %}
-        <div class="space-y-4 bg-base-100 p-5 sm:p-6 lg:p-7">
+        <div class="space-y-4 bg-base-100/72 p-5 sm:p-6 lg:p-7">
             {% if game.name is defined and game.name %}
                 <div class="space-y-3">
                     <h1 class="text-3xl font-bold tracking-tight text-base-content sm:text-4xl">
@@ -58,7 +58,9 @@
                 })|striptags %}
                 <section class="space-y-2 border-t border-base-300/60 pt-4">
                     <h2 class="text-sm font-semibold uppercase tracking-wide text-base-content/70">{{ 'game.description'|trans }}</h2>
-                    <p class="text-sm leading-normal text-base-content/80">{{ safeDescription|nl2br }}</p>
+                    <div class="max-h-32 overflow-y-auto pr-3 text-sm leading-normal text-base-content/80 [scrollbar-color:color-mix(in_oklch,var(--color-base-content)_22%,transparent)_transparent] [scrollbar-width:thin]">
+                        {{ safeDescription|nl2br }}
+                    </div>
                 </section>
             {% endif %}
         </div>

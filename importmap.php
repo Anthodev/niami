@@ -27,10 +27,10 @@ return [
         'version' => '3.2.2',
     ],
     'daisyui' => [
-        'version' => '5.5.18',
+        'version' => '5.5.20',
     ],
     'daisyui/daisyui.min.css' => [
-        'version' => '5.5.18',
+        'version' => '5.5.20',
         'type' => 'css',
     ],
     '@orchidjs/sifter' => [

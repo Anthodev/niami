@@ -2,18 +2,22 @@
 
 {% if topReport is defined and topReport is not null %}
     {% set statusName = topReport.gameStatus.name %}
-    {% set statusIcon = 'ph:sparkle' %}
-    {% set statusBadge = 'badge-success' %}
+    {% set statusLabel = 'most_upvoted.status.great'|trans %}
+    {% set statusIcon = 'ph:trend-up' %}
+    {% set statusBadge = 'badge-status-great' %}
 
     {% if statusName == 'OK' %}
-        {% set statusIcon = 'ph:smiley' %}
-        {% set statusBadge = 'badge-info' %}
+        {% set statusLabel = 'most_upvoted.status.ok'|trans %}
+        {% set statusIcon = 'ph:equals' %}
+        {% set statusBadge = 'badge-status-ok' %}
     {% elseif statusName == 'BAD' %}
-        {% set statusIcon = 'ph:smiley-nervous' %}
-        {% set statusBadge = 'badge-warning' %}
+        {% set statusLabel = 'most_upvoted.status.bad'|trans %}
+        {% set statusIcon = 'ph:trend-down' %}
+        {% set statusBadge = 'badge-status-bad' %}
     {% elseif statusName == 'BUGGED' %}
-        {% set statusIcon = 'ph:smiley-x-eyes' %}
-        {% set statusBadge = 'badge-error' %}
+        {% set statusLabel = 'most_upvoted.status.bugged'|trans %}
+        {% set statusIcon = 'ph:bug' %}
+        {% set statusBadge = 'badge-status-bugged' %}
     {% endif %}
 
     <section class="app-surface rounded-box p-4">
@@ -28,18 +32,18 @@
         </div>
 
         <div class="flex flex-wrap gap-2">
-            <span class="badge {{ statusBadge }} gap-1">{{ ux_icon(statusIcon, {class: 'h-4 w-4'}) }} {{ statusName }}</span>
-            <span class="badge {{ topReport.isPatched ? 'badge-primary' : 'badge-ghost' }}">{{ 'most_upvoted.badge.is_patched'|trans }}</span>
-            <span class="badge {{ topReport.isSwitch2Edition ? 'badge-primary' : 'badge-ghost' }}">{{ 'most_upvoted.badge.switch_2_edition'|trans }}</span>
-            <span class="badge {{ topReport.hasImprovedLoadingTimes ? 'badge-primary' : 'badge-ghost' }}">{{ 'most_upvoted.badge.better_loading_times'|trans }}</span>
-            <span class="badge {{ topReport.is60FpsPortable ? 'badge-secondary' : 'badge-ghost' }}">{{ 'most_upvoted.badge.60fps_portable'|trans }}</span>
-            <span class="badge {{ topReport.hasStableFrameratePortable ? 'badge-secondary' : 'badge-ghost' }}">{{ 'most_upvoted.badge.stable_fps_portable'|trans }}</span>
-            <span class="badge {{ topReport.hasResolutionImprovedPortable ? 'badge-secondary' : 'badge-ghost' }}">{{ 'most_upvoted.badge.resolution_improved_portable'|trans }}</span>
-            <span class="badge {{ topReport.isNativeResolutionPortable ? 'badge-secondary' : 'badge-ghost' }}">{{ 'most_upvoted.badge.native_resolution_portable'|trans }}</span>
-            <span class="badge {{ topReport.is60FpsDocked ? 'badge-primary' : 'badge-ghost' }}">{{ 'most_upvoted.badge.60fps_tv'|trans }}</span>
-            <span class="badge {{ topReport.hasStableFramerateDocked ? 'badge-primary' : 'badge-ghost' }}">{{ 'most_upvoted.badge.stable_fps_tv'|trans }}</span>
-            <span class="badge {{ topReport.hasResolutionImprovedDocked ? 'badge-primary' : 'badge-ghost' }}">{{ 'most_upvoted.badge.resolution_improved_tv'|trans }}</span>
-            <span class="badge {{ topReport.isNativeResolutionDocked ? 'badge-primary' : 'badge-ghost' }}">{{ 'most_upvoted.badge.native_resolution_tv'|trans }}</span>
+            <span class="badge {{ statusBadge }} badge-readable-light gap-1">{{ ux_icon(statusIcon, {class: 'h-4 w-4'}) }} <span class="badge-readable-text">{{ statusLabel }}</span></span>
+            <span class="badge {{ topReport.isPatched ? 'badge-mode-misc badge-readable-light' : 'badge-top-muted badge-readable-light' }}"><span class="badge-readable-text">{{ 'most_upvoted.badge.is_patched'|trans }}</span></span>
+            <span class="badge {{ topReport.isSwitch2Edition ? 'badge-mode-misc badge-readable-light' : 'badge-top-muted badge-readable-light' }}"><span class="badge-readable-text">{{ 'most_upvoted.badge.switch_2_edition'|trans }}</span></span>
+            <span class="badge {{ topReport.hasImprovedLoadingTimes ? 'badge-mode-misc badge-readable-light' : 'badge-top-muted badge-readable-light' }}"><span class="badge-readable-text">{{ 'most_upvoted.badge.better_loading_times'|trans }}</span></span>
+            <span class="badge {{ topReport.is60FpsPortable ? 'badge-mode-portable badge-readable-light' : 'badge-top-muted badge-readable-light' }}"><span class="badge-readable-text">{{ 'most_upvoted.badge.60fps_portable'|trans }}</span></span>
+            <span class="badge {{ topReport.hasStableFrameratePortable ? 'badge-mode-portable badge-readable-light' : 'badge-top-muted badge-readable-light' }}"><span class="badge-readable-text">{{ 'most_upvoted.badge.stable_fps_portable'|trans }}</span></span>
+            <span class="badge {{ topReport.hasResolutionImprovedPortable ? 'badge-mode-portable badge-readable-light' : 'badge-top-muted badge-readable-light' }}"><span class="badge-readable-text">{{ 'most_upvoted.badge.resolution_improved_portable'|trans }}</span></span>
+            <span class="badge {{ topReport.isNativeResolutionPortable ? 'badge-mode-portable badge-readable-light' : 'badge-top-muted badge-readable-light' }}"><span class="badge-readable-text">{{ 'most_upvoted.badge.native_resolution_portable'|trans }}</span></span>
+            <span class="badge {{ topReport.is60FpsDocked ? 'badge-mode-tv badge-readable-light' : 'badge-top-muted badge-readable-light' }}"><span class="badge-readable-text">{{ 'most_upvoted.badge.60fps_tv'|trans }}</span></span>
+            <span class="badge {{ topReport.hasStableFramerateDocked ? 'badge-mode-tv badge-readable-light' : 'badge-top-muted badge-readable-light' }}"><span class="badge-readable-text">{{ 'most_upvoted.badge.stable_fps_tv'|trans }}</span></span>
+            <span class="badge {{ topReport.hasResolutionImprovedDocked ? 'badge-mode-tv badge-readable-light' : 'badge-top-muted badge-readable-light' }}"><span class="badge-readable-text">{{ 'most_upvoted.badge.resolution_improved_tv'|trans }}</span></span>
+            <span class="badge {{ topReport.isNativeResolutionDocked ? 'badge-mode-tv badge-readable-light' : 'badge-top-muted badge-readable-light' }}"><span class="badge-readable-text">{{ 'most_upvoted.badge.native_resolution_tv'|trans }}</span></span>
         </div>
     </section>
 {% endif %}

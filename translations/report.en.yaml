@@ -6,37 +6,44 @@ game:
 
 add_report:
     label: 'Add a Report'
+    subtitle: 'Share how this game behaves on Nintendo Switch 2.'
     form:
         portable:
             label: 'Portable performances'
             is_60fps: 'Target 60 FPS?'
-            has_stable_framerate: 'Stable Framerate?*'
-            has_resolution_improved: 'Resolution Improved?**'
-            is_native_resolution: 'Native Resolution?***'
+            has_stable_framerate: 'Stable Framerate?1'
+            has_resolution_improved: 'Resolution Improved?2'
+            is_native_resolution: 'Native Resolution?3'
         tv:
             label: 'TV performances'
             is_60fps: 'Target 60 FPS?'
-            has_stable_framerate: 'Stable Framerate?*'
-            has_resolution_improved: 'Resolution Improved?**'
-            is_native_resolution: 'Native Resolution?***'
+            has_stable_framerate: 'Stable Framerate?1'
+            has_resolution_improved: 'Resolution Improved?2'
+            is_native_resolution: 'Native Resolution?3'
         misc:
             label: 'Misc'
             has_improved_loading_times: 'Improved Loading Times?'
             game_status: 'How the game run on Switch 2 system?'
+            game_status_choice:
+                great: 'Better than Switch 1'
+                ok: 'Similar to Switch 1'
+                bad: 'Worse than Switch 1'
+                bugged: 'Major bugs'
             is_switch_2_editon: 'Is this a "Switch 2 edition"?'
             is_patched: 'Patched version for the Switch 2?'
     notice:
-        stable_framerate: '*Mostly keeping maximum framerate (30 or 60 fps)'
-        resolution_improved: '**Is the resolution higher than on Switch 1 system?'
-        native_resolution: '***Is it reaching native resolution on Switch 2 system? (1080p portable / 4k on TV)'
+        label: 'Quick notes'
+        stable_framerate: '1 Mostly keeping maximum framerate (30 or 60 fps)'
+        resolution_improved: '2 Is the resolution higher than on Switch 1 system?'
+        native_resolution: '3 Is it reaching native resolution on Switch 2 system? (1080p portable / 4k on TV)'
 
 list:
     legends:
         label: 'Legends'
-        running_better: 'Running better*'
-        running_same: 'Running about the same*'
-        running_worse: 'Running worse*'
-        is_bugged: 'Is bugged*'
+        running_better: 'Better than Switch 1*'
+        running_same: 'Similar to Switch 1*'
+        running_worse: 'Worse than Switch 1*'
+        is_bugged: 'Major bugs*'
         most_upvoted: 'Most upvoted'
         notice: '*Compared on Nintendo Switch 1 system'
     empty:
@@ -45,28 +52,35 @@ list:
     table:
         header:
             status: 'Status'
-            60fps: '60 FPS1'
-            stable_FPS: 'Stable FPS2'
-            better_resolution: 'Better Res3'
-            native_resolution: 'Native Res4'
+            60fps: '60 FPS'
+            stable_FPS: 'Stable FPS'
+            better_resolution: 'Better Res'
+            native_resolution: 'Native Res'
             better_loading_times: 'Better loading'
-            switch_2_edition: 'S2E?5'
-            is_patched: 'Patched?6'
+            switch_2_edition: 'S2E?'
+            is_patched: 'Patched?'
             issue: 'Issue?'
             upvoted: 'Upvoted'
             portable_label: 'Portable'
             tv_label: 'TV'
             misc_label: 'Misc'
+        icon_legend: 'Icon legend'
         notice:
-            60fps: '1: Target above 30 FPS'
-            stable_FPS: '2: Framerate is consistently at 30 or 60 FPS related to the reported framerate'
-            better_resolution: '3: Has a better resolution than on Nintendo Switch 1 system in related mode'
-            native_resolution: '4: Can hit 1080p in portable mode and/or 4K in TV mode on Nintendo Switch 2 system'
-            switch_2_edition: '5: Is a "Switch 2 Edition" or not'
-            is_patched: '6: Has the game been patched for the Nintendo Switch 2 system?'
+            60fps: '60 FPS: target above 30 FPS'
+            stable_FPS: 'Stable FPS: framerate is consistently at 30 or 60 FPS related to the reported framerate'
+            better_resolution: 'Better Res: higher resolution than on Nintendo Switch 1 in related mode'
+            native_resolution: 'Native Res: can hit 1080p portable and/or 4K TV on Nintendo Switch 2'
+            better_loading_times: 'Better loading: faster loading times on Nintendo Switch 2'
+            switch_2_edition: 'S2E: is a Switch 2 Edition'
+            is_patched: 'Patched: has a Nintendo Switch 2 compatibility patch'
 
 most_upvoted:
     title: 'Top report'
+    status:
+        great: 'Runs better'
+        ok: 'Runs similar'
+        bad: 'Runs worse'
+        bugged: 'Major bugs'
     badge:
         60fps_portable: '60 FPS on portable'
         stable_fps_portable: 'Stable FPS on portable'

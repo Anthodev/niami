@@ -1,37 +1,44 @@
 {% trans_default_domain 'report' %}
+{% import '@macro/_ordinal_macro.html.twig' as ordinal %}
+{% import '@macro/_reverse_ordinal_macro.html.twig' as reverse_ordinal %}
 
-{% set checkboxClass = 'checkbox checkbox-primary checkbox-sm shrink-0' %}
-{% set checkboxLabelClass = 'flex min-h-10 items-center gap-2 rounded-box border border-base-300/70 bg-base-100 px-3 py-2 text-sm transition hover:border-primary/40 hover:bg-base-200/60 focus-within:outline focus-within:outline-2 focus-within:outline-primary/40' %}
+{% set checkboxClass = 'report-option-input' %}
+{% set checkboxLabelClass = 'report-option' %}
 
-<section class="app-card" data-controller="report-form" id="add-report">
+<section class="app-card app-card-muted overflow-hidden" data-controller="report-form" id="add-report">
     <div class="collapse collapse-arrow">
         <input id="report-create-toggle" type="checkbox" aria-label="{{ 'add_report.label'|trans }}" />
         <div class="collapse-title flex items-center gap-3 px-4 py-3 text-base font-semibold sm:px-5">
-            <span class="grid h-8 w-8 place-items-center rounded-box bg-primary/10 text-primary">
+            <span class="grid h-8 w-8 place-items-center rounded-box border border-primary/35 bg-primary/10 text-primary">
                 {{ ux_icon('ph:plus-square', {class: 'h-5 w-5'}) }}
             </span>
-            <span>{{ 'add_report.label'|trans }}</span>
+            <div class="min-w-0">
+                <span class="block">{{ 'add_report.label'|trans }}</span>
+                <span class="block text-xs font-normal text-base-content/55">{{ 'add_report.subtitle'|trans }}</span>
+            </div>
         </div>
 
         <div class="collapse-content">
             {{ form_start(createReportForm, {
                 'action': path('create_report'),
-                'attr': {'class': 'space-y-4 pt-1'}
+                'attr': {'class': 'space-y-5 pt-1'}
             }) }}
 
-            <fieldset class="app-surface rounded-box p-3 sm:p-4">
-                <legend class="px-2 text-sm font-semibold uppercase tracking-wide text-secondary">
+            <fieldset class="app-surface rounded-box p-4 sm:p-5">
+                <legend class="px-2 text-sm font-semibold uppercase tracking-wide text-mode-portable">
                     {{ ux_icon('ph:game-controller', {class: 'mr-1 inline h-4 w-4'}) }}
                     {{ 'add_report.form.portable.label'|trans }}
                 </legend>
-                <div class="mt-2 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+                <div class="mt-3 grid gap-2.5 sm:grid-cols-2 xl:grid-cols-4">
                     <label class="{{ checkboxLabelClass }}">
                         {{ form_widget(createReportForm.is60FpsPortable, {'attr': {'class': checkboxClass}}) }}
-                        <span>{{ form_label(createReportForm.is60FpsPortable) }}</span>
+                        <span class="report-option-marker">{{ ux_icon('ph:check', {class: 'h-4 w-4'}) }}</span>
+                        <span class="flex min-w-0 items-center gap-2">{{ ux_icon('ph:gauge', {class: 'h-4 w-4 shrink-0 text-base-content/50'}) }} <span>{{ createReportForm.is60FpsPortable.vars.label }}</span></span>
                     </label>
                     <label class="{{ checkboxLabelClass }}">
                         {{ form_widget(createReportForm.hasStableFrameratePortable, {'attr': {'class': checkboxClass}}) }}
-                        <span>{{ form_label(createReportForm.hasStableFrameratePortable) }}</span>
+                        <span class="report-option-marker">{{ ux_icon('ph:check', {class: 'h-4 w-4'}) }}</span>
+                        <span class="flex min-w-0 items-center gap-2">{{ ux_icon('ph:activity', {class: 'h-4 w-4 shrink-0 text-base-content/50'}) }} <span>{{ ordinal.ordinal(createReportForm.hasStableFrameratePortable.vars.label) }}</span></span>
                     </label>
                     <label class="{{ checkboxLabelClass }}">
                         {{ form_widget(createReportForm.hasResolutionImprovedPortable, {'attr': {
@@ -39,7 +46,8 @@
                             'data-report-form-target': 'improvedPortable',
                             'data-action': 'report-form#improvedChanged'
                         }}) }}
-                        <span>{{ form_label(createReportForm.hasResolutionImprovedPortable) }}</span>
+                        <span class="report-option-marker">{{ ux_icon('ph:check', {class: 'h-4 w-4'}) }}</span>
+                        <span class="flex min-w-0 items-center gap-2">{{ ux_icon('ph:arrows-out', {class: 'h-4 w-4 shrink-0 text-base-content/50'}) }} <span>{{ ordinal.ordinal(createReportForm.hasResolutionImprovedPortable.vars.label) }}</span></span>
                     </label>
                     <label class="{{ checkboxLabelClass }}">
                         {{ form_widget(createReportForm.isNativeResolutionPortable, {'attr': {
@@ -47,24 +55,27 @@
                             'data-report-form-target': 'nativePortable',
                             'data-action': 'report-form#nativeChanged'
                         }}) }}
-                        <span>{{ form_label(createReportForm.isNativeResolutionPortable) }}</span>
+                        <span class="report-option-marker">{{ ux_icon('ph:check', {class: 'h-4 w-4'}) }}</span>
+                        <span class="flex min-w-0 items-center gap-2">{{ ux_icon('ph:monitor', {class: 'h-4 w-4 shrink-0 text-base-content/50'}) }} <span>{{ ordinal.ordinal(createReportForm.isNativeResolutionPortable.vars.label) }}</span></span>
                     </label>
                 </div>
             </fieldset>
 
-            <fieldset class="app-surface rounded-box p-3 sm:p-4">
-                <legend class="px-2 text-sm font-semibold uppercase tracking-wide text-primary">
+            <fieldset class="app-surface rounded-box p-4 sm:p-5">
+                <legend class="px-2 text-sm font-semibold uppercase tracking-wide text-mode-tv">
                     {{ ux_icon('ph:television', {class: 'mr-1 inline h-4 w-4'}) }}
                     {{ 'add_report.form.tv.label'|trans }}
                 </legend>
-                <div class="mt-2 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+                <div class="mt-3 grid gap-2.5 sm:grid-cols-2 xl:grid-cols-4">
                     <label class="{{ checkboxLabelClass }}">
                         {{ form_widget(createReportForm.is60FpsDocked, {'attr': {'class': checkboxClass}}) }}
-                        <span>{{ form_label(createReportForm.is60FpsDocked) }}</span>
+                        <span class="report-option-marker">{{ ux_icon('ph:check', {class: 'h-4 w-4'}) }}</span>
+                        <span class="flex min-w-0 items-center gap-2">{{ ux_icon('ph:gauge', {class: 'h-4 w-4 shrink-0 text-base-content/50'}) }} <span>{{ createReportForm.is60FpsDocked.vars.label }}</span></span>
                     </label>
                     <label class="{{ checkboxLabelClass }}">
                         {{ form_widget(createReportForm.hasStableFramerateDocked, {'attr': {'class': checkboxClass}}) }}
-                        <span>{{ form_label(createReportForm.hasStableFramerateDocked) }}</span>
+                        <span class="report-option-marker">{{ ux_icon('ph:check', {class: 'h-4 w-4'}) }}</span>
+                        <span class="flex min-w-0 items-center gap-2">{{ ux_icon('ph:activity', {class: 'h-4 w-4 shrink-0 text-base-content/50'}) }} <span>{{ ordinal.ordinal(createReportForm.hasStableFramerateDocked.vars.label) }}</span></span>
                     </label>
                     <label class="{{ checkboxLabelClass }}">
                         {{ form_widget(createReportForm.hasResolutionImprovedDocked, {'attr': {
@@ -72,7 +83,8 @@
                             'data-report-form-target': 'improvedDocked',
                             'data-action': 'report-form#improvedChanged'
                         }}) }}
-                        <span>{{ form_label(createReportForm.hasResolutionImprovedDocked) }}</span>
+                        <span class="report-option-marker">{{ ux_icon('ph:check', {class: 'h-4 w-4'}) }}</span>
+                        <span class="flex min-w-0 items-center gap-2">{{ ux_icon('ph:arrows-out', {class: 'h-4 w-4 shrink-0 text-base-content/50'}) }} <span>{{ ordinal.ordinal(createReportForm.hasResolutionImprovedDocked.vars.label) }}</span></span>
                     </label>
                     <label class="{{ checkboxLabelClass }}">
                         {{ form_widget(createReportForm.isNativeResolutionDocked, {'attr': {
@@ -80,40 +92,52 @@
                             'data-report-form-target': 'nativeDocked',
                             'data-action': 'report-form#nativeChanged'
                         }}) }}
-                        <span>{{ form_label(createReportForm.isNativeResolutionDocked) }}</span>
+                        <span class="report-option-marker">{{ ux_icon('ph:check', {class: 'h-4 w-4'}) }}</span>
+                        <span class="flex min-w-0 items-center gap-2">{{ ux_icon('ph:monitor', {class: 'h-4 w-4 shrink-0 text-base-content/50'}) }} <span>{{ ordinal.ordinal(createReportForm.isNativeResolutionDocked.vars.label) }}</span></span>
                     </label>
                 </div>
             </fieldset>
 
-            <fieldset class="app-surface rounded-box p-3 sm:p-4">
-                <legend class="px-2 text-sm font-semibold uppercase tracking-wide text-accent">
+            <fieldset class="app-surface rounded-box p-4 sm:p-5">
+                <legend class="px-2 text-sm font-semibold uppercase tracking-wide text-mode-misc">
                     {{ ux_icon('ph:sliders-horizontal', {class: 'mr-1 inline h-4 w-4'}) }}
                     {{ 'add_report.form.misc.label'|trans }}
                 </legend>
-                <div class="mt-2 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+                <div class="mt-3 grid gap-2.5 sm:grid-cols-2 xl:grid-cols-4">
                     <label class="{{ checkboxLabelClass }}">
                         {{ form_widget(createReportForm.hasImprovedLoadingTimes, {'attr': {'class': checkboxClass}}) }}
-                        <span>{{ form_label(createReportForm.hasImprovedLoadingTimes) }}</span>
+                        <span class="report-option-marker">{{ ux_icon('ph:check', {class: 'h-4 w-4'}) }}</span>
+                        <span class="flex min-w-0 items-center gap-2">{{ ux_icon('ph:clock-countdown', {class: 'h-4 w-4 shrink-0 text-base-content/50'}) }} <span>{{ createReportForm.hasImprovedLoadingTimes.vars.label }}</span></span>
                     </label>
                     <label class="{{ checkboxLabelClass }}">
                         {{ form_widget(createReportForm.isPatched, {'attr': {'class': checkboxClass}}) }}
-                        <span>{{ form_label(createReportForm.isPatched) }}</span>
+                        <span class="report-option-marker">{{ ux_icon('ph:check', {class: 'h-4 w-4'}) }}</span>
+                        <span class="flex min-w-0 items-center gap-2">{{ ux_icon('ph:wrench', {class: 'h-4 w-4 shrink-0 text-base-content/50'}) }} <span>{{ createReportForm.isPatched.vars.label }}</span></span>
                     </label>
                     <label class="{{ checkboxLabelClass }}">
                         {{ form_widget(createReportForm.isSwitch2Edition, {'attr': {'class': checkboxClass}}) }}
-                        <span>{{ form_label(createReportForm.isSwitch2Edition) }}</span>
+                        <span class="report-option-marker">{{ ux_icon('ph:check', {class: 'h-4 w-4'}) }}</span>
+                        <span class="flex min-w-0 items-center gap-2">{{ ux_icon('ph:seal-check', {class: 'h-4 w-4 shrink-0 text-base-content/50'}) }} <span>{{ createReportForm.isSwitch2Edition.vars.label }}</span></span>
                     </label>
-                    <label class="form-control gap-1 rounded-box border border-base-300/70 bg-base-100 px-3 py-2">
-                        <span class="label-text text-sm font-medium">{{ form_label(createReportForm.gameStatus) }}</span>
-                        {{ form_widget(createReportForm.gameStatus, {'attr': {'class': 'select select-bordered select-sm w-full focus:select-primary'}}) }}
+                    <label class="report-select-card flex min-h-12 flex-col justify-center gap-2">
+                        <span class="flex items-center gap-2 text-sm font-medium text-base-content/85">
+                            {{ ux_icon('ph:trend-up', {class: 'h-4 w-4 text-base-content/50'}) }}
+                            {{ createReportForm.gameStatus.vars.label }}
+                        </span>
+                        {{ form_widget(createReportForm.gameStatus, {'attr': {'class': 'select select-bordered select-sm w-full border-base-300/70 bg-base-100/70 focus:select-primary'}}) }}
                     </label>
                 </div>
             </fieldset>
 
-            <div class="rounded-box bg-info/10 p-3 text-xs leading-relaxed text-base-content/70">
-                <p>{{ 'add_report.notice.stable_framerate'|trans }}</p>
-                <p>{{ 'add_report.notice.resolution_improved'|trans }}</p>
-                <p>{{ 'add_report.notice.native_resolution'|trans }}</p>
+            <div class="rounded-box border border-base-300/60 bg-base-200/50 p-4 text-xs leading-relaxed text-base-content/65">
+                <p class="mb-2 flex items-center gap-2 font-semibold uppercase tracking-wide text-base-content/50">
+                    {{ ux_icon('ph:info', {class: 'h-4 w-4'}) }} {{ 'add_report.notice.label'|trans }}
+                </p>
+                <div class="grid gap-1.5 sm:grid-cols-3">
+                    <p>{{ reverse_ordinal.reverse_ordinal('add_report.notice.stable_framerate'|trans) }}</p>
+                    <p>{{ reverse_ordinal.reverse_ordinal('add_report.notice.resolution_improved'|trans) }}</p>
+                    <p>{{ reverse_ordinal.reverse_ordinal('add_report.notice.native_resolution'|trans) }}</p>
+                </div>
             </div>
 
             {{ form_widget(createReportForm.gameId, {'attr': {'value': game.id}}) }}

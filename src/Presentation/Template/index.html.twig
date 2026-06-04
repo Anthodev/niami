@@ -4,11 +4,11 @@
 {% block content %}
     <section class="app-shell py-6 sm:py-8 lg:py-10">
         <div class="space-y-5 sm:space-y-6">
-            <div class="app-card overflow-hidden">
-                <div class="grid gap-0 lg:grid-cols-[minmax(0,1fr)_minmax(24rem,34rem)] lg:items-stretch">
-                    <div class="relative overflow-hidden bg-base-100 p-5 sm:p-6 lg:p-7">
-                        <div class="pointer-events-none absolute -right-20 -top-24 h-52 w-52 rounded-full bg-primary/10 blur-3xl" aria-hidden="true"></div>
-                        <div class="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-[linear-gradient(to_right,color-mix(in_oklch,var(--color-primary)_18%,transparent)_1px,transparent_1px),linear-gradient(to_bottom,color-mix(in_oklch,var(--color-base-content)_14%,transparent)_1px,transparent_1px)] bg-[size:22px_22px] opacity-35 [mask-image:linear-gradient(to_top,black,transparent)]" aria-hidden="true"></div>
+            <div class="app-card overflow-hidden bg-base-100/70 p-1 backdrop-blur-xl">
+                <div class="grid gap-0 overflow-hidden rounded-[calc(var(--radius-box)-0.25rem)] lg:grid-cols-[minmax(0,1fr)_minmax(24rem,34rem)] lg:items-stretch">
+                    <div class="relative overflow-hidden bg-base-100/76 p-5 backdrop-blur-xl sm:p-6 lg:p-7">
+                        <div class="pointer-events-none absolute -right-20 -top-24 h-52 w-52 rounded-full bg-primary/8 blur-3xl" aria-hidden="true"></div>
+                        <div class="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-[linear-gradient(to_right,color-mix(in_oklch,var(--color-base-content)_8%,transparent)_1px,transparent_1px),linear-gradient(to_bottom,color-mix(in_oklch,var(--color-base-content)_7%,transparent)_1px,transparent_1px)] bg-[size:20px_20px] opacity-20 [mask-image:linear-gradient(to_top,black,transparent)]" aria-hidden="true"></div>
 
                         <div class="relative space-y-5">
                             <div class="space-y-4">
@@ -25,17 +25,17 @@
                             </p>
 
                             <div class="flex flex-wrap gap-2 pt-1 text-xs font-medium text-base-content/65">
-                                <span class="inline-flex items-center gap-1.5 rounded-box border border-base-300/70 bg-base-200/45 px-2.5 py-1.5">
+                                <span class="inline-flex items-center gap-1.5 rounded-box border border-base-300/70 bg-base-200/45 px-2.5 backdrop-blur-md py-1.5">
                                     <span class="h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_0_4px_color-mix(in_oklch,var(--color-primary)_16%,transparent)]"></span>
-                                    Switch 2 focused
+                                    Switch → Switch 2
                                 </span>
-                                <span class="inline-flex items-center gap-1.5 rounded-box border border-base-300/70 bg-base-200/45 px-2.5 py-1.5">
+                                <span class="inline-flex items-center gap-1.5 rounded-box border border-base-300/70 bg-base-200/45 px-2.5 backdrop-blur-md py-1.5">
                                     {{ ux_icon('ph:database', {class: 'h-3.5 w-3.5 text-primary'}) }}
-                                    Community data
+                                    Community reports
                                 </span>
-                                <span class="inline-flex items-center gap-1.5 rounded-box border border-base-300/70 bg-base-200/45 px-2.5 py-1.5">
-                                    {{ ux_icon('ph:lightning', {class: 'h-3.5 w-3.5 text-primary'}) }}
-                                    Fast lookup
+                                <span class="inline-flex items-center gap-1.5 rounded-box border border-base-300/70 bg-base-200/45 px-2.5 backdrop-blur-md py-1.5">
+                                    {{ ux_icon('ph:activity', {class: 'h-3.5 w-3.5 text-primary'}) }}
+                                    Compatibility signals
                                 </span>
                             </div>
                             </div>
@@ -49,7 +49,7 @@
                         </div>
                     </div>
 
-                    <div class="relative flex overflow-hidden border-t border-base-300/80 bg-base-200/85 p-5 sm:p-6 lg:border-l lg:border-t-0 lg:border-base-300/80 lg:p-8 xl:p-10">
+                    <div class="relative flex overflow-hidden border-t border-base-300/80 bg-base-200/66 p-5 backdrop-blur-xl sm:p-6 lg:border-l lg:border-t-0 lg:border-base-300/80 lg:p-8 xl:p-10">
                         <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_15%,color-mix(in_oklch,var(--color-primary)_8%,transparent),transparent_32%)]" aria-hidden="true"></div>
                         <div class="relative flex w-full">
                             {% include "@app/partials/_home_search_frame.html.twig" %}

@@ -134,6 +134,11 @@ class CreateReportForm extends AbstractType
                     'report',
                 ),
                 'class' => ReportGameStatusEnum::class,
+                'choice_label' => fn (ReportGameStatusEnum $status): string => $this->translator->trans(
+                    'add_report.form.misc.game_status_choice.'.$status->value,
+                    [],
+                    'report',
+                ),
                 'choice_attr' => [
                     ReportGameStatusEnum::OK->name => ['selected' => true],
                 ],

@@ -9,39 +9,38 @@
 
 {% for report in reports %}
     {% set statusName = report.gameStatus.name %}
-    {% set statusIcon = 'ph:sparkle' %}
-    {% set statusBadge = 'badge-success' %}
+    {% set statusIcon = 'ph:trend-up' %}
+    {% set statusBadge = 'badge-status-great' %}
 
     {% if statusName == 'OK' %}
-        {% set statusIcon = 'ph:smiley' %}
-        {% set statusBadge = 'badge-info' %}
+        {% set statusIcon = 'ph:equals' %}
+        {% set statusBadge = 'badge-status-ok' %}
     {% elseif statusName == 'BAD' %}
-        {% set statusIcon = 'ph:smiley-nervous' %}
-        {% set statusBadge = 'badge-warning' %}
+        {% set statusIcon = 'ph:trend-down' %}
+        {% set statusBadge = 'badge-status-bad' %}
     {% elseif statusName == 'BUGGED' %}
-        {% set statusIcon = 'ph:smiley-x-eyes' %}
-        {% set statusBadge = 'badge-error' %}
+        {% set statusIcon = 'ph:bug' %}
+        {% set statusBadge = 'badge-status-bugged' %}
     {% endif %}
 
     <tr class="border-b border-base-300/60 transition hover:bg-base-200/70 {{ loop.first ? 'bg-warning/5' : '' }}">
         <td class="sticky left-0 z-10 bg-inherit py-3 text-center">
-            <span class="badge {{ statusBadge }} gap-1 whitespace-nowrap">
+            <span class="badge {{ statusBadge }} gap-1 whitespace-nowrap" title="{{ statusName }}" aria-label="{{ statusName }}">
                 {{ ux_icon(statusIcon, {class: 'h-4 w-4'}) }}
-                {{ statusName }}
             </span>
         </td>
 
         <td class="py-3 text-center">{{ _self.check_cell(report.is60FpsPortable) }}</td>
         <td class="py-3 text-center">{{ _self.check_cell(report.hasStableFrameratePortable) }}</td>
         <td class="py-3 text-center">{{ _self.check_cell(report.hasResolutionImprovedPortable) }}</td>
-        <td class="py-3 text-center">{{ _self.check_cell(report.isNativeResolutionPortable) }}</td>
+        <td class="report-group-separator py-3 text-center">{{ _self.check_cell(report.isNativeResolutionPortable) }}</td>
         <td class="py-3 text-center">{{ _self.check_cell(report.is60FpsDocked) }}</td>
         <td class="py-3 text-center">{{ _self.check_cell(report.hasStableFramerateDocked) }}</td>
         <td class="py-3 text-center">{{ _self.check_cell(report.hasResolutionImprovedDocked) }}</td>
-        <td class="py-3 text-center">{{ _self.check_cell(report.isNativeResolutionDocked) }}</td>
+        <td class="report-group-separator py-3 text-center">{{ _self.check_cell(report.isNativeResolutionDocked) }}</td>
         <td class="py-3 text-center">{{ _self.check_cell(report.hasImprovedLoadingTimes) }}</td>
         <td class="py-3 text-center">{{ _self.check_cell(report.isPatched) }}</td>
-        <td class="py-3 text-center">{{ _self.check_cell(report.switch2Edition) }}</td>
+        <td class="report-group-separator py-3 text-center">{{ _self.check_cell(report.switch2Edition) }}</td>
 
         <td class="py-3 text-center">
             <turbo-frame class="flex justify-center" id="report-{{ report.id }}">

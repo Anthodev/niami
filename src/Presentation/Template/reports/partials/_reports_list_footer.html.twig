@@ -1,18 +1,20 @@
 {% trans_default_domain 'report' %}
-{% import '@macro/_reverse_ordinal_macro.html.twig' as reverse_ordinal %}
-
 {% if reports|length > 0 %}
                 </tbody>
             </table>
         </div>
 
-        <div class="grid gap-2 border-t border-base-300/70 p-4 text-xs text-base-content/60 sm:grid-cols-2 lg:grid-cols-3">
-            <p>{{ reverse_ordinal.reverse_ordinal('list.table.notice.60fps'|trans) }}</p>
-            <p>{{ reverse_ordinal.reverse_ordinal('list.table.notice.stable_FPS'|trans) }}</p>
-            <p>{{ reverse_ordinal.reverse_ordinal('list.table.notice.better_resolution'|trans) }}</p>
-            <p>{{ reverse_ordinal.reverse_ordinal('list.table.notice.native_resolution'|trans) }}</p>
-            <p>{{ reverse_ordinal.reverse_ordinal('list.table.notice.switch_2_edition'|trans) }}</p>
-            <p>{{ reverse_ordinal.reverse_ordinal('list.table.notice.is_patched'|trans) }}</p>
+        <div class="p-4 text-xs text-base-content/60">
+            <p class="mb-3 font-semibold uppercase tracking-wide text-base-content/50">{{ 'list.table.icon_legend'|trans }}</p>
+            <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                <p class="flex items-start gap-2">{{ ux_icon('ph:gauge', {class: 'mt-0.5 h-4 w-4 shrink-0 text-base-content/70'}) }} <span>{{ 'list.table.notice.60fps'|trans }}</span></p>
+                <p class="flex items-start gap-2">{{ ux_icon('ph:activity', {class: 'mt-0.5 h-4 w-4 shrink-0 text-base-content/70'}) }} <span>{{ 'list.table.notice.stable_FPS'|trans }}</span></p>
+                <p class="flex items-start gap-2">{{ ux_icon('ph:arrows-out', {class: 'mt-0.5 h-4 w-4 shrink-0 text-base-content/70'}) }} <span>{{ 'list.table.notice.better_resolution'|trans }}</span></p>
+                <p class="flex items-start gap-2">{{ ux_icon('ph:monitor', {class: 'mt-0.5 h-4 w-4 shrink-0 text-base-content/70'}) }} <span>{{ 'list.table.notice.native_resolution'|trans }}</span></p>
+                <p class="flex items-start gap-2">{{ ux_icon('ph:clock-countdown', {class: 'mt-0.5 h-4 w-4 shrink-0 text-base-content/70'}) }} <span>{{ 'list.table.notice.better_loading_times'|trans }}</span></p>
+                <p class="flex items-start gap-2">{{ ux_icon('ph:wrench', {class: 'mt-0.5 h-4 w-4 shrink-0 text-base-content/70'}) }} <span>{{ 'list.table.notice.is_patched'|trans }}</span></p>
+                <p class="flex items-start gap-2">{{ ux_icon('ph:seal-check', {class: 'mt-0.5 h-4 w-4 shrink-0 text-base-content/70'}) }} <span>{{ 'list.table.notice.switch_2_edition'|trans }}</span></p>
+            </div>
         </div>
 {% else %}
         <div class="p-8 text-center sm:p-10">
