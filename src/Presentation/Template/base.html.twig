@@ -7,7 +7,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{{ 'content.title'|trans }}{% endblock %}</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>🎮</text></svg>">
-    <meta name="description" content="Discover Nintendo Switch games compatibility reports for Nintendo Switch 2. Community-driven database of gaming experiences and performance insights.">
+    <meta name="description" content="{{ 'content.description'|trans }}">
+    <script>
+        (function () {
+            var fallbackTheme = 'plumber-dark';
+            var theme = fallbackTheme;
+
+            try {
+                theme = localStorage.getItem('theme') || fallbackTheme;
+            } catch (error) {
+                theme = fallbackTheme;
+            }
+
+            if (theme !== 'plumber-dark' && theme !== 'plumber-light') {
+                theme = fallbackTheme;
+            }
+
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
 
     {% block stylesheets %}
     {% endblock %}
@@ -16,7 +34,7 @@
         {% block importmap %}{{ importmap('app') }}{% endblock %}
     {% endblock %}
 </head>
-<body class="bg-base-100 min-h-screen antialiased transition-colors duration-300" data-controller="turbo-loading" data-turbo-loading-min-length-value="3">
+<body class="app-background min-h-screen bg-base-100 text-base-content antialiased transition-colors duration-300" data-controller="turbo-loading" data-turbo-loading-min-length-value="3">
     {% include '@app/partials/_header.html.twig' %}
 
     <main class="flex-1">

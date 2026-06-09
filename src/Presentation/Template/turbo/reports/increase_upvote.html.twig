@@ -1,15 +1,15 @@
 <turbo-stream action="update" target="report-{{ reportId }}">
     <template>
-        <div data-report-upvote data-report-id="{{ reportId }}">
-            <span class="flex cursor-not-allowed text-decoration-none opacity-60">
-                <div id="upvote-count-{{ reportId }}" class="bg-inherit opacity-100">{{ reportUpvoteCount }}</div>
-                <div class="w-6 h-6 bg-inherit text-primary ml-1">
-                    {{ ux_icon('ph:arrow-fat-up-duotone') }}
-                </div>
+        <div data-report-upvote data-report-id="{{ reportId }}" class="inline-flex items-center gap-2">
+            <span class="btn btn-ghost btn-sm cursor-not-allowed rounded-full text-primary opacity-70" aria-disabled="true">
+                <span id="upvote-count-{{ reportId }}" class="font-semibold">{{ reportUpvoteCount }}</span>
+                {{ ux_icon('ph:arrow-fat-up-duotone', {class: 'h-4 w-4'}) }}
             </span>
+            {% if reportId == mostUpvotedReportId %}
+                <span class="tooltip text-warning" data-tip="Most upvoted" aria-label="Most upvoted">
+                    {{ ux_icon('ph:star-fill', {class: 'h-5 w-5'}) }}
+                </span>
+            {% endif %}
         </div>
-        {% if reportId == mostUpvotedReportId %}
-            <div class="w-6 h-6 bg-inherit text-yellow-300 ml-1">{{ ux_icon('ph:star-fill') }}</div>
-        {% endif %}
     </template>
 </turbo-stream>

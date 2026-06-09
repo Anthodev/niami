@@ -2,21 +2,63 @@
 {% extends "@app/base.html.twig" %}
 
 {% block content %}
-    <div class="min-h-[80vh] flex items-center justify-center px-6 py-20">
-        <div class="max-w-4xl w-full text-center space-y-12">
-            <div class="space-y-6">
-                <p class="text-primary text-sm tracking-widest uppercase font-medium">Nintendo Switch 2</p>
-                <h1 class="text-5xl md:text-7xl font-light text-base-content tracking-tight">
-                    {{ 'content.title'|trans }}
-                </h1>
-                <p class="text-lg text-base-content/60 max-w-xl mx-auto font-light leading-relaxed">
-                    {{ 'content.subtitle'|trans }}
-                </p>
+    <section class="app-shell py-6 sm:py-8 lg:py-10">
+        <div class="space-y-5 sm:space-y-6">
+            <div class="app-card overflow-hidden bg-base-100/70 p-1 backdrop-blur-xl">
+                <div class="grid gap-0 overflow-hidden rounded-[calc(var(--radius-box)-0.25rem)] lg:grid-cols-[minmax(0,1fr)_minmax(24rem,34rem)] lg:items-stretch">
+                    <div class="relative overflow-hidden bg-base-100/76 p-5 backdrop-blur-xl sm:p-6 lg:p-7">
+                        <div class="pointer-events-none absolute -right-20 -top-24 h-52 w-52 rounded-full bg-primary/8 blur-3xl" aria-hidden="true"></div>
+                        <div class="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-[linear-gradient(to_right,color-mix(in_oklch,var(--color-base-content)_8%,transparent)_1px,transparent_1px),linear-gradient(to_bottom,color-mix(in_oklch,var(--color-base-content)_7%,transparent)_1px,transparent_1px)] bg-[size:20px_20px] opacity-20 [mask-image:linear-gradient(to_top,black,transparent)]" aria-hidden="true"></div>
+
+                        <div class="relative space-y-5">
+                            <div class="space-y-4">
+                            <div class="space-y-3">
+                                <h1 class="max-w-3xl text-balance text-4xl font-black tracking-tight text-base-content sm:text-5xl lg:text-6xl">
+                                    <span class="bg-gradient-to-r from-primary via-primary to-base-content bg-clip-text text-transparent">{{ 'content.title'|trans }}</span>
+                                </h1>
+                                <p class="max-w-2xl border-l-2 border-primary/70 pl-4 text-pretty text-base font-semibold leading-6 text-base-content/85 sm:text-lg">
+                                    {{ 'content.subtitle'|trans }}
+                                </p>
+                            </div>
+                            <p class="max-w-2xl text-pretty text-sm leading-6 text-base-content/65 sm:text-base">
+                                {{ 'content.description'|trans }}
+                            </p>
+
+                            <div class="flex flex-wrap gap-2 pt-1 text-xs font-medium text-base-content/65">
+                                <span class="inline-flex items-center gap-1.5 rounded-box border border-base-300/70 bg-base-200/45 px-2.5 backdrop-blur-md py-1.5">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_0_4px_color-mix(in_oklch,var(--color-primary)_16%,transparent)]"></span>
+                                    Switch → Switch 2
+                                </span>
+                                <span class="inline-flex items-center gap-1.5 rounded-box border border-base-300/70 bg-base-200/45 px-2.5 backdrop-blur-md py-1.5">
+                                    {{ ux_icon('ph:database', {class: 'h-3.5 w-3.5 text-primary'}) }}
+                                    Community reports
+                                </span>
+                                <span class="inline-flex items-center gap-1.5 rounded-box border border-base-300/70 bg-base-200/45 px-2.5 backdrop-blur-md py-1.5">
+                                    {{ ux_icon('ph:activity', {class: 'h-3.5 w-3.5 text-primary'}) }}
+                                    Compatibility signals
+                                </span>
+                            </div>
+                            </div>
+
+                            <div class="h-px bg-gradient-to-r from-primary/35 via-base-300/70 to-transparent" aria-hidden="true"></div>
+
+                            <div class="flex items-start gap-3 rounded-box border border-info/10 bg-info/10 p-3 text-sm leading-6 text-base-content/75">
+                            <span class="mt-0.5 h-5 w-5 shrink-0 text-info">{{ ux_icon('ph:info') }}</span>
+                            <p>Search a game, open its report page, then compare community notes before playing.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="relative flex overflow-hidden border-t border-base-300/80 bg-base-200/66 p-5 backdrop-blur-xl sm:p-6 lg:border-l lg:border-t-0 lg:border-base-300/80 lg:p-8 xl:p-10">
+                        <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_15%,color-mix(in_oklch,var(--color-primary)_8%,transparent),transparent_32%)]" aria-hidden="true"></div>
+                        <div class="relative flex w-full">
+                            {% include "@app/partials/_home_search_frame.html.twig" %}
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="max-w-2xl mx-auto">
-                {% include "@app/partials/_home_search_frame.html.twig" %}
-            </div>
+            <turbo-frame id="search-results-frame" class="block w-full"></turbo-frame>
         </div>
-    </div>
+    </section>
 {% endblock %}

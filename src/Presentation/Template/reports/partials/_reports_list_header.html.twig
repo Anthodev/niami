@@ -1,26 +1,53 @@
 {% trans_default_domain 'report' %}
-{% import '@macro/_ordinal_macro.html.twig' as ordinal %}
+
+<section class="app-card app-card-muted overflow-hidden" data-controller="report-comment-modal">
+    <div class="card-body p-0">
+        <div class="space-y-4 p-4 sm:p-5">
+            <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                    <h2 class="text-lg font-semibold text-base-content">{{ 'list.legends.label'|trans }}</h2>
+                    <p class="text-sm text-base-content/60">{{ 'list.legends.notice'|trans }}</p>
+                </div>
+                <span class="badge badge-primary badge-outline">{{ reports|length }} reports</span>
+            </div>
+
+            <div class="flex flex-wrap gap-2 text-xs">
+                <span class="badge-status-great badge-readable-light gap-1">{{ ux_icon('ph:trend-up', {class: 'h-4 w-4'}) }} <span class="badge-readable-text">{{ 'list.legends.running_better'|trans }}</span></span>
+                <span class="badge-status-ok badge-readable-light gap-1">{{ ux_icon('ph:equals', {class: 'h-4 w-4'}) }} <span class="badge-readable-text">{{ 'list.legends.running_same'|trans }}</span></span>
+                <span class="badge-status-bad badge-readable-light gap-1">{{ ux_icon('ph:trend-down', {class: 'h-4 w-4'}) }} <span class="badge-readable-text">{{ 'list.legends.running_worse'|trans }}</span></span>
+                <span class="badge-status-bugged badge-readable-light gap-1">{{ ux_icon('ph:bug', {class: 'h-4 w-4'}) }} <span class="badge-readable-text">{{ 'list.legends.is_bugged'|trans }}</span></span>
+                <span class="badge-most-upvoted badge-readable-light gap-1">{{ ux_icon('ph:star-fill', {class: 'h-4 w-4'}) }} <span class="badge-readable-text">{{ 'list.legends.most_upvoted'|trans }}</span></span>
+            </div>
+        </div>
 
 {% if reports|length > 0 %}
-    <div class="overflow-x-auto">
-        <table class="table table-zebra table-sm w-full">
-            <thead class="bg-base-200">
-                <tr>
-                    <th class="text-center">{{ 'list.table.header.status'|trans }}</th>
-                    <th class="text-center">{{ ordinal.ordinal('list.table.header.60fps'|trans) }}</th>
-                    <th class="text-center">{{ ordinal.ordinal('list.table.header.stable_FPS'|trans) }}</th>
-                    <th class="text-center">{{ ordinal.ordinal('list.table.header.better_resolution'|trans) }}</th>
-                    <th class="text-center">{{ ordinal.ordinal('list.table.header.native_resolution'|trans) }}</th>
-                    <th class="text-center">{{ ordinal.ordinal('list.table.header.60fps'|trans) }}</th>
-                    <th class="text-center">{{ ordinal.ordinal('list.table.header.stable_FPS'|trans) }}</th>
-                    <th class="text-center">{{ ordinal.ordinal('list.table.header.better_resolution'|trans) }}</th>
-                    <th class="text-center">{{ ordinal.ordinal('list.table.header.native_resolution'|trans) }}</th>
-                    <th class="text-center">{{ 'list.table.header.better_loading_times'|trans }}</th>
-                    <th class="text-center">{{ ordinal.ordinal('list.table.header.is_patched'|trans) }}</th>
-                    <th class="text-center">{{ ordinal.ordinal('list.table.header.switch_2_edition'|trans) }}</th>
-                    <th class="text-center">{{ 'list.table.header.upvoted'|trans }}</th>
-                    <th class="text-center">{{ 'list.table.header.issue'|trans }}</th>
-                </tr>
-            </thead>
-            <tbody>
+        <div class="overflow-x-auto border-b border-base-300/70">
+            <table class="table table-sm min-w-[72rem]">
+                <thead class="bg-base-200/80 text-xs uppercase tracking-wide text-base-content/70">
+                    <tr>
+                        <th class="sticky left-0 z-10 bg-base-200/95 text-center">{{ 'list.table.header.status'|trans }}</th>
+                        <th colspan="4" class="text-center text-mode-portable">{{ 'list.table.header.portable_label'|trans }}</th>
+                        <th colspan="4" class="text-center text-mode-tv">{{ 'list.table.header.tv_label'|trans }}</th>
+                        <th colspan="3" class="text-center text-mode-misc">{{ 'list.table.header.misc_label'|trans }}</th>
+                        <th class="text-center">{{ 'list.table.header.upvoted'|trans }}</th>
+                        <th class="text-center">{{ 'list.table.header.issue'|trans }}</th>
+                    </tr>
+                    <tr>
+                        <th class="sticky left-0 z-10 bg-base-200/95"></th>
+                        <th class="text-center"><span class="inline-grid place-items-center" title="{{ 'list.table.header.60fps'|trans }}" aria-label="{{ 'list.table.header.60fps'|trans }}">{{ ux_icon('ph:gauge', {class: 'h-4 w-4'}) }}</span></th>
+                        <th class="text-center"><span class="inline-grid place-items-center" title="{{ 'list.table.header.stable_FPS'|trans }}" aria-label="{{ 'list.table.header.stable_FPS'|trans }}">{{ ux_icon('ph:activity', {class: 'h-4 w-4'}) }}</span></th>
+                        <th class="text-center"><span class="inline-grid place-items-center" title="{{ 'list.table.header.better_resolution'|trans }}" aria-label="{{ 'list.table.header.better_resolution'|trans }}">{{ ux_icon('ph:arrows-out', {class: 'h-4 w-4'}) }}</span></th>
+                        <th class="text-center"><span class="inline-grid place-items-center" title="{{ 'list.table.header.native_resolution'|trans }}" aria-label="{{ 'list.table.header.native_resolution'|trans }}">{{ ux_icon('ph:monitor', {class: 'h-4 w-4'}) }}</span></th>
+                        <th class="text-center"><span class="inline-grid place-items-center" title="{{ 'list.table.header.60fps'|trans }}" aria-label="{{ 'list.table.header.60fps'|trans }}">{{ ux_icon('ph:gauge', {class: 'h-4 w-4'}) }}</span></th>
+                        <th class="text-center"><span class="inline-grid place-items-center" title="{{ 'list.table.header.stable_FPS'|trans }}" aria-label="{{ 'list.table.header.stable_FPS'|trans }}">{{ ux_icon('ph:activity', {class: 'h-4 w-4'}) }}</span></th>
+                        <th class="text-center"><span class="inline-grid place-items-center" title="{{ 'list.table.header.better_resolution'|trans }}" aria-label="{{ 'list.table.header.better_resolution'|trans }}">{{ ux_icon('ph:arrows-out', {class: 'h-4 w-4'}) }}</span></th>
+                        <th class="text-center"><span class="inline-grid place-items-center" title="{{ 'list.table.header.native_resolution'|trans }}" aria-label="{{ 'list.table.header.native_resolution'|trans }}">{{ ux_icon('ph:monitor', {class: 'h-4 w-4'}) }}</span></th>
+                        <th class="text-center"><span class="inline-grid place-items-center" title="{{ 'list.table.header.better_loading_times'|trans }}" aria-label="{{ 'list.table.header.better_loading_times'|trans }}">{{ ux_icon('ph:clock-countdown', {class: 'h-4 w-4'}) }}</span></th>
+                        <th class="text-center"><span class="inline-grid place-items-center" title="{{ 'list.table.header.is_patched'|trans }}" aria-label="{{ 'list.table.header.is_patched'|trans }}">{{ ux_icon('ph:wrench', {class: 'h-4 w-4'}) }}</span></th>
+                        <th class="text-center"><span class="inline-grid place-items-center" title="{{ 'list.table.header.switch_2_edition'|trans }}" aria-label="{{ 'list.table.header.switch_2_edition'|trans }}">{{ ux_icon('ph:seal-check', {class: 'h-4 w-4'}) }}</span></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
 {% endif %}

@@ -1,21 +1,30 @@
 class UpvoteManager {
   constructor() {
     this.storageKey = 'ns2ubcr_upvoted_reports';
-    this.init();
+    this.boundClickHandler = this.handleClick.bind(this);
+    this.boundRefreshHandler = this.refresh.bind(this);
   }
 
   init() {
-    this.markAlreadyUpvoted();
-    this.attachEventListeners();
+    this.refresh();
+    document.removeEventListener('click', this.boundClickHandler);
+    document.addEventListener('click', this.boundClickHandler);
+    document.removeEventListener('turbo:stream-connected', this.boundRefreshHandler);
+    document.addEventListener('turbo:stream-connected', this.boundRefreshHandler);
   }
 
   getUpvotedReports() {
-    const stored = localStorage.getItem(this.storageKey);
-    return stored ? JSON.parse(stored) : [];
+    try {
+      const stored = localStorage.getItem(this.storageKey);
+      return stored ? JSON.parse(stored) : [];
+    } catch (error) {
+      return [];
+    }
   }
 
   addUpvotedReport(reportId) {
     const upvoted = this.getUpvotedReports();
+
     if (!upvoted.includes(reportId)) {
       upvoted.push(reportId);
       localStorage.setItem(this.storageKey, JSON.stringify(upvoted));
@@ -26,61 +35,53 @@ class UpvoteManager {
     return this.getUpvotedReports().includes(reportId);
   }
 
-  markAlreadyUpvoted() {
-    document.querySelectorAll('[data-report-upvote]').forEach(element => {
+  refresh() {
+    document.querySelectorAll('[data-report-upvote]').forEach((element) => {
       const reportId = element.getAttribute('data-report-id');
+
       if (this.hasUpvoted(reportId)) {
-        this.disableUpvoteElement(element, reportId);
+        this.disableUpvoteElement(element);
       }
     });
   }
 
-  disableUpvoteElement(element, reportId) {
+  disableUpvoteElement(element) {
     const link = element.querySelector('a');
-    if (link) {
-      const span = document.createElement('span');
-      span.innerHTML = link.innerHTML;
-      span.className = link.className.replace('group-hover:text-green-700', 'text-gray-400');
-      span.classList.remove('cursor-pointer', 'group')
-      span.classList.add('cursor-not-allowed');
 
-      link.parentNode.replaceChild(span, link);
-
-      const icon = span.querySelector('div:last-child');
-      if (icon) {
-        icon.remove();
-      }
+    if (!link) {
+      return;
     }
+
+    const disabled = document.createElement('span');
+    disabled.innerHTML = link.innerHTML;
+    disabled.className = 'btn btn-ghost btn-sm cursor-not-allowed rounded-full text-primary opacity-70';
+    disabled.setAttribute('aria-disabled', 'true');
+
+    link.replaceWith(disabled);
   }
 
-  attachEventListeners() {
-    document.addEventListener('turbo:stream-connected', (event) => {
-      setTimeout(() => this.markAlreadyUpvoted(), 100);
-    });
+  handleClick(event) {
+    const upvoteLink = event.target.closest('[data-report-upvote] a');
 
-    document.addEventListener('click', (event) => {
-      const upvoteLink = event.target.closest('[data-report-upvote] a');
-      if (upvoteLink) {
-        const container = upvoteLink.closest('[data-report-upvote]');
-        const reportId = container.getAttribute('data-report-id');
+    if (!upvoteLink) {
+      return;
+    }
 
-        if (this.hasUpvoted(reportId)) {
-          event.preventDefault();
-          event.stopPropagation();
-          return false;
-        }
+    const container = upvoteLink.closest('[data-report-upvote]');
+    const reportId = container.getAttribute('data-report-id');
 
-        this.addUpvotedReport(reportId);
-        this.disableUpvoteElement(container, reportId);
-      }
-    });
+    if (this.hasUpvoted(reportId)) {
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+
+    this.addUpvotedReport(reportId);
+    this.disableUpvoteElement(container);
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  new UpvoteManager();
-});
+const upvoteManager = new UpvoteManager();
 
-document.addEventListener('turbo:load', () => {
-  new UpvoteManager();
-});
+document.addEventListener('DOMContentLoaded', () => upvoteManager.init());
+document.addEventListener('turbo:load', () => upvoteManager.init());

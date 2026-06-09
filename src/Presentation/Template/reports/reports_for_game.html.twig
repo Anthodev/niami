@@ -1,12 +1,15 @@
 {% extends '@app/base.html.twig' %}
 
 {% block content %}
-    {% include '@reports/partials/_reports_game_info.html.twig' with { game: game, topReport: topReport } %}
+    <main class="app-shell py-6 sm:py-8 lg:py-10">
+        <div class="space-y-5 sm:space-y-6">
+            {% include '@reports/partials/_reports_game_info.html.twig' with { game: game, topReport: topReport } %}
 
-    {% include '@reports/partials/_reports_create_form.html.twig' %}
+            {% include '@reports/partials/_reports_create_form.html.twig' %}
 
-    {% include '@reports/partials/_reports_list_legends.html.twig' %}
-    {% include '@reports/partials/_reports_list.html.twig' %}
+            {% include '@reports/partials/_reports_list.html.twig' %}
+        </div>
+    </main>
 {% endblock %}
 
 {% block javascripts %}

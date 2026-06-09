@@ -1,61 +1,68 @@
 {% trans_default_domain 'report' %}
+{% set hasCover = game.imageCover is defined and game.imageCover and game.name is defined %}
 
-<div class="card bg-base-100 border border-base-300/50 overflow-hidden">
-    <div class="flex flex-col sm:flex-row">
-        {% if game.imageCover is defined and game.name is defined %}
-            <div class="relative overflow-hidden sm:w-40 sm:h-40 w-full h-48 flex-shrink-0">
-                <img src="{{ game.imageCover }}" alt="{{ game.name }}"
-                    class="w-full h-full object-cover">
+<section class="app-card app-card-muted overflow-hidden">
+    <div class="grid gap-0 {{ hasCover ? 'lg:grid-cols-[minmax(16rem,18rem)_1fr] lg:items-stretch' : '' }}">
+        {% if hasCover %}
+            {% set coverUrl = game.imageCover|replace({'/t_thumb/': '/t_cover_big_2x/', '/t_cover_small/': '/t_cover_big_2x/'}) %}
+            <div class="flex items-start justify-center border-b border-base-300/60 bg-base-200/62 p-5 sm:p-6 lg:border-b-0 lg:border-r lg:p-6">
+                <figure class="mx-auto h-72 w-full max-w-[16rem] overflow-hidden rounded-box shadow-xl ring-1 ring-base-300/60 lg:h-80 lg:max-w-[14rem]">
+                    <img
+                        src="{{ coverUrl }}"
+                        alt="{{ game.name }}"
+                        class="h-full w-full object-cover"
+                        loading="lazy"
+                    >
+                </figure>
             </div>
         {% endif %}
-
-        <div class="flex-1 p-6 space-y-4">
-            {% if game.name %}
-                <h1 class="text-2xl font-semibold text-primary">
-                    {{ game.name }}
-                </h1>
-
-                <div class="divider my-0"></div>
+        <div class="space-y-4 bg-base-100/72 p-5 sm:p-6 lg:p-7">
+            {% if game.name is defined and game.name %}
+                <div class="space-y-3">
+                    <h1 class="text-3xl font-bold tracking-tight text-base-content sm:text-4xl">
+                        {{ game.name }}
+                    </h1>
+                    <div class="h-px bg-base-300/70" aria-hidden="true"></div>
+                </div>
             {% endif %}
 
-            <div class="grid grid-cols-3 gap-4">
-                <div class="flex items-center gap-2">
-                    <span class="text-base-content/50 text-sm">{{ 'game.release_date'|trans }}</span>
-                    <span class="badge badge-sm badge-primary badge-outline">
-                        {{ game.releaseDate|date('d/m/Y') }}
-                    </span>
+            <dl class="grid gap-3 sm:grid-cols-3">
+                <div class="app-surface rounded-box p-3">
+                    <dt class="text-xs uppercase tracking-wide text-base-content/60">{{ 'game.release_date'|trans }}</dt>
+                    <dd class="mt-1 font-medium text-base-content">{{ game.releaseDate|date('d/m/Y') }}</dd>
                 </div>
 
-                <div class="flex items-center justify-center gap-2">
-                    {% if game.developer is defined and game.developer != '' %}
-                        <span class="text-base-content/50 text-sm">{{ 'game.developer'|trans }}</span>
-                        <span class="badge badge-sm badge-secondary badge-outline">
-                            {{ game.developer.name }}
-                        </span>
-                    {% endif %}
-                </div>
+                {% if game.developer is defined and game.developer != '' %}
+                    <div class="app-surface rounded-box p-3">
+                        <dt class="text-xs uppercase tracking-wide text-base-content/60">{{ 'game.developer'|trans }}</dt>
+                        <dd class="mt-1 font-medium text-base-content">{{ game.developer.name|default(game.developer) }}</dd>
+                    </div>
+                {% endif %}
 
-                <div class="flex items-center justify-end gap-2">
-                    {% if game.publisher is defined and game.publisher != '' %}
-                        <span class="text-base-content/50 text-sm">{{ 'game.publisher'|trans }}</span>
-                        <span class="badge badge-sm badge-accent badge-outline">
-                            {{ game.publisher.name }}
-                        </span>
-                    {% endif %}
-                </div>
-            </div>
-
-            <div class="divider my-0"></div>
+                {% if game.publisher is defined and game.publisher != '' %}
+                    <div class="app-surface rounded-box p-3">
+                        <dt class="text-xs uppercase tracking-wide text-base-content/60">{{ 'game.publisher'|trans }}</dt>
+                        <dd class="mt-1 font-medium text-base-content">{{ game.publisher.name|default(game.publisher) }}</dd>
+                    </div>
+                {% endif %}
+            </dl>
 
             {% include '@reports/partials/_reports_top_report.html.twig' %}
 
-            {% if game.description is defined %}
-                <div class="divider divider-start text-sm font-medium">{{ 'game.description'|trans }}</div>
-
-                <p class="text-sm text-base-content/70 leading-relaxed">
-                    {{ game.description|raw }}
-                </p>
+            {% if game.description is defined and game.description %}
+                {% set safeDescription = game.description|replace({
+                    '<br><br>': "\n", '<br><br/>': "\n", '<br><br />': "\n",
+                    '<br/><br>': "\n", '<br/><br/>': "\n", '<br/><br />': "\n",
+                    '<br /><br>': "\n", '<br /><br/>': "\n", '<br /><br />': "\n",
+                    '<br>': " ", '<br/>': " ", '<br />': " "
+                })|striptags %}
+                <section class="space-y-2 border-t border-base-300/60 pt-4">
+                    <h2 class="text-sm font-semibold uppercase tracking-wide text-base-content/70">{{ 'game.description'|trans }}</h2>
+                    <div class="max-h-32 overflow-y-auto pr-3 text-sm leading-normal text-base-content/80 [scrollbar-color:color-mix(in_oklch,var(--color-base-content)_22%,transparent)_transparent] [scrollbar-width:thin]">
+                        {{ safeDescription|nl2br }}
+                    </div>
+                </section>
             {% endif %}
         </div>
     </div>
-</div>
+</section>

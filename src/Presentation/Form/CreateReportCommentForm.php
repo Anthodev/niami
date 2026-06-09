@@ -40,9 +40,6 @@ class CreateReportCommentForm extends AbstractType
                 'empty_data' => '',
                 'required' => true,
             ])
-            ->add('ip', HiddenType::class, [
-                'required' => true,
-            ])
             ->add('gameSlug', HiddenType::class, [
                 'required' => true,
             ]);

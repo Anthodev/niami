@@ -1,42 +1,67 @@
 {% trans_default_domain 'reportComment' %}
 
-<dialog id="comment_{{ modal_index }}" class="modal">
-  <div class="modal-box bg-base-100">
-    <h3 class="font-bold text-lg">{{ 'reports.modal.title'|trans }}</h3>
+<dialog
+    id="comment_{{ modal_index }}"
+    class="modal"
+    aria-labelledby="comment_{{ modal_index }}_title"
+    data-report-comment-modal-target="dialog"
+    data-action="click->report-comment-modal#closeOnBackdrop"
+>
+    <div class="modal-box app-card max-w-lg">
+        <div class="flex items-start justify-between gap-4">
+            <div>
+                <h2 id="comment_{{ modal_index }}_title" class="text-lg font-semibold text-base-content">
+                    {{ 'reports.modal.title'|trans }}
+                </h2>
+                <p class="mt-1 text-sm text-base-content/60">
+                    {{ 'form.create.comment.placeholder'|trans }}
+                </p>
+            </div>
 
-    <div class="modal-action flex flex-col gap-4">
+            <button type="button" class="btn btn-ghost btn-sm btn-circle" data-action="report-comment-modal#close" aria-label="{{ 'reports.modal.close'|trans }}">
+                {{ ux_icon('ph:x', {class: 'h-4 w-4'}) }}
+            </button>
+        </div>
+
         {{ form_start(createReportCommentForm, {
             'action': path('create_report_comment', { reportId: 'REPORT_ID_PLACEHOLDER' }),
             'method': 'POST',
             'id': 'comment-form-' ~ modal_index,
-        }) }}
-
-        {{ form_widget(createReportCommentForm.comment, {
             'attr': {
-                'class': 'textarea textarea-bordered w-full'
+                'class': 'mt-5 space-y-4',
+                'data-report-comment-modal-target': 'form'
             }
         }) }}
+
+        <div class="form-control gap-2">
+            {{ form_label(createReportCommentForm.comment, null, {'label_attr': {'class': 'label-text font-medium'}}) }}
+            {{ form_widget(createReportCommentForm.comment, {
+                'attr': {
+                    'class': 'textarea textarea-bordered min-h-32 w-full rounded-box focus:textarea-primary',
+                    'placeholder': 'form.create.comment.placeholder'|trans
+                }
+            }) }}
+        </div>
 
         {{ form_widget(createReportCommentForm.gameSlug, {
             'attr': {
-                'placeholder': 'Game slug will be set dynamically'
+                'data-report-comment-modal-target': 'gameSlug'
             }
         }) }}
 
-        {{ form_widget(createReportCommentForm.ip, {
-            'attr': {
-                'value': app.request.clientIp,
-            }
-        }) }}
 
         {{ form_rest(createReportCommentForm) }}
 
-        <div class="flex gap-2 justify-end">
-            <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('comment_{{ modal_index }}').close()">{{ 'reports.modal.close'|trans }}</button>
-            <button class="btn btn-primary btn-sm">{{ 'reports.modal.submit'|trans }}</button>
+        <div class="modal-action mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            <button type="button" class="btn btn-ghost" data-action="report-comment-modal#close">
+                {{ 'reports.modal.close'|trans }}
+            </button>
+            <button class="app-button-primary">
+                {{ ux_icon('ph:paper-plane-tilt', {class: 'h-4 w-4'}) }}
+                {{ 'reports.modal.submit'|trans }}
+            </button>
         </div>
 
         {{ form_end(createReportCommentForm) }}
     </div>
-  </div>
 </dialog>

@@ -179,6 +179,7 @@ class IgdbClient implements ApiClientInterface
                     involved_companies.publisher,
                     involved_companies.developer,
                     cover.url,
+                    cover.image_id,
                     first_release_date,
                     summary,
                     websites.url,
@@ -301,9 +302,25 @@ class IgdbClient implements ApiClientInterface
 
             $imageCover = '';
             if (!empty($igdbSearchResultItem->cover)) {
-                /** @var string $coverUrl */
-                $coverUrl = $igdbSearchResultItem->cover['url'] ?? '';
-                $imageCover = 'https:'.$coverUrl;
+                /** @var string|null $coverImageId */
+                $coverImageId = $igdbSearchResultItem->cover['image_id'] ?? null;
+
+                if (is_string($coverImageId) && '' !== $coverImageId) {
+                    $imageCover = sprintf(
+                        'https://images.igdb.com/igdb/image/upload/t_cover_big_2x/%s.jpg',
+                        $coverImageId,
+                    );
+                } else {
+                    /** @var string $coverUrl */
+                    $coverUrl = $igdbSearchResultItem->cover['url'] ?? '';
+                    if ('' !== $coverUrl) {
+                        $imageCover = 'https:'.str_replace(
+                            '/t_thumb/',
+                            '/t_cover_big_2x/',
+                            $coverUrl,
+                        );
+                    }
+                }
             }
 
             if (empty($publisher->name) || empty($developer->name)) {

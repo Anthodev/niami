@@ -2,6 +2,7 @@ form:
     label: ' Search the game: '
     placeholder: 'Type at least 3 characters...'
     submit: 'Search'
+    loading: 'Searching...'
     helper: 'Search will run automatically from the third character'
     errorMessage: 'Type at least %minLength% characters...'
     constraints:
@@ -13,6 +14,8 @@ form:
         no_results:
             label: 'No results found'
             message: 'No games found for <strong>%searchQuery%</strong>. Search again with different keywords.'
+            prefix: 'No games found for'
+            suffix: 'Search again with different keywords.'
 card:
     view_reports_button: 'View Reports'
 footer:
