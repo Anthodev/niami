@@ -5,10 +5,16 @@
         <div class="space-y-4 p-4 sm:p-5">
             <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                    <h2 class="text-lg font-semibold text-base-content">{{ 'list.legends.label'|trans }}</h2>
+                    <h2 class="text-lg font-semibold text-base-content">{{ 'list.title'|trans }}</h2>
                     <p class="text-sm text-base-content/60">{{ 'list.legends.notice'|trans }}</p>
                 </div>
-                <span class="badge badge-primary badge-outline">{{ reports|length }} reports</span>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="badge badge-primary badge-outline">{{ reports|length }} reports</span>
+                    <button type="button" class="app-button-primary btn-sm" data-action="report-sidebar#open">
+                        {{ ux_icon('ph:plus', {class: 'h-4 w-4'}) }}
+                        {{ 'add_report.label'|trans }}
+                    </button>
+                </div>
             </div>
 
             <div class="flex flex-wrap gap-2 text-xs">

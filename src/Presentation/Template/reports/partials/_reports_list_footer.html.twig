@@ -23,10 +23,10 @@
             </div>
             <p class="mt-3 text-lg font-semibold text-base-content">{{ 'list.empty.title'|trans }}</p>
             <p class="mx-auto mt-1 max-w-md text-sm text-base-content/60">{{ 'list.empty.description'|trans }}</p>
-            <label for="report-create-toggle" class="app-button-primary mt-5 inline-flex cursor-pointer">
+            <button type="button" class="app-button-primary mt-5" data-action="report-sidebar#open">
                 {{ ux_icon('ph:plus', {class: 'h-4 w-4'}) }}
                 {{ 'add_report.label'|trans }}
-            </label>
+            </button>
         </div>
 {% endif %}
 
