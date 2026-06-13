@@ -7,6 +7,9 @@ game:
 add_report:
     label: 'Add a Report'
     subtitle: 'Share how this game behaves on Nintendo Switch 2.'
+    drawer:
+        eyebrow: 'New compatibility report'
+        close: 'Close report form'
     form:
         portable:
             label: 'Portable performances'
@@ -38,6 +41,7 @@ add_report:
         native_resolution: '3 Is it reaching native resolution on Switch 2 system? (1080p portable / 4k on TV)'
 
 list:
+    title: 'Reports list'
     legends:
         label: 'Legends'
         running_better: 'Better than Switch 1*'

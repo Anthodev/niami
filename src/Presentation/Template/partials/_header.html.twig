@@ -39,7 +39,17 @@
             </form>
         {% endif %}
 
-        <div class="flex items-center" data-controller="theme">
+        <div class="flex items-center gap-1" data-controller="theme">
+            {% if createReportForm is defined %}
+                <button
+                    type="button"
+                    class="btn btn-primary btn-sm rounded-box gap-2 shadow-none"
+                    data-action="report-sidebar#open"
+                >
+                    {{ ux_icon('ph:plus', {class: 'h-4 w-4'}) }}
+                    <span class="hidden sm:inline">{{ 'add_report.label'|trans({}, 'report') }}</span>
+                </button>
+            {% endif %}
             <label class="swap swap-rotate btn btn-ghost btn-circle inline-grid h-11 min-h-11 w-11 place-items-center items-center justify-center p-0 text-base-content/80 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-primary" aria-label="Changer de thème">
                 <input
                     type="checkbox"

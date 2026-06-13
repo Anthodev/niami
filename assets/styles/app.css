@@ -222,6 +222,30 @@
     .app-button-primary {
         @apply btn btn-primary rounded-box shadow-none;
     }
+
+
+    .report-sidebar-backdrop {
+        @apply pointer-events-none fixed inset-0 z-[60] bg-base-300/55 opacity-0 backdrop-blur-sm transition-opacity duration-300 ease-out;
+    }
+
+    .report-sidebar-backdrop.is-open {
+        @apply pointer-events-auto opacity-100;
+    }
+
+    .report-sidebar-panel {
+        @apply fixed inset-y-0 right-0 z-[70] w-full max-w-md translate-x-full border-l border-base-300/70 bg-base-100/95 shadow-2xl backdrop-blur transition-transform duration-300 ease-out supports-[backdrop-filter]:bg-base-100/90 sm:max-w-xl;
+    }
+
+    .report-sidebar-panel.is-open {
+        @apply translate-x-0;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .report-sidebar-backdrop,
+        .report-sidebar-panel {
+            transition-duration: 1ms;
+        }
+    }
 }
 
 

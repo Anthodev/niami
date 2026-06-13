@@ -5,9 +5,11 @@ import ThemeController from './controllers/theme_controller.js';
 import ReportFormController from './controllers/report_form_controller.js';
 import ReportCommentModalController from './controllers/report_comment_modal_controller.js';
 import NavbarSearchController from './controllers/navbar_search_controller.js';
+import ReportSidebarController from './controllers/report_sidebar_controller.js';
 
 const app = startStimulusApp();
 app.register('theme', ThemeController);
 app.register('report-form', ReportFormController);
 app.register('report-comment-modal', ReportCommentModalController);
 app.register('navbar-search', NavbarSearchController);
+app.register('report-sidebar', ReportSidebarController);

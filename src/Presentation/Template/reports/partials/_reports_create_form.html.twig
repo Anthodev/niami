@@ -5,31 +5,21 @@
 {% set checkboxClass = 'report-option-input' %}
 {% set checkboxLabelClass = 'report-option' %}
 
-<section class="app-card app-card-muted overflow-hidden" data-controller="report-form" id="add-report">
-    <div class="collapse collapse-arrow">
-        <input id="report-create-toggle" type="checkbox" aria-label="{{ 'add_report.label'|trans }}" />
-        <div class="collapse-title flex items-center gap-3 px-4 py-3 text-base font-semibold sm:px-5">
-            <span class="grid h-8 w-8 place-items-center rounded-box border border-primary/35 bg-primary/10 text-primary">
-                {{ ux_icon('ph:plus-square', {class: 'h-5 w-5'}) }}
-            </span>
-            <div class="min-w-0">
-                <span class="block">{{ 'add_report.label'|trans }}</span>
-                <span class="block text-xs font-normal text-base-content/55">{{ 'add_report.subtitle'|trans }}</span>
-            </div>
-        </div>
+<section data-controller="report-form" id="add-report">
+    {{ form_start(createReportForm, {
+        'action': path('create_report'),
+        'attr': {
+            'class': 'space-y-4',
+            'data-action': 'turbo:submit-end->report-sidebar#closeAfterSuccessfulSubmit'
+        }
+    }) }}
 
-        <div class="collapse-content">
-            {{ form_start(createReportForm, {
-                'action': path('create_report'),
-                'attr': {'class': 'space-y-5 pt-1'}
-            }) }}
-
-            <fieldset class="app-surface rounded-box p-4 sm:p-5">
+    <fieldset class="app-surface rounded-box p-4 sm:p-5">
                 <legend class="px-2 text-sm font-semibold uppercase tracking-wide text-mode-portable">
                     {{ ux_icon('ph:game-controller', {class: 'mr-1 inline h-4 w-4'}) }}
                     {{ 'add_report.form.portable.label'|trans }}
                 </legend>
-                <div class="mt-3 grid gap-2.5 sm:grid-cols-2 xl:grid-cols-4">
+                <div class="mt-3 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2">
                     <label class="{{ checkboxLabelClass }}">
                         {{ form_widget(createReportForm.is60FpsPortable, {'attr': {'class': checkboxClass}}) }}
                         <span class="report-option-marker">{{ ux_icon('ph:check', {class: 'h-4 w-4'}) }}</span>
@@ -61,12 +51,12 @@
                 </div>
             </fieldset>
 
-            <fieldset class="app-surface rounded-box p-4 sm:p-5">
+    <fieldset class="app-surface rounded-box p-4 sm:p-5">
                 <legend class="px-2 text-sm font-semibold uppercase tracking-wide text-mode-tv">
                     {{ ux_icon('ph:television', {class: 'mr-1 inline h-4 w-4'}) }}
                     {{ 'add_report.form.tv.label'|trans }}
                 </legend>
-                <div class="mt-3 grid gap-2.5 sm:grid-cols-2 xl:grid-cols-4">
+                <div class="mt-3 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2">
                     <label class="{{ checkboxLabelClass }}">
                         {{ form_widget(createReportForm.is60FpsDocked, {'attr': {'class': checkboxClass}}) }}
                         <span class="report-option-marker">{{ ux_icon('ph:check', {class: 'h-4 w-4'}) }}</span>
@@ -98,12 +88,12 @@
                 </div>
             </fieldset>
 
-            <fieldset class="app-surface rounded-box p-4 sm:p-5">
+    <fieldset class="app-surface rounded-box p-4 sm:p-5">
                 <legend class="px-2 text-sm font-semibold uppercase tracking-wide text-mode-misc">
                     {{ ux_icon('ph:sliders-horizontal', {class: 'mr-1 inline h-4 w-4'}) }}
                     {{ 'add_report.form.misc.label'|trans }}
                 </legend>
-                <div class="mt-3 grid gap-2.5 sm:grid-cols-2 xl:grid-cols-4">
+                <div class="mt-3 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2">
                     <label class="{{ checkboxLabelClass }}">
                         {{ form_widget(createReportForm.hasImprovedLoadingTimes, {'attr': {'class': checkboxClass}}) }}
                         <span class="report-option-marker">{{ ux_icon('ph:check', {class: 'h-4 w-4'}) }}</span>
@@ -129,29 +119,27 @@
                 </div>
             </fieldset>
 
-            <div class="rounded-box border border-base-300/60 bg-base-200/50 p-4 text-xs leading-relaxed text-base-content/65">
+    <div class="rounded-box border border-base-300/60 bg-base-200/50 p-4 text-xs leading-relaxed text-base-content/65">
                 <p class="mb-2 flex items-center gap-2 font-semibold uppercase tracking-wide text-base-content/50">
                     {{ ux_icon('ph:info', {class: 'h-4 w-4'}) }} {{ 'add_report.notice.label'|trans }}
                 </p>
-                <div class="grid gap-1.5 sm:grid-cols-3">
+                <div class="grid gap-1.5 sm:grid-cols-3 lg:grid-cols-1">
                     <p>{{ reverse_ordinal.reverse_ordinal('add_report.notice.stable_framerate'|trans) }}</p>
                     <p>{{ reverse_ordinal.reverse_ordinal('add_report.notice.resolution_improved'|trans) }}</p>
                     <p>{{ reverse_ordinal.reverse_ordinal('add_report.notice.native_resolution'|trans) }}</p>
                 </div>
             </div>
 
-            {{ form_widget(createReportForm.gameId, {'attr': {'value': game.id}}) }}
-            {{ form_widget(createReportForm.gameSlug, {'attr': {'value': game.slug}}) }}
-            {{ form_rest(createReportForm) }}
+    {{ form_widget(createReportForm.gameId, {'attr': {'value': game.id}}) }}
+    {{ form_widget(createReportForm.gameSlug, {'attr': {'value': game.slug}}) }}
+    {{ form_rest(createReportForm) }}
 
-            <div class="flex justify-end">
-                <button class="app-button-primary w-full sm:w-auto">
+    <div class="flex justify-end">
+                <button class="app-button-primary w-full">
                     {{ ux_icon('ph:plus', {class: 'h-4 w-4'}) }}
                     {{ 'add_report.label'|trans }}
                 </button>
             </div>
 
-            {{ form_end(createReportForm) }}
-        </div>
-    </div>
+    {{ form_end(createReportForm) }}
 </section>
